@@ -90,7 +90,7 @@ break fusion. Performance should not significantly diverge from the
 existing UTF-16 text package. There will be an expected change to the
 exposed Text internals, in which case, breakage should be assessed by
 circulating a git commit reference to a release candidate as soon as
-possible. This candidate should be sourced publicly and loudly.
+possible. This candidate should be shared publicly and loudly.
 
 **Implementation:**
 
