@@ -1,3 +1,5 @@
+# Introduction
+
 This proposal is for the migration of the `text` package from its
 default UTF-16 encoding to UTF-8. The lack of UTF-8 as a default in the
 `text` package is a pain point raised by the Haskell Community and
@@ -12,6 +14,61 @@ Further, we solicited both community and industry feedback to gauge the
 appetite for breakage, and what stakeholders would be affected by the
 changes. Andrew Lelechenko has offered to lead the implementation of
 this project.
+
+# What is Unicode?
+
+Representing a text via bytes requires to choose a character enconding.
+One of the most old encodings is ASCII: it has 2⁷=128 code points,
+representing Latin letters, digits and punctuations. These code points
+are trivially mapped to 7-bit sequences and stored byte by byte (with leading zero).
+
+Unfortunately, almost no other alphabet except English can fit into ASCII:
+even Western European languages need code points for ñ, ß, ø, etc.
+Since on the majority of architectures a byte contains 8 bits, able to encode
+up to 256 code points, various incompatible ASCII extensions proliferated profusely.
+This includes ISO 8859-1, covering additional symbols for Latin scripts, several
+encodings to represent Cyrillic letters, etc.
+
+Not only it was error-prone to guess an encoding of a particular bytestring, but also
+impossible, for example, to mix French and Russian letters in a single text. This
+prompted work on a universal encoding, Unicode, which would be capable to represent
+all letters one can think of. At early development stages it was thought that
+“64K ought to be enough for anybody” and a uniform 16-bit encoding UCS-2 was proposed.
+Some programming languages developed around that period (Java, JavaScript)
+chose this encoding for internal representation of strings. It is
+only twice longer than ASCII and, since all code points are
+represented by 2 bytes, constant-time indexing is possible.
+
+Soon enough, however, Unicode Consortium discovered more than 64K letters.
+Unicode standard defines almost 17·2¹⁶ code points, of which \~143 000 are assigned
+a character (as of Unicode 13.0). Now comes a tricky part: Unicode defines how to map
+characters to code points (basically, integers), but how would you serialise lists of
+integers to bytes? The simplest encoding is just allocate 32 bits (4 bytes) per code
+point, and write them one by one. This is UTF-32. Its main benefit is that since
+all code points take the same size, so you can still index characters in a constant time.
+However, memory requirements are 4x comparing to ASCII, and in a world of ASCII and UCS-2
+there was little appetite to embrace one more, completely new encoding.
+
+Next option on the list is to encode some code points as 2 bytes and some others,
+less lucky ones, as 4 bytes. This is UTF-16. This encoding allowed to retain a decent
+backward compatibility with UCS-2, so, for instance, modern Java and JavaScript
+stick to UTF-16 as default internal representation. The biggest downside is that you
+no longer know beforehand, where *n*-th code point starts. One must *parse* all characters
+from the very beginning to learn which ones are 2-byte long and which are 4-byte long.
+
+But once we abandon requirement of constant indexing, even better option arises. Let's
+encode first 128 characters as 1 byte, some others as 2 bytes, and the rest as 4 bytes.
+This is UTF-8. The killer feature of this encoding is that it's fully backwards compatible
+with ASCII. This meant that all existing ASCII documents were automatically valid UTF-8
+documents as well, and that 50-years-old executables could often parse UTF08 data without
+knowing a bit about it. This property appeared so important that in a modern environment
+the vast majority of data is stored and sent between processes in UTF-8 encoding.
+
+To sum up:
+
+* Both UTF-8 and UTF-16 support exactly the same range of characters.
+* For ASCII data UTF-8 takes twice less space.
+* UTF-8 is vastly more popular for serialization and storage.
 
 # Motivation
 
