@@ -45,9 +45,9 @@ a character (as of Unicode 13.0). Now comes a tricky part: Unicode defines how t
 characters to code points (basically, integers), but how would you serialise lists of
 integers to bytes? The simplest encoding is just allocate 32 bits (4 bytes) per code
 point, and write them one by one. This is UTF-32. Its main benefit is that since
-all code points take the same size, so you can still index characters in a constant time.
+all code points take the same size, you can still index characters in a constant time.
 However, memory requirements are 4x comparing to ASCII, and in a world of ASCII and UCS-2
-there was little appetite to embrace one more, completely new encoding.
+there was little appetite to embrace one more incompatible encoding.
 
 Next option on the list is to encode some code points as 2 bytes and some others,
 less lucky ones, as 4 bytes. This is UTF-16. This encoding allowed to retain a decent
@@ -60,7 +60,7 @@ But once we abandon requirement of constant indexing, even better option arises.
 encode first 128 characters as 1 byte, some others as 2 bytes, and the rest as 4 bytes.
 This is UTF-8. The killer feature of this encoding is that it's fully backwards compatible
 with ASCII. This meant that all existing ASCII documents were automatically valid UTF-8
-documents as well, and that 50-years-old executables could often parse UTF08 data without
+documents as well, and that 50-years-old executables could often parse UTF-8 data without
 knowing a bit about it. This property appeared so important that in a modern environment
 the vast majority of data is stored and sent between processes in UTF-8 encoding.
 
@@ -72,13 +72,33 @@ To sum up:
 
 # Motivation
 
--   UTF-16 by default requires that all Text values pay a premium for serialization. Arguably, the performance impact of Text is flipped
-    upside-down: most text is UTF-8, and Haskell devs pay an undue cost when working with the wrong default.
+`text` is a standard Haskell library for Unicode strings. Internally it stores
+Unicode code points in UTF-16, so any character takes either 2 or 4 bytes.
+In a modern enviroment this is a suboptimal choice: usually data
+is stored (e. g., on a disc or in DB) and tranferred between agents (e. g., via web)
+in UTF-8 encoding. So `text` needs to convert (UTF-8 to UTF-16) all inputs and usually
+ends up converting outputs as well (this time UTF-16 to UTF-8).
 
--   UTF-8 is the industry standard and by far the most common text encoding, with roughly 97% of web pages existing in UTF-8. The
-    existing UTF-16 default imposes an additional hurdle to working with the vast majority of web content on earth.
+Even within Haskell ecosystem UTF-16 is rarely used
+for interprocess communication or as a component of binary formats.
+The very `instance Binary Text` serializes `Text` in UTF-8 encoding.
 
--   Many systems in Haskell are UTF-8 by default (e.g. Haddock)
+If we switch the internal representation of `Text` from UTF-16 to UTF-8,
+all such conversions would be made redundant and we'll be able just check that
+a `ByteString` is a valid UTF-8 (which is most often the case) and copy it into `Text`.
+If in future (see an upcoming "Unifying vector-like types" proposal) `ByteString`
+is backed by unpinned memory, we'd be able to eliminate copying entirely.
+
+`Text` is also often used in contexts, which involve mostly ASCII characters.
+For such applications storing data in UTF-8 means using up to 2x less space,
+which could be important to reduce memory pressure.
+
+The importance of UTF-16 to UTF-8 transition was recognised long ago, and at least
+two attempts has been made:
+[in 2011](https://github.com/jaspervdj/text/tree/utf8) and five years later
+[in 2016](https://github.com/text-utf8/text-utf8). Unfortunately, they did not get
+merged into main `text` package. Today, five more years later it seems suitable
+to make another attempt.
 
 # Goals
 
