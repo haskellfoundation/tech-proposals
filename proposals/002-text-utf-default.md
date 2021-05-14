@@ -57,7 +57,7 @@ no longer know beforehand, where *n*-th code point starts. One must *parse* all 
 from the very beginning to learn which ones are 2-byte long and which are 4-byte long.
 
 But once we abandon requirement of constant indexing, even better option arises. Let's
-encode first 128 characters as 1 byte, some others as 2 bytes, and the rest as 4 bytes.
+encode first 128 characters as 1 byte, some others as 2 bytes, and the rest as 3 or 4 bytes.
 This is UTF-8. The killer feature of this encoding is that it's fully backwards compatible
 with ASCII. This meant that all existing ASCII documents were automatically valid UTF-8
 documents as well, and that 50-years-old executables could often parse UTF-8 data without
@@ -90,11 +90,19 @@ If in future (see an upcoming "Unifying vector-like types" proposal) `ByteString
 is backed by unpinned memory, we'd be able to eliminate copying entirely.
 
 `Text` is also often used in contexts, which involve mostly ASCII characters.
-For such applications storing data in UTF-8 means using up to 2x less space,
-which could be important to reduce memory pressure.
+This often prompts developers to use `ByteString` instead of `Text` to save 2x space
+in a (false) hope that their data would never happen to contain anything non-ASCII.
+Backing `Text` by UTF-8 removes this source of inefficiency, reduces memory consumption
+up to 2x and promote more convergence to use `Text` for all stringy things
+(as opposed to binary data).
+
+Modern computer science research is focused on developing faster algorithms
+for UTF-8 data, e. g., an ultra-fast JSON decoder [simdjson](https://github.com/simdjson/simdjson). There is much less work on (and demand for) UTF-16 algorithms.
+Switching `text` to UTF-8 will open us a way to accomodate and benefit
+from future developments in rapid text processing.
 
 The importance of UTF-16 to UTF-8 transition was recognised long ago, and at least
-two attempts has been made:
+two attempts have been made:
 [in 2011](https://github.com/jaspervdj/text/tree/utf8) and five years later
 [in 2016](https://github.com/text-utf8/text-utf8). Unfortunately, they did not get
 merged into main `text` package. Today, five more years later it seems suitable
@@ -108,14 +116,13 @@ to make another attempt.
 
 -   Ensure stakeholders (e.g. GHC, Cabal, Stack, boot libs) have ample time to migrate and address any bugs.
 
--   Implementation should not significantly alter the performance characteristics of the base `text` library within some tolerance
-    threshold.
+-   Performance satisfies targets listed below in "Performance impact" section.
 
 # People
 
 -   Performers:
 
-    -   Leader: Andrew Lelechenko (bodigrim)
+    -   Leader: Andrew Lelechenko (Bodigrim)
 
     -   Support: Emily Pillmore (emilypi)
 
@@ -172,6 +179,73 @@ possible. This candidate should be shared publicly and loudly.
 **Implementation:**
 
 -   TBD: There is a straightforward implementation, but this one is left up to Andrew for comment.
+
+**Performance impact**
+
+A common misunderstanding is that switching to UTF-8 makes everything twice smaller and
+twice faster. That's not quite so.
+
+While UTF-8 encoded English text is twice smaller than UTF-16,
+this is not exactly true even for other Latin-based languages, which frequently
+use vowels with diacritics. For non-Latin scripts (Russian, Hebrew, Greek)
+the difference between UTF-8 and UTF-16 is almost negligible: one saves on
+spaces and punctuation, but letters still take two bytes. On a bright side, programs rarely
+transfer sheer walls of text, and for a typical markup language (JSON, HTML, XML),
+even if payload is non-ASCII, savings from UTF-8 easily reach \~30%.
+
+As a Haskell value, `Text` involves a significant constant overhead: there is
+a constructor tag, then offset and length, plus bytearray header and length.
+Altogether 5 machine word = 40 bytes. So for short texts, even if they are ASCII only,
+difference in memory allocations is not very pronounced.
+
+Further, traversing UTF-8 text is not necessarily faster than UTF-16. Both are
+variable length encodings, so indexing a certain element requires parsing everything
+in front. But in UTF-16 there are only two options: a code point
+takes either 2 or 4 bytes, and the vast majority of frequently used characters are
+2-byte long. So traversing UTF-16 keeps branch prediction happy. Now with UTF-8
+we have all four options: a code point can take from 1 to 4 bytes, and most non-English
+texts constantly alternate between 1-byte (e. g., spaces) and 2-byte characters.
+Having more branches and, more importantly, bad branch prediction is a serious penalty.
+This to a certain degree is mitigated by better cache locality.
+
+Existing `text` benchmarks are arguably favoring UTF-16 encoding: most of them are huge
+walls of Russian, Greek, Korean, etc. texts without any markup. So encoding them in UTF-8
+does not save any space, but we have to pay extra for more elaborate encoding. Our goal
+here is nevertheless to stay roughly on par with existing implementation.
+
+Benchmarks for `decodeUtf8` / `encodeUtf8` should improve significantly by virtue
+of avoiding conversion between UTF-8 and UTF-16 conversion.
+Fast validation of UTF-8 is not a trivial task, but we intend to employ
+[`simdjson::validate_utf8`](https://arxiv.org/pdf/2010.03090.pdf) for this task.
+
+Another important aspect of `text` performance is fusion.We are finalising
+an `inspection-testing`-based [test suite](https://github.com/haskell/text/pull/337) to check that
+pipelines, which used to fuse before, are fusing after UTF-8 transition as well.
+Fusion is incredibly fragile matter: for example, of 100 tests, which fuse in GHC 8.10.4,
+40 do not fuse in GHC 9.0.1, 30 do not fuse in GHC 8.4.4, etc. In such environment we cannot
+bet on retaining all fusion capabilities, but we aim to thoroughly investigate
+and explain all regressions.
+
+We expect that switching to UTF-8 will be beneficial for client of `text`, both
+libraries and applications. They'll be able to save memory for storage,
+save time on encoding/decoding inputs and outputs, use state-of-the-art text algorithms,
+developed for UTF-8. Parsers often benefit from UTF-8 encoding, because if a grammar
+does not have specific rules for non-ASCII characters (which is most often the case),
+parser can operate on a `ByteArray` without bothering about multibyte encodings at all.
+
+We will seek clients' feedback as early as possible, and will act on it, if it arrives
+before the end of the project. However, since our clients are external actors, often
+unpaid volunteers, we cannot expect them to provide feedback by the given date.
+Thus to keep targets of this project time-bound, we cannot include a goal
+of waiting for an approval of indefinite number of parties for indefinitely long.
+Such goal or sentiment, in our opinion, made a significant contribution into failure
+of two previous attempts.
+
+To sum up:
+
+* `decodeUtf8` and `encodeUtf8` become at least 2x faster.
+* Geometric mean of existing benchmarks (which favor UTF-16) decreases.
+* Fusion (as per our test suite) does not regress beyond at most several cases.
 
 **Stakeholders:**
 
