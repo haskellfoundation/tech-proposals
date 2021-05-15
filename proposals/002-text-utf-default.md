@@ -86,8 +86,8 @@ The very `instance Binary Text` serializes `Text` in UTF-8 encoding.
 If we switch the internal representation of `Text` from UTF-16 to UTF-8,
 all such conversions would be made redundant and we'll be able just check that
 a `ByteString` is a valid UTF-8 (which is most often the case) and copy it into `Text`.
-If in future (see an upcoming "Unifying vector-like types" proposal) `ByteString`
-is backed by unpinned memory, we'd be able to eliminate copying entirely.
+If in future `ByteString` switch to be
+backed by unpinned memory, we'd be able to eliminate copying entirely.
 
 `Text` is also often used in contexts, which involve mostly ASCII characters.
 This often prompts developers to use `ByteString` instead of `Text` to save 2x space
@@ -117,6 +117,8 @@ to make another attempt.
 -   Ensure stakeholders (e.g. GHC, Cabal, Stack, boot libs) have ample time to migrate and address any bugs.
 
 -   Performance satisfies targets listed below in "Performance impact" section.
+
+-   Compatibiltiy story satisfies targets listed below in "Compatibility issues" section.
 
 # People
 
@@ -179,6 +181,70 @@ possible. This candidate should be shared publicly and loudly.
 **Implementation:**
 
 -   TBD: There is a straightforward implementation, but this one is left up to Andrew for comment.
+
+**Compatibility issues**
+
+`text` is a very old package, deeply ingrained in Haskell ecosystem.
+A change of internal representation is necessarily a breaking change.
+Our strategy to tackle compatibility issues is guided by a desire
+to finish this project in a time-bound fashion with realistic expectations
+about available resources.
+
+Current `text` HEAD supports GHCs back to GHC 8.0.
+At the moment we do not foresee any blockers
+to keep compatibility with GHC 8.0 after UTF-8 transition,
+and we plan to stick to it even if it causes some overhead in CPP.
+However, if we discover that supporting old GHCs causes a significant overhead
+(e. g., a dedicated non-trivial code path, emulating missing primop
+or working around a bug), we may decide to shrink the compatibility window.
+Such decision would not to be taken lightly, but we believe that getting
+things done for the bright future should not be hindered by old unsupported luggage.
+
+One suggestion to improve compatibility story was to keep both UTF-16 and UTF-8
+implementations in `text` and switch between them via Cabal flag. It seems,
+however, that such strategy will put an undue, indefinitely long burden
+on `text` maintainers, and brings little benefits to downstream packages, because
+they cannot detect build flags of `text` (and thus cannot rely on its internals at all).
+
+Instead we mark a new, UTF-8 release as `text-2.0`, and put a call for volunteers
+to maintain a legacy UTF-16 package. Depending on a demand, this could be done either
+as a continuation of `text-1.X` series, or as a separate `text-utf16` package. We'll facilitate such community project and will work with Hackage Trustees and Stackage
+Curators to ensure timely transition of ecosystem.
+
+With regards to API compatibility, we intend to keep signatures of non-`Internal`
+modules unchanged, except `Word16` replaced by `Word8` where appropriate.
+Such promise unfortunately cannot be made for `Internal` modules,
+due to their nature: even while we'll strive to keep as much untouched as possible,
+the semantics of internal functions is due to change drastically. This kind of breakage
+should not come as a big surprise, because `Internal` modules have a disclaimer about
+unstable API.
+
+There are two places where `text` leaks details of internal represenation.
+First of them is `Data.Text.Array`, which provides an access to an underlying bytearray.
+Not only its API is to change from `Word16` to `Word8`, but also the semantics
+of array switches from UTF-16 to UTF-8. This will cause breakage of several packages
+such as `unicode-transforms` and `unicode-collation`. We intend to communicate with
+respective maintainers as early as possible to help with transition.
+
+Another one is `Data.Text.Foreign`, which is mostly used by `text-icu` library,
+which binds to `libicu` for certain Unicode manipulations. `libicu` provides
+helpers to convert C strings
+[from UTF8 to UTF16](https://unicode-org.github.io/icu/userguide/strings/utf-8.html).
+It is up to `text-icu` maintainers either to modify their bindings. We intend
+to reach to them as soon as we have an MVP.
+
+Since fixing downstream compatibility issues is up to external counterparties,
+most of which are unpaid volunteers, we cannot expect them to do it in a limited
+time frame. We are devoted to having a smooth migration story and will provide
+as much guidance as possible, but to keep our targets time-bound we cannot tie the success
+of this project to actions of third parties. We will not wait for everyone to migrate.
+
+To sum up, we plan to:
+
+* Keep `text` compatible with GHCs back to 8.0, unless it puts an undue cost (more than 50 lines of code per major release).
+* Keep signatures of non-`Internal` modules compatible modulo `Word16`/`Word8` change.
+* Provide migration guidance to clients of `Data.Text.{Array,Foreign}`.
+* Facilitate a community project to keep UTF16-based legacy fork alive, if there is such demand.
 
 **Performance impact**
 
@@ -265,20 +331,20 @@ packages that go out of date.
 
 -   text-2.0.0.0, which will provide a UTF-8 encoding for Text as a default for all versions going forward.
 
--   A `text-utf16` package, which is a preservation of the current UTF-16 encoded text, for backwards compatibility.
-
--   Updates to the Text Haddocks that reflect the UTF-8 changes
+-   Updates to the Text Haddocks that reflect the UTF-8 changes.
 
 -   Announcements and updates across all Haskell channels covering the following:
-    -   Significant dates and milestones
+    -   Significant dates and milestones.
 
-    -   Expected code impact
+    -   Release candidates.
 
-    -   Release candidates
+    -   Migration guides.
 
-    -   Delivery
+    -   Performance impact analysis.
 
--   Migration instructions and design documentation
+    -   Delivery.
+
+    -   Design documentation.
 
 # Outcomes
 
