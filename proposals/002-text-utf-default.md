@@ -144,9 +144,9 @@ to make another attempt.
 
     -   Edward Kmett: has been vocal about his use of `text-icu` and requires it not be broken.
 
--   Ben Gamari: integration with GHC
+    -   Ben Gamari: integration with GHC
 
--   The Cabal maintainers (fgaz, emilypi, mikolaj): integration with Cabal
+    -   The Cabal maintainers (fgaz, emilypi, mikolaj): integration with Cabal
 
 Progress will be reported on a weekly basis to the HF Technical Agenda
 Track, with Emily as support for Andrew.
@@ -284,7 +284,7 @@ of avoiding conversion between UTF-8 and UTF-16 conversion.
 Fast validation of UTF-8 is not a trivial task, but we intend to employ
 [`simdjson::validate_utf8`](https://arxiv.org/pdf/2010.03090.pdf) for this task.
 
-Another important aspect of `text` performance is fusion.We are finalising
+Another important aspect of `text` performance is fusion. We are finalising
 an `inspection-testing`-based [test suite](https://github.com/haskell/text/pull/337) to check that
 pipelines, which used to fuse before, are fusing after UTF-8 transition as well.
 Fusion is incredibly fragile matter: for example, of 100 tests, which fuse in GHC 8.10.4,
@@ -329,9 +329,9 @@ packages that go out of date.
 
 # Deliverables
 
--   text-2.0.0.0, which will provide a UTF-8 encoding for Text as a default for all versions going forward.
+-   `text-2.0.0.0`, which will provide a UTF-8 encoding for Text as a default for all versions going forward.
 
--   Updates to the Text Haddocks that reflect the UTF-8 changes.
+-   Updates to the `text` Haddocks that reflect the UTF-8 changes.
 
 -   Announcements and updates across all Haskell channels covering the following:
     -   Significant dates and milestones.
@@ -360,7 +360,7 @@ packages that go out of date.
 
 -   HF must minimize the cost to migrate, or people will just get mad (and rightfully so).
 
--   Text-icu will need a bespoke UTF-8 conversion function. In general, the Unicode story must be tracked and made sure it will not break.
+-   `text-icu` will need a bespoke UTF-8 conversion function. In general, the Unicode story must be tracked and made sure it will not break.
     -   Recommendation: make this a high-priority deliverable when project planning
 
 -   The old UTF-16 text package will need to be preserved, and will require a maintainer.
