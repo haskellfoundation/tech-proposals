@@ -118,7 +118,7 @@ to make another attempt.
 
 -   Performance satisfies targets listed below in "Performance impact" section.
 
--   Compatibiltiy story satisfies targets listed below in "Compatibility issues" section.
+-   Compatibility story satisfies targets listed below in "Compatibility issues" section.
 
 # People
 
