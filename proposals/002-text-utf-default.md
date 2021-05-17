@@ -110,7 +110,7 @@ to make another attempt.
 
 # Goals
 
--   Solicit feedback from community members and industry to gauge appetite for such a change.
+-   Ensure that the new design of `text` and its migration strategy accommodates the needs of community members and industry
 
 -   Provide an implementation, migration, and delivery plan for changing the default encoding of `text` from UTF-16 to UTF-8.
 
