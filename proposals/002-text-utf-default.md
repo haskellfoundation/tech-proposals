@@ -97,7 +97,9 @@ up to 2x and promote more convergence to use `Text` for all stringy things
 (as opposed to binary data).
 
 Modern computer science research is focused on developing faster algorithms
-for UTF-8 data, e. g., an ultra-fast JSON decoder [simdjson](https://github.com/simdjson/simdjson). There is much less work on (and demand for) UTF-16 algorithms.
+for UTF-8 data, e. g., an ultra-fast JSON decoder
+[simdjson](https://github.com/simdjson/simdjson).
+There is much less work on (and demand for) UTF-16 algorithms.
 Switching `text` to UTF-8 will open us a way to accomodate and benefit
 from future developments in rapid text processing.
 
@@ -110,7 +112,7 @@ to make another attempt.
 
 # Goals
 
--   Ensure that the new design of `text` and its migration strategy accommodates the needs of community members and industry
+-   Ensure that the new design of `text` and its migration strategy accommodates the needs of community members and industry.
 
 -   Provide an implementation, migration, and delivery plan for changing the default encoding of `text` from UTF-16 to UTF-8.
 
@@ -133,54 +135,69 @@ to make another attempt.
     -   The text maintainers
 
         -   Xia Li-Yao (lysxia)
-
-        -   Emily Pillmore (emilypi)
-
-        -   Dan Cartwright (chessai)
-
         -   Callan McGill (boarders)
+        -   Travis Athougies (tathougies)
+        -   Matt Parsons (parsonsmatt)
+        -   Emily Pillmore (emilypi)
+        -   Dan Cartwright (chessai)
 
 -   Stakeholders:
 
     -   Edward Kmett: has been vocal about his use of `text-icu` and requires it not be broken.
 
-    -   Ben Gamari: integration with GHC
+    -   Ben Gamari: integration with GHC.
 
-    -   The Cabal maintainers (fgaz, emilypi, mikolaj): integration with Cabal
+    -   The Cabal maintainers (fgaz, emilypi, mikolaj): integration with Cabal.
 
 Progress will be reported on a weekly basis to the HF Technical Agenda
 Track, with Emily as support for Andrew.
 
 # Timeline
 
-We expect that this project will take roughly 6 months to fully
-complete: 3-4 months to complete the code implementation, performance
-testing, and unit testing, another 1-2 months to integrate with
+We expect to finish the bulk of implementation in 3 months,
+by the beginning of September, so that GHC could bump its `text`
+submodule before GHC 9.4 feature freeze. Following months leading
+to GHC release will provide us time to integrate with
 stakeholders and diagnose any potential issues with the migration.
+The project ends by Christmas 2021.
 
-**Preparation:**
+**Prior art**
 
-Using the HVR's existing [`text-utf8`](https://github.com/text-utf8) as
-a starting point, the following must be done before an implementation is
-started:
+The oldest attempt to use UTF-8 in `text` is
+[jaspervdj's GSoC](https://github.com/jaspervdj/text/tree/utf8) back in 2011.
+The final results can be found
+[here](https://jaspervdj.be/posts/2011-08-19-text-utf8-the-aftermath.html).
+Significant parts of Jasper's work got merged into `text`, including
+comprehensive benchmark suite and many minor improvements. However,
+70-commits-long UTF-8 branch itself was left unmerged and now, after 10 years,
+is almost 800 commits past `master` branch.
 
--   Modernize the codebase and clear out the bitrot
+Next comes [`text-utf8`](https://github.com/text-utf8/text-utf8) package,
+which forked from `text` in 2016. Its authors rebased parts of Jasper's work
+in a bulk commit and continued from this point onwards,
+accumulating \~100 commits atop of it.
+The work came to a halt in 2018 and at the moment is \~200 commits behind `master` branch.
 
--   Establish a baseline for performance and any related issues.
+It would be extremely challenging to rebase this work on top of current `text`,
+audit and verify decade-old changes, then fix remaining
+issues and pass a review. As one can imagine, reviewers are not usually quite happy
+to review 300 commits of vague provenance. Moreover, we discovered that benchmarks
+regressed severely in `text-utf8` and that fusion is broken on several occasions.
+It's unclear where exactly the problem lurks there. Finally, we'd like to explore different
+approaches to tackle potential performance issues.
 
--   Update testing and performance benchmarks to make use of `inspection-testing` to ensure fusion is not broken in
-    subsequent UTF-8 related changes.
+We decided that the safest bet is to reimplement UTF-8 transition from the scratch,
+paying close attention to tests and benchmarks step by step. This way we'll be able
+to gain enough confidence and understanding of the nature of changes, and provide
+reviewers with a clean sequence of commits, facilitating timely merge.
 
-An MVP should completely preserve standard user-facing API, and not
-break fusion. Performance should not significantly diverge from the
-existing UTF-16 text package. There will be an expected change to the
-exposed Text internals, in which case, breakage should be assessed by
-circulating a git commit reference to a release candidate as soon as
-possible. This candidate should be shared publicly and loudly.
-
-**Implementation:**
-
--   TBD: There is a straightforward implementation, but this one is left up to Andrew for comment.
+Talking about developments in a wider ecosystem, one must mention
+`text-short` package, which provides a data structure, similar in characteristics
+to `ShortByteString`, but interpreted as a UTF-8 encoded data. It was argued that
+this type is worth inclusion into main `text` package to mirror `ShortByteString`,
+exposed from `bytestring`. While such acquisition is out of scope for this project,
+it will be easier to do so when `text` package itself switches to UTF-8, opening
+possibilities for even better String story in Haskell.
 
 **Compatibility issues**
 
@@ -208,7 +225,8 @@ they cannot detect build flags of `text` (and thus cannot rely on its internals 
 
 Instead we mark a new, UTF-8 release as `text-2.0`, and put a call for volunteers
 to maintain a legacy UTF-16 package. Depending on a demand, this could be done either
-as a continuation of `text-1.X` series, or as a separate `text-utf16` package. We'll facilitate such community project and will work with Hackage Trustees and Stackage
+as a continuation of `text-1.X` series, or as a separate `text-utf16` package. We'll
+facilitate such community project and will work with Hackage Trustees and Stackage
 Curators to ensure timely transition of ecosystem.
 
 With regards to API compatibility, we intend to keep signatures of non-`Internal`
@@ -230,14 +248,15 @@ Another one is `Data.Text.Foreign`, which is mostly used by `text-icu` library,
 which binds to `libicu` for certain Unicode manipulations. `libicu` provides
 helpers to convert C strings
 [from UTF8 to UTF16](https://unicode-org.github.io/icu/userguide/strings/utf-8.html).
-It is up to `text-icu` maintainers either to modify their bindings. We intend
+It is up to `text-icu` maintainers to modify their bindings. We intend
 to reach to them as soon as we have an MVP.
 
 Since fixing downstream compatibility issues is up to external counterparties,
 most of which are unpaid volunteers, we cannot expect them to do it in a limited
 time frame. We are devoted to having a smooth migration story and will provide
 as much guidance as possible, but to keep our targets time-bound we cannot tie the success
-of this project to actions of third parties. We will not wait for everyone to migrate.
+of this project to actions of third parties. We will not block this project
+because of unmigrated packages downstream.
 
 To sum up, we plan to:
 
