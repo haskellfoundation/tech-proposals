@@ -237,7 +237,7 @@ the semantics of internal functions is due to change drastically. This kind of b
 should not come as a big surprise, because `Internal` modules have a disclaimer about
 unstable API.
 
-There are two places where `text` leaks details of internal represenation.
+There are two places where `text` leaks details of internal representation.
 First of them is `Data.Text.Array`, which provides an access to an underlying bytearray.
 Not only its API is to change from `Word16` to `Word8`, but also the semantics
 of array switches from UTF-16 to UTF-8. This will cause breakage of several packages
