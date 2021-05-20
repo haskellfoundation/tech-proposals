@@ -2,7 +2,7 @@
 
 
 
-This template is for Haskell Foundation technical agenda proposals. You may find existing proposals and more examples at the [tech-proposals](https://github.com/haskellfoundation/tech-proposals) repository. 
+This template is for Haskell Foundation technical agenda proposals. You may find existing proposals and more examples at the [tech-proposals](https://github.com/haskellfoundation/tech-proposals) repository.
 
 
 
@@ -10,14 +10,13 @@ This template is for Haskell Foundation technical agenda proposals. You may find
 
 This section should detail the following: A summary of the proposal’s
 motivation, implementation, risks, timeline, and goals. It should aim to
-be an abstract for the proposals.
+be an abstract for the proposal.
 
 ## Background
 
 This section should explain any background (targeting a casual audience)
 needed to understand the proposal’s motivation (e.g. a high level
 overview of the technical details and some history).
-
 
 
 ## Motivation
@@ -37,10 +36,10 @@ for undertaking the project.
 
 This section should detail the following people:
 
--   **Performers:** the project leads and main developers/resources who will be directly involved in the day to day work.
-    
+-   **Performers:** the project leads and main developers/resources who will be directly involved in the day to day work. If your project needs performers to be sourced by the Haskell Foundation, please say so here.
+
 -   **Reviewers:** people who will be signing off on work done for the proposal at different stages.
-    
+
 -   **Stakeholders:** A sample of people who will be directly affected by the project, who can serve as coordinators and advisors.
 
 ## Resources
@@ -58,15 +57,15 @@ months and years.
 
 ## Lifecycle:
 
-This section should detail the SDLC of the project, including a
+This section should detail the development lifecycle of the project, including a
 high-level description of the following criteria:
 
 -   **Implementation:** A high-level overview of the implementation details of the project, including how the leaders expect to make progress on individual goals and key progress indicators. This
     section should not be as granular as individual merge requests that will be made, but that would be a bonus!
-    
+
 -   **Compatibility issues:** highlight any potential compatibility issues that may arise from the changes brought by this project, including any work that needs to be done on the part of
     stakeholders or performers.
-    
+
 -   **Performance impact:** An overview of the potential performance impact of this project on the ecosystem, if applicable.
 
 ## Deliverables
@@ -74,7 +73,7 @@ high-level description of the following criteria:
 This section should describe the individual deliverables this project
 will bring as a result of the changes described above. These
 deliverables should support the end goals of the project and define what
-HF is actually delivering to the community.
+this project is actually delivering to the community.
 
 ## Outcomes
 
