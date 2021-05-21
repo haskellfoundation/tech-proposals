@@ -67,7 +67,7 @@ the vast majority of data is stored and sent between processes in UTF-8 encoding
 To sum up:
 
 * Both UTF-8 and UTF-16 support exactly the same range of characters.
-* For ASCII data UTF-8 takes twice less space.
+* For ASCII data UTF-8 takes half the space.
 * UTF-8 is vastly more popular for serialization and storage.
 
 # Motivation
