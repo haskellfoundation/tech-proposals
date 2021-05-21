@@ -18,7 +18,7 @@ this project.
 # What is Unicode?
 
 Representing a text via bytes requires to choose a character enconding.
-One of the most old encodings is ASCII: it has 2⁷=128 code points,
+One of the oldest encodings is ASCII: it has 2⁷=128 code points,
 representing Latin letters, digits and punctuations. These code points
 are trivially mapped to 7-bit sequences and stored byte by byte (with leading zero).
 
