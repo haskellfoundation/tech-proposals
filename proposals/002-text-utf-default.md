@@ -86,14 +86,14 @@ The very `instance Binary Text` serializes `Text` in UTF-8 encoding.
 If we switch the internal representation of `Text` from UTF-16 to UTF-8,
 all such conversions would be made redundant and we'll be able just check that
 a `ByteString` is a valid UTF-8 (which is most often the case) and copy it into `Text`.
-If in future `ByteString` switch to be
+If in the future `ByteString` switches to be
 backed by unpinned memory, we'd be able to eliminate copying entirely.
 
 `Text` is also often used in contexts, which involve mostly ASCII characters.
-This often prompts developers to use `ByteString` instead of `Text` to save 2x space
+This often prompts developers to use `ByteString` instead of `Text` to save half the space
 in a (false) hope that their data would never happen to contain anything non-ASCII.
-Backing `Text` by UTF-8 removes this source of inefficiency, reduces memory consumption
-up to 2x and promote more convergence to use `Text` for all stringy things
+Backing `Text` by UTF-8 removes this source of inefficiency, reduces memory consumption by
+up to half and promote more convergence to use `Text` for all stringy things
 (as opposed to binary data).
 
 Modern computer science research is focused on developing faster algorithms
@@ -180,13 +180,13 @@ The work came to a halt in 2018 and at the moment is \~200 commits behind `maste
 
 It would be extremely challenging to rebase this work on top of current `text`,
 audit and verify decade-old changes, then fix remaining
-issues and pass a review. As one can imagine, reviewers are not usually quite happy
+issues and pass a review. As one can imagine, reviewers are usually not happy
 to review 300 commits of vague provenance. Moreover, we discovered that benchmarks
 regressed severely in `text-utf8` and that fusion is broken on several occasions.
 It's unclear where exactly the problem lurks there. Finally, we'd like to explore different
 approaches to tackle potential performance issues.
 
-We decided that the safest bet is to reimplement UTF-8 transition from the scratch,
+We decided that the safest bet is to reimplement UTF-8 transition from scratch,
 paying close attention to tests and benchmarks step by step. This way we'll be able
 to gain enough confidence and understanding of the nature of changes, and provide
 reviewers with a clean sequence of commits, facilitating timely merge.
@@ -194,17 +194,17 @@ reviewers with a clean sequence of commits, facilitating timely merge.
 Talking about developments in a wider ecosystem, one must mention
 `text-short` package, which provides a data structure, similar in characteristics
 to `ShortByteString`, but interpreted as a UTF-8 encoded data. It was argued that
-this type is worth inclusion into main `text` package to mirror `ShortByteString`,
+this type is worth including in main `text` package to mirror `ShortByteString`,
 exposed from `bytestring`. While such acquisition is out of scope for this project,
 it will be easier to do so when `text` package itself switches to UTF-8, opening
 possibilities for even better String story in Haskell.
 
 **Compatibility issues**
 
-`text` is a very old package, deeply ingrained in Haskell ecosystem.
+`text` is a very old package, deeply ingrained in the Haskell ecosystem.
 A change of internal representation is necessarily a breaking change.
 Our strategy to tackle compatibility issues is guided by a desire
-to finish this project in a time-bound fashion with realistic expectations
+to finish this project in a time-bounded fashion with realistic expectations
 about available resources.
 
 Current `text` HEAD supports GHCs back to GHC 8.0.
@@ -217,7 +217,7 @@ or working around a bug), we may decide to shrink the compatibility window.
 Such decision would not to be taken lightly, but we believe that getting
 things done for the bright future should not be hindered by old unsupported luggage.
 
-One suggestion to improve compatibility story was to keep both UTF-16 and UTF-8
+One suggestion to improve the compatibility story was to keep both UTF-16 and UTF-8
 implementations in `text` and switch between them via Cabal flag. It seems,
 however, that such strategy will put an undue, indefinitely long burden
 on `text` maintainers, and brings little benefits to downstream packages, because
@@ -234,11 +234,11 @@ modules unchanged, except `Word16` replaced by `Word8` where appropriate.
 Such promise unfortunately cannot be made for `Internal` modules,
 due to their nature: even while we'll strive to keep as much untouched as possible,
 the semantics of internal functions is due to change drastically. This kind of breakage
-should not come as a big surprise, because `Internal` modules have a disclaimer about
-unstable API.
+should not come as a big surprise, because `Internal` modules have a disclaimer about the API
+being unstable.
 
 There are two places where `text` leaks details of internal representation.
-First of them is `Data.Text.Array`, which provides an access to an underlying bytearray.
+First of them is `Data.Text.Array`, which provides access to an underlying bytearray.
 Not only its API is to change from `Word16` to `Word8`, but also the semantics
 of array switches from UTF-16 to UTF-8. This will cause breakage of several packages
 such as `unicode-transforms` and `unicode-collation`. We intend to communicate with
@@ -254,7 +254,7 @@ to reach to them as soon as we have an MVP.
 Since fixing downstream compatibility issues is up to external counterparties,
 most of which are unpaid volunteers, we cannot expect them to do it in a limited
 time frame. We are devoted to having a smooth migration story and will provide
-as much guidance as possible, but to keep our targets time-bound we cannot tie the success
+as much guidance as possible, but to keep our targets time-bounded we cannot tie the success
 of this project to actions of third parties. We will not block this project
 because of unmigrated packages downstream.
 
@@ -263,29 +263,29 @@ To sum up, we plan to:
 * Keep `text` compatible with GHCs back to 8.0, unless it puts an undue cost (more than 50 lines of code per major release).
 * Keep signatures of non-`Internal` modules compatible modulo `Word16`/`Word8` change.
 * Provide migration guidance to clients of `Data.Text.{Array,Foreign}`.
-* Facilitate a community project to keep UTF16-based legacy fork alive, if there is such demand.
+* Facilitate a community project to keep UTF16-based legacy fork alive, if there is such a demand.
 
 **Performance impact**
 
-A common misunderstanding is that switching to UTF-8 makes everything twice smaller and
-twice faster. That's not quite so.
+A common misunderstanding is that switching to UTF-8 makes everything smaller by half and
+twice as fast. That's not quite so.
 
-While UTF-8 encoded English text is twice smaller than UTF-16,
+While UTF-8 encoded English text is half as big as UTF-16,
 this is not exactly true even for other Latin-based languages, which frequently
 use vowels with diacritics. For non-Latin scripts (Russian, Hebrew, Greek)
 the difference between UTF-8 and UTF-16 is almost negligible: one saves on
 spaces and punctuation, but letters still take two bytes. On a bright side, programs rarely
 transfer sheer walls of text, and for a typical markup language (JSON, HTML, XML),
-even if payload is non-ASCII, savings from UTF-8 easily reach \~30%.
+even if the payload is non-ASCII, savings from UTF-8 easily reach \~30%.
 
 As a Haskell value, `Text` involves a significant constant overhead: there is
 a constructor tag, then offset and length, plus bytearray header and length.
 Altogether 5 machine word = 40 bytes. So for short texts, even if they are ASCII only,
-difference in memory allocations is not very pronounced.
+the difference in memory allocations is not very pronounced.
 
 Further, traversing UTF-8 text is not necessarily faster than UTF-16. Both are
 variable length encodings, so indexing a certain element requires parsing everything
-in front. But in UTF-16 there are only two options: a code point
+up front. But in UTF-16 there are only two options: a code point
 takes either 2 or 4 bytes, and the vast majority of frequently used characters are
 2-byte long. So traversing UTF-16 keeps branch prediction happy. Now with UTF-8
 we have all four options: a code point can take from 1 to 4 bytes, and most non-English
