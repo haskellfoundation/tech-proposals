@@ -1,4 +1,4 @@
-A HIP (*Haskell Improvement Process*) is a process for submitting changes to the Haskell language ecosystem. Its main motivation is to become the primary mechanism to propose, discuss and implement ecosystem changes through the Haskell Foundation. In this process, all changes to the ecosystem go through a proposal process, called Haskell Improvement Proposals (HIPs), which are openly discussed by the Haskell Foundation Technical Trackm and any and all relevant or interested stakeholders. Only upon reaching a consensus are accepted to be merged and executed.
+A HIP (*Haskell Improvement Proposals*) is a process for submitting changes to the Haskell language ecosystem. Its main motivation is to become the primary mechanism to propose, discuss and implement ecosystem changes through the Haskell Foundation. For each HIP, all changes to the ecosystem go through a proposal process, which are is discussed by the Haskell Foundation (HF) Technical Track and any and all relevant or interested stakeholders. Only upon reaching a consensus are accepted to be merged and executed.
 
 The aim of the Haskell Improvement Process is to apply the openness and collaboration that have shaped Haskell's documentation and implementation to the process of evolving the language and its ecosystem. This document captures our guidelines, commitments and expectations regarding this process.
 
@@ -23,11 +23,11 @@ There are four major steps in the HIP process:
 
 Before submitting a HIP, it is required that you perform necessary preparations:
 
-- Discuss your idea on the [Haskell.org Discourse](https://discourse.haskell.org/)  currently, we suggest cross-posting on the Haskell Foundation Slack for higher volume commentary) Create a Haskell Foundation topic that starts with “Pre-HIP” and briefly describe what you would like to change and why you think it’s a good idea.
+- Discuss your idea on the [Haskell.org Discourse](https://discourse.haskell.org/). Currently, we suggest cross-posting on the Haskell Foundation Slack for higher volume commentary. Create a Haskell Foundation topic that starts with “Pre-HIP” and briefly describe what you would like to change and why you think it’s a good idea.
 
 - Proposing your ideas on the Discourse is not an optional step. For every change to the ecosystem, it is important to *publicly* gauge interest from the community and relevant stakeholders. Use this step to promote your idea and gather early feedback on your informal proposal. It may happen that experts and community members may have tried something similar in the past and may offer valuable advice.
 
-Within two weeks after your submission of the pre-HIP to the Discourse, a Technical Track Lead will intervene and advise you whether your idea can be submitted as a HIP or needs more work.
+Within two weeks of your submission of the pre-HIP to the Discourse, a Technical Track Lead will intervene and advise you whether your idea can be submitted as a HIP or needs more work.
 
 
 ### Submission
@@ -93,12 +93,11 @@ The HIP HF Technical Track is an experienced group of people with knowledge of t
   - weighing in pros and cons of every proposal
   - accepting, postponing or rejecting the proposal.
 
-HF Technical Track members should be either individuals responsible for a specific part of the Haskell ecosystem, or contributors and committers to parts of it. Exceptionally, members may also be important representatives of the community with a high technical knowledge to understand the implications of every proposal and participate into the discussions. The members are elected by the HF CTO based on their expertise and implication in the community.
+HF Technical Track members should be either individuals responsible for a specific part of the Haskell ecosystem, or contributors and committers to parts of it. Exceptionally, members may also be important representatives of the community with a high technical knowledge to understand the implications of every proposal and participate into the discussions. The members are selected by the HF CTO based on their expertise and implication in the community.
 
 The current HF Technical Track members are:
 
 - Emily Pillmore ([@emilypi](https://github.com/emilypi)), Haskell Foundation
-- Andrew Boardman ([@myShoggoth](https://github.com/myShoggoth)), Haskell Foundation
 - Richard Eisenberg ([@goldfirere](https://github.com/goldfirere)), Tweag
 - Michael Snoyman ([@snoyberg](https://github.com/snoyberg)), FPComplete
 - Chris Dornan ([@cdornan](https://github.com/cdornan)), IRIS Connect
@@ -130,7 +129,7 @@ For a HIP to be accepted, it must fulfill two requirements:
 
 ### Guests
 
-Experts in some fields may be invited to concrete meetings as guests when discussing related HIPs. Their input would be important to discuss the current state of the proposal, both its design and implementation.
+Experts in some fields may be invited to specific meetings as guests when discussing related HIPs. Their input would be important to discuss the current state of the proposal, both its design and implementation.
 
 ## Proposal states
 
@@ -141,7 +140,7 @@ The state of a proposal changes over time depending on the phase of the process 
 3. **Awaiting review:** The proposal has been scheduled to be reviewed for a concrete date.
 4. **Under review:** Once the author has delivered a new version, the proposal will be under review until the next available HIP meeting takes place.
 5. **Under revision:** Authors are addressing the issues pinpointed by the HF Technical Track or working on the implementation.
-6. **Dormant:** When a HIP has been under revision for more than two iterations (that is, no progress has been made since the last review), it’s considered dormant, in which case any related activity will be paralysed and the Process Lead will not allocate more resources to it.
+6. **Dormant:** When a HIP has been under revision for more than two iterations (that is, no progress has been made since the last review), it’s considered dormant, in which case any related activity will be paralyzed and the Process Lead will not allocate more resources to it.
 7. **Postponed:** The HIP has been postponed under some concrete conditions. When these are met, the HIP can be resubmitted.
 8. **Rejected:** The HIP has been rejected with a clear and full explanation.
 9. **Accepted:** The HIP has been accepted and it’s waiting for the merge into the repo.
