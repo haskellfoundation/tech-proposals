@@ -44,8 +44,8 @@ on latest advances and best practices as well.
 
 ## Prior Art (if applicable)
 
-[Parallel and Concurrent Programming in Haskell / Simon Marlow (2013, O'Reilly)](https://simonmar.github.io/pages/pcph.html)
-[Haskell High Performance Programming / Samuli Thomasson (2016, Packt)](https://www.packtpub.com/product/haskell-high-performance-programming/9781786464217)
+- [Parallel and Concurrent Programming in Haskell / Simon Marlow (2013, O'Reilly)](https://simonmar.github.io/pages/pcph.html)
+- [Haskell High Performance Programming / Samuli Thomasson (2016, Packt)](https://www.packtpub.com/product/haskell-high-performance-programming/9781786464217)
 
 
 ## Timeline
