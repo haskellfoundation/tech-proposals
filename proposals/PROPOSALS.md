@@ -112,7 +112,9 @@ Experts in some fields may be invited to specific meetings as guests when discus
 
 ## Proposal states
 
-The state of a proposal changes over time depending on the phase of the process and the decisions taken by the HF Technical Track . A given proposal can be in one of several states:
+The state of a proposal changes over time depending on the phase of the process and the decisions taken by the HF Technical Track. A given proposal can be in one of several states:
+
+0. **Discussion:** The proposal is being discussed informally on discourse. In this phase the proposal only exists informally, no pull request exists yet.
 
 1. **Submitted:**  An HF Tech Track member has validated the proposal and checked that meets all the formal requirements. A pull request has been opened against the proposals repo.
 
