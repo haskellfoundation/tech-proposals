@@ -102,10 +102,14 @@ The current HF Technical Track members are:
 
 ### Voting
 
-For a HIP to be accepted, it must fulfill two requirements:
+When a HIP is scheduled at an HF Technical Track meeting (i.e. it is in 'Under Review'), it can be held to a vote for one of the following outcomes (in case it makes a difference: the HIP will be marked according to the first on this list to have a majority):
 
-- 66% of the HF Technical Track votes in favor of it
-- The HIP specifies a proposal lead (e.g. an implementor, or project director) who will represent the work done on the project.
+- Accepted (needs 66% of the HF Technical Track to vote in favor, and the HIP must specify a proposal lead, e.g. an implementor or project director, from the HF Technical Track who will represent the work done on the project.)
+- Dormant (needs a simple majority, an HF Technical Track member that voted in favor will close the issue and PR and mark it as Dormant)
+- Postponed (needs a simple majority, an HF Technical Track member that voted to postpone will close the issue and PR, and write clear conditions for reopening)
+- Revision needed (needs a simple majority. This can only be the outcome of the vote four times, for a total of five rounds. An HF Technical Track member will write up what revisions are needed.)
+
+If none of these applies, the proposal is Rejected.
 
 ### Responsibilities of the members
 
