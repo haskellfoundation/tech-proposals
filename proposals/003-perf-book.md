@@ -18,29 +18,43 @@ We would like to create a **freely available online book** which:
 These goals lead to the following suggestions:
 
 - Writing this book should be a **community-driven** effort
-- This book should focus on writing **idiomatic Haskell** code that is fast rather than advanced state-of-the-art techniques
-- The book should cover the **principles and mindset** of performant Haskell code as well as provide concrete examples of debugging and tuning the performance of a Haskell project using **case studies**
+- This book should focus on writing **idiomatic Haskell** code that is fast
+  rather than advanced state-of-the-art techniques
+- The book should cover the **principles and mindset** of performant Haskell
+  code as well as provide concrete examples of debugging and tuning the
+  performance of a Haskell project using **case studies**
+- The book should **cover a modern "best-practice" toolset** used to generate
+  data for examining a program's characteristics, and **methods for analyzing**
+  and understanding the characteristics of a program using that data
 
 ## Motivation
 
-One motivation for this book is that it can help **drive the adoption** of Haskell in professional settings by providing knowledge regarding what to do when debugging and tuning performance is necessary, and help **improve the confidence** of practitioners and would-be practitioners.
+One motivation for this book is that it can help **drive the adoption** of Haskell
+in professional settings by providing knowledge regarding what to do when debugging
+and tuning performance is necessary, and help **improve the confidence** of
+practitioners and would-be practitioners.
+
+**Currently, there is no clear path** to becoming proficient in writing performant Haskell.
+One must search the web for tutorials and blogs posts in the hopes of finding up to date
+information, and keep an eye on the ever changing landscape of tools and techniques.
+
+Creating a book would provide a clear and up-to-date path for learners to learn
+about performant Haskell, and will help advanced users of Haskell to refresh their knowledge
+on latest advances and best practices as well.
 
 ## Prior Art (if applicable)
 
+[Parallel and Concurrent Programming in Haskell / Simon Marlow (2013, O'Reilly)](https://simonmar.github.io/pages/pcph.html)
 [Haskell High Performance Programming / Samuli Thomasson (2016, Packt)](https://www.packtpub.com/product/haskell-high-performance-programming/9781786464217)
 
-## People
-
-The following roles are necessary to make this project successful:
-
-- **Subject matter expert**(s): directing the “spirit of the book” and/or sharing knowledge with writers
-- **Writer**(s): writing the content of the book
-- **Reviewer**(s): providing feedback and corrections
-- **Editor**(s): quality assurance for the book
 
 ## Timeline
 
 ## Outcomes
+
+1. A freely available online book, hosted on Github
+2. A repository containing the content of the book in markdown format, infrastructure for updating it, and a contribution process and guidelines
+3. Content covering the latest developments in tooling, techniques and best practices with regards to performance programming in Haskell
 
 ## Procedure
 
