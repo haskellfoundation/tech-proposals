@@ -12,20 +12,19 @@ If you’re motivated enough to go through this involved but rewarding process, 
 
 ## What's the process for submitting a HIP?
 
-There are four major steps in the HIP process:
+There are five major steps in the HIP process:
 
-1. Initial informal discussion (2 weeks)
+1. Initial informal discussion 
 2. Submission
-3. Formal presentation (up to 1 month)
-4. Formal evaluation (up to 2 months)
-
-### Initial informal discussion (2 weeks)
+3. Review
+4. Acceptance
+5. Formal presentation
 
 Before submitting a HIP, it is required that you perform necessary preparations:
 
 - Discuss your idea on the [Haskell.org Discourse](https://discourse.haskell.org/). Currently, we suggest cross-posting on the Haskell Foundation Slack for higher volume commentary. Create a Discourse topic under the category "Haskell Foundation", that starts with "Pre-HIP” and briefly describe what you would like to change and why you think it’s a good idea.
 
-- Proposing your ideas on the Discourse is not an optional step. For every change to the ecosystem, it is important to engage in Due Diligence with the community and relevant stakeholders. Use this step to promote your idea and gather early feedback on your Pre-HIP proposal. It may happen that experts and community members may have tried something similar in the past and may offer valuable advice.
+- Proposing your ideas on the Discourse is not an optional step. For every change to the ecosystem, it is important to engage in due diligence with the community and relevant stakeholders. Use this step to promote your idea and gather early feedback on your Pre-HIP proposal. It may happen that experts and community members may have tried something similar in the past and may offer valuable advice.
 
 
 ### Submission
@@ -47,21 +46,26 @@ The HF Technical Track decides the duration of the next iteration depending upon
 
 During every iteration, the HF Technical Track reviews the changes (updated design document, progress with the implementation, etc) to the proposal. Based on the feedback, the HIP is either:
 
-1. **Accepted**, in which case the HF Technical Track will propose a release date.
+1. **Accepted**, in which case the HF Technical Track has accepted the proposal, and it will be merged by the HF Technical Track members.
 2. **Rejected**, in which case the HIP is closed and no longer evaluated in the future.
 3. **Postponed**, in which case the HF Technical Track sets aside the HIP under some conditions. When those conditions are met, the HIP can be resubmitted.
-4. **Under revision**, in which case the author needs to continue the formal evaluation and address all the HF Technical Track feedback. Thus, the follow-up discussion is scheduled for the next iteration.
+4. **Under revision**, in which case the author needs to continue the formal evaluation and address all the HF Technical Track feedback. Thus, the follow-up discussion is scheduled for the next iteration. 
 5. **Dormant**,  in which case no changes have been made to a HIP in two iterations, it’s marked as dormant and both the PR and issue are closed. Dormant HIPs can be reopened by any person, be it the same or different authors, at which point it will start from the formal evaluation phase.
 
-When the author and the HF Technical Track members agree on the final document, it is formally accepted: assigned a number, and scheduled for a final formal presentation.
+### Updating Proposal Statuses
 
-### Formal presentation (up to 1 month)
+If the author of a particular proposal wants to update the status of their proposal, they should either comment on the issue and tag an HF Technical Track member with a note regarding what status they would like to update the proposal to. It is good to be redundant and raise the question in our other fora as well: Slack and Discourse. However, Github should be the first choice. 
 
-During the next available Technical Track meeting, the author of the HIP presents the proposal to the audience. 
+### Formal presentation 
 
-### Merging the proposal
+After a proposal is merged, the author will present KPI's and deliverables that define the proposal to the HF Technical track. During the next available Technical Track meeting after acceptance, the author or designated lead (as defined by the proposal) should give a short 5-10min presentation consisting of the following: 
 
-If the HIP is accepted, the HF Technical Track will propose a release date, and the proposal will be merged directly by the HF Technical Track members.
+1. **High level summary:** the author will present the high-level abstract for what the proposal intends to accomplish. 
+2. **Timeline:** In what timeline, and should outline possible hurdles and risks that affect the timeline. 
+3. **Resources:** What resources are required in order to take the project from start to completion.
+4.  **Contact:** Who is going to update the HF Technical Track members, and on what schedule.
+
+Once the formal presentation is given, the HF Technical Track members will track the progress over time at our ongoing meetings. This also gives the track members time to introduce themselves and and we can all get to know each other. Currently, HF Technical Track meetings are held weekly on Tuesdays at 11:30am-12:30pm UTC-5 (EST). 
 
 ## Structure of the process
 
@@ -69,7 +73,7 @@ The HIP process involves the following parties:
 
 1. The HIP Authors
 2. Relevant stakeholders affected by the change
-3. The HF Technical Track Leads
+3. The HF Technical Track members
 
 ### The HIP Authors
 
@@ -117,20 +121,14 @@ Experts in some fields may be invited to specific meetings as guests when discus
 The state of a proposal changes over time depending on the phase of the process and the decisions taken by the HF Technical Track. A given proposal can be in one of several states:
 
 0. **Discussion:** The proposal is being discussed informally on discourse. In this phase the proposal only exists informally, no pull request exists yet.
-
 1. **Submitted:** A pull request has been opened against the proposals repo.
-
-2. **Under review:** The proposal will be under review until the next available Tech Track meeting takes place.
-
-3. **Under revision:** Authors are addressing the issues pinpointed throughout the discussion and feedback process from the community and/or the HF Technical Track.
-
-6. **Dormant:** When a HIP has been under revision for more than two iterations (that is, no progress has been made since the last review), it’s considered dormant, in which case any related activity will be paralyzed and the HF Tech Track will not allocate more resources to it.
-
-7. **Postponed:** The HIP has been postponed under some concrete conditions. When these are met, the HIP can be resubmitted.
-
-8. **Rejected:** The HIP has been rejected with a clear and full explanation.
-
-9. **Merged:** The HIP has been accepted and has been merged into the repo.
+2. **Validated:** The submitted proposal has been validated for conformity to the [proposal template](proposals/TEMPLATE.md), and made all necessary changes to the proposal name and its location in the repo.
+3. **Under review:** The proposal will be under review until the next available Tech Track meeting takes place.
+4. **Under revision:** Authors are addressing the issues pinpointed throughout the discussion and feedback process from the community and/or the HF Technical Track.
+5. **Dormant:** When a HIP has been under revision for more than two iterations (that is, no progress has been made since the last review), it’s considered dormant, in which case any related activity will be paralyzed and the HF Tech Track will not allocate more resources to it.
+6. **Postponed:** The HIP has been postponed under some concrete conditions. When these are met, the HIP can be resubmitted.
+7. **Rejected:** The HIP has been rejected with a clear and full explanation.
+8. **Merged:** The HIP has been accepted and has been merged into the repo.
 
 ## How do I submit? ##
 
