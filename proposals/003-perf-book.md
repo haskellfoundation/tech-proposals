@@ -53,7 +53,7 @@ on latest advances and best practices as well.
 ## Outcomes
 
 1. A freely available online book, hosted on Github
-2. A repository containing the content of the book in markdown format, infrastructure for updating it, and a contribution process and guidelines
+2. A repository containing the content of the book in markdown format, infrastructure for updating it and a contribution process
 3. Content covering the latest developments in tooling, techniques and best practices with regards to performance programming in Haskell
 
 ## Procedure
