@@ -39,7 +39,9 @@ repo](https://github.com/haskellfoundation/tech-proposals). Within a week of rec
 
 While the majority of general technical commentary and feedback will occur in the proposals repo, it's hard to tell when a particular proposal is finalized. This what we call "Formal Evaluation". 
 
-Formal Evaluation of a proposal is done in iterations. The maximum number of iterations is five. These iterations take place in the HF Tech Track meetings and are usually monthly. However, they can last longer, in which case the author has more time to implement all the required changes. 
+Formal Evaluation of a proposal is done in iterations. These iterations take place in the HF Tech Track meetings and are usually monthly. However, they can last longer, in which case the author has more time to implement all the required changes. 
+
+The maximum number of iterations is five. At the fifth iteration, the HF Technical Track can only vote to Accept, Postpone, or Reject.
 
 The HF Technical Track decides the duration of the next iteration depending upon the feedback and complexity of the HIP. Consequently, authors have more time to prepare all the changes. If they finish their revision before the scheduled iteration, an HF Technical Track member will reschedule it for the next available meeting.
 
