@@ -16,9 +16,11 @@ There are five major steps in the HIP process:
 
 1. Initial informal discussion 
 2. Submission
-3. Review
+3. Formal Review
 4. Acceptance
 5. Formal presentation
+
+### Initial Discussion
 
 Before submitting a HIP, it is required that you perform necessary preparations:
 
@@ -34,11 +36,13 @@ A HIP is a Markdown document written in conformance with the [process template](
 A HIP is submitted as a pull request against [the official Haskell tech proposal
 repo](https://github.com/haskellfoundation/tech-proposals). Within a week of receiving the pull request, members of the HF Technical Track will acknowledge your submission, validate that it conforms to the proposal template guidelines (see: [TEMPLATE.md](TEMPLATE.md)) and provide feedback to improve the overall quality of the document (if necessary). When the document conforms to the template guidelines, it is ready for formal evaluation by the HF Technical Track members, as well as the broader community. 
 
-### Formal evaluation (up to 5 iterations)
+### Formal Review (up to 5 iterations)
 
-While the majority of general technical commentary and feedback will occur in the proposals repo, it's hard to tell when a particular proposal is finalized. This what we call "Formal Evaluation". 
+While the majority of general technical commentary and feedback will occur in the proposals repo, it's hard to tell when a particular proposal is finalized. This what we call "Formal Review".  
 
-Formal Evaluation of a proposal is done in iterations. These iterations take place in the HF Tech Track meetings and are usually monthly. However, they can last longer, in which case the author has more time to implement all the required changes. 
+#### Formal Review 
+
+Formal Review of a proposal is done in iterations. These iterations take place in the HF Tech Track meetings and are usually monthly. However, they can last longer, in which case the author has more time to implement all the required changes. 
 
 The maximum number of iterations is five. At the fifth iteration, the HF Technical Track can only vote to Accept, Postpone, or Reject.
 
@@ -52,7 +56,11 @@ During every iteration, the HF Technical Track reviews the changes (updated desi
 4. **Under revision**, in which case the author needs to continue the formal evaluation and address all the HF Technical Track feedback. Thus, the follow-up discussion is scheduled for the next iteration. 
 5. **Dormant**,  in which case no changes have been made to a HIP in two iterations, it’s marked as dormant and both the PR and issue are closed. Dormant HIPs can be reopened by any person, be it the same or different authors, at which point it will start from the formal evaluation phase.
 
-### Updating Proposal Statuses
+#### Involving Stakeholders
+
+At this point where a propsal is being reviewed, if there are relevant stakeholders from industry or in the community (e.g. library authors and maintainers who are affected), they should be solicited for comment and brought into the discussion. Remember, proposals may sound good, but it's best to iron out as many details as possible prior to their acceptance. This means that any hesitations stakeholders have with the project should be factored into the proposal's details. 
+
+#### Updating Proposal Statuses
 
 If the author of a particular proposal wants to update the status of their proposal, they should either comment on the issue and tag an HF Technical Track member with a note regarding what status they would like to update the proposal to. It is good to be redundant and raise the question in our other fora as well: Slack and Discourse. However, Github should be the first choice. 
 
@@ -77,7 +85,7 @@ The HIP process involves the following parties:
 
 ### The HIP Authors
 
-Authors are responsible for building consensus within the community and documenting dissenting opinions before the HIP is officially discussed by the HIP HF Technical Track . Their goal is to convince the HF Technical Track that their proposal is useful and addresses pertinent problems in the Haskell ecosystem as well as interactions with already existing features. Authors can change over the lifecycle of the HIP.
+Authors are responsible for building consensus within the community and documenting dissenting opinions before the HIP is officially discussed by the HIP HF Technical Track . Their goal is to convince the HF Technical Track that their proposal is useful and addresses pertinent problems in the Haskell ecosystem as well as interactions with already existing features. Authors can change over the life-cycle of the HIP.
 
 ### The HF Technical Track
 
