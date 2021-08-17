@@ -116,7 +116,7 @@ The state of a proposal changes over time depending on the phase of the process 
 
 0. **Discussion:** The proposal is being discussed informally on discourse. In this phase the proposal only exists informally, no pull request exists yet.
 
-1. **Submitted:**  An HF Tech Track member has validated the proposal and checked that meets all the formal requirements. A pull request has been opened against the proposals repo.
+1. **Submitted:** A pull request has been opened against the proposals repo.
 
 2. **Under review:** The proposal will be under review until the next available Tech Track meeting takes place.
 
