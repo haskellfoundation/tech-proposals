@@ -1,6 +1,6 @@
 A HIP (*Haskell Foundation Initiative Proposal*) is a process for submitting a proposal for an initiative to be undertaken by the Haskell Foundation (HF). The main motivation of this document is to detail the primary mechanism through which the community may propose, discuss and implement initiatives to be carried out through the Haskell Foundation that will affect the Haskell ecosystem. For each HIP, all changes to the ecosystem go through a proposal process, which are is discussed by the HF Technical Track, the broader community, and any and all interested stakeholders. Only upon reaching a consensus are initiatives accepted to be merged and executed.
 
-The aim of the Haskell Improvement Process is to apply the openness and collaboration that have shaped Haskell's documentation and implementation to a process of evolving the HF and the broader Haskell ecosystem. This document captures our guidelines, commitments and expectations regarding this process.
+The aim of the HIP process is to apply the openness and collaboration that have shaped Haskell's documentation and implementation to a process of evolving the HF and the broader Haskell ecosystem. This document captures our guidelines, commitments and expectations regarding this process.
 
 ## Why Write a Proposal?
 
