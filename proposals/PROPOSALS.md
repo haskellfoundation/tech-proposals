@@ -81,7 +81,15 @@ Once the formal presentation is given, the HFTT members will track the progress 
 
 ## The Role of the HFTT
 
+<<<<<<< HEAD
 The HFTT is an experienced group of people with knowledge of the Haskell ecosystem, responsible for the strategic technical direction on behalf of the Haskell Foundation. Members are tasked with
+=======
+Authors are responsible for building consensus within the community and documenting dissenting opinions before the HIP is officially discussed by the HIP HF Technical Track. Their goal is to convince the HF Technical Track that their proposal is useful and addresses pertinent problems in the Haskell ecosystem as well as interactions with already existing features. Authors can change over the life-cycle of the HIP.
+
+### The HF Technical Track
+
+The HF Technical Track is an experienced group of people with knowledge of the Haskell ecosystem, responsible for the strategic technical direction on behalf of the Haskell Foundation. Members are tasked with
+>>>>>>> 607c1757e3d5187283fa5a43ec87d679ded11e6c
 
   - communicating with the community
   - weighing in pros and cons of every proposal
