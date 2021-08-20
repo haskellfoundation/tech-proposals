@@ -81,19 +81,17 @@ Once the formal presentation is given, the HFTT members will track the progress 
 
 ## The Role of the HFTT
 
-<<<<<<< HEAD
 The HFTT is an experienced group of people with knowledge of the Haskell ecosystem, responsible for the strategic technical direction on behalf of the Haskell Foundation. Members are tasked with
-=======
+
 Authors are responsible for building consensus within the community and documenting dissenting opinions before the HIP is officially discussed by the HIP HF Technical Track. Their goal is to convince the HF Technical Track that their proposal is useful and addresses pertinent problems in the Haskell ecosystem as well as interactions with already existing features. Authors can change over the life-cycle of the HIP.
 
 ### The HF Technical Track
 
 The HF Technical Track is an experienced group of people with knowledge of the Haskell ecosystem, responsible for the strategic technical direction on behalf of the Haskell Foundation. Members are tasked with
->>>>>>> 607c1757e3d5187283fa5a43ec87d679ded11e6c
 
-  - communicating with the community
-  - weighing in pros and cons of every proposal
-  - accepting, postponing or rejecting the proposal.
+- communicating with the community
+- weighing in pros and cons of every proposal
+- accepting, postponing or rejecting the proposal.
 
 HFTT members should be either individuals responsible for a specific part of the Haskell ecosystem, or contributors and committers to parts of it. The members are selected by the HF CTO based on their expertise and reputation in the community.
 
@@ -142,7 +140,7 @@ The state of a proposal changes over time depending on the phase of the process 
 7. **Rejected:** The HFTP has been rejected with a clear and full explanation.
 8. **Merged:** The HFTP has been accepted and has been merged into the repo.
 
-When a proposal has moved from one state to another, it will be appropriately labeled using the Github label system. The labels will be as they are above.
+When a proposal has movede Haskell Foundation. Members are tasked with from one state to another, it will be appropriately labeled using the Github label system. The labels will be as they are above.
 
 ## How do I submit? ##
 
@@ -155,4 +153,4 @@ The process to submit is simple:
  * Use the [Markdown Syntax](http://daringfireball.net/projects/markdown/syntax) to write your HFTP.
 * Commit your changes to your forked repository
 * Create a new [pull request](https://github.com/haskellfoundation/tech-proposals/pull/new).
-* Notify the Haskell HFTP team on the Slack instance or on Discourse (or both!).
+* Notify the HFTT on Github using the team label `@haskellfoundation/tech-proposals`. Optionally, the address the HFTT Slack instance or on Discourse (or both!).
