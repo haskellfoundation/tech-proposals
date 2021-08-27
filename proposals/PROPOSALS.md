@@ -65,13 +65,11 @@ At this point where a proposal is being reviewed, if there are relevant stakehol
 
 #### Updating Proposal Statuses
 
-If the author of a particular proposal wants to update the status of their proposal, they should either comment on the issue and alert the HFTT using the Github team tag `haskellfoundation/tech-proposals` with a note regarding what status they would like to update the proposal to. It is good to be redundant and raise the question in our other fora as well: Slack and Discourse. However, Github is required.  
+If the author of a particular proposal wants to update the status of their proposal, they should comment on the issue and alert the HFTT using the Github team tag `haskellfoundation/tech-proposals` with a note regarding what status they would like to update the proposal to. It is good to be redundant and raise the question in our other fora as well: Slack and Discourse. However, Github is required.  
 
 ## The Role of the HFTT
 
-The HFTT is an experienced group of people with knowledge of the Haskell ecosystem, responsible for the strategic technical direction on behalf of the Haskell Foundation. Members are tasked with
-
-Authors are responsible for building consensus within the community and documenting dissenting opinions before the HFTP is officially discussed by the HFTP HF Technical Track. Their goal is to convince the HF Technical Track that their proposal is useful and addresses pertinent problems in the Haskell ecosystem as well as interactions with already existing features. Authors can change over the life-cycle of the HFTP.
+Authors are responsible for building consensus within the community and documenting dissenting opinions before the HFTP is officially discussed by the HFTT. Their goal is to convince the HFTT that their proposal is useful and addresses pertinent problems in the Haskell ecosystem as well as interactions with already existing features. Authors can change over the life-cycle of the HFTP.
 
 ### The HF Technical Track
 
@@ -116,7 +114,7 @@ Experts in some fields may be invited to specific meetings as guests when discus
 
 ### Joining the HFTT
 
-If you would like to join the HFTT or would like to know how members are elected, please refer to the [charter](proposals/CHARTER.md).
+If you would like to join the HFTT or would like to know how members are elected, please refer to the [charter](proposals/CHARTER.md)
 
 ## Proposal states
 
