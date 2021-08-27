@@ -16,13 +16,12 @@ If you’re motivated enough to go through this involved but rewarding process, 
 
 ## What's the process for submitting a HFTP?
 
-There are five major steps in the HFTP process:
+There are four major steps in the HFTP process:
 
 1. Initial informal discussion 
 2. Submission
 3. Formal Review
 4. Acceptance
-5. Formal presentation
 
 ### Initial Discussion
 
@@ -68,26 +67,15 @@ At this point where a proposal is being reviewed, if there are relevant stakehol
 
 If the author of a particular proposal wants to update the status of their proposal, they should either comment on the issue and alert the HFTT using the Github team tag `haskellfoundation/tech-proposals` with a note regarding what status they would like to update the proposal to. It is good to be redundant and raise the question in our other fora as well: Slack and Discourse. However, Github is required.  
 
-### Formal presentation 
-
-After a proposal is merged, the author will present KPI's and deliverables that define the proposal to the HFTT. During the next available Technical Track meeting after acceptance, the author or designated lead (as defined by the proposal) should give a short 5-10min presentation consisting of the following: 
-
-1. **High level summary:** the author will present the high-level abstract for what the proposal intends to accomplish. 
-2. **Timeline:** In what timeline, and should outline possible hurdles and risks that affect the timeline. 
-3. **Resources:** What resources are required in order to take the project from start to completion.
-4.  **Contact:** Who is going to update the HFTT members, and on what schedule.
-
-Once the formal presentation is given, the HFTT members will track the progress over time at our ongoing meetings. This also gives the track members time to introduce themselves and and we can all get to know each other. Currently, HFTT meetings are held weekly on Tuesdays at 11:30am-12:30pm UTC-5 (EST). 
-
 ## The Role of the HFTT
 
 The HFTT is an experienced group of people with knowledge of the Haskell ecosystem, responsible for the strategic technical direction on behalf of the Haskell Foundation. Members are tasked with
 
-Authors are responsible for building consensus within the community and documenting dissenting opinions before the HIP is officially discussed by the HIP HF Technical Track. Their goal is to convince the HF Technical Track that their proposal is useful and addresses pertinent problems in the Haskell ecosystem as well as interactions with already existing features. Authors can change over the life-cycle of the HIP.
+Authors are responsible for building consensus within the community and documenting dissenting opinions before the HFTP is officially discussed by the HFTP HF Technical Track. Their goal is to convince the HF Technical Track that their proposal is useful and addresses pertinent problems in the Haskell ecosystem as well as interactions with already existing features. Authors can change over the life-cycle of the HFTP.
 
 ### The HF Technical Track
 
-The HF Technical Track is an experienced group of people with knowledge of the Haskell ecosystem, responsible for the strategic technical direction on behalf of the Haskell Foundation. Members are tasked with
+The HF Technical Track is an experienced group of people with knowledge of the Haskell ecosystem, responsible for the strategic technical direction on behalf of the Haskell Foundation. Members are tasked with:
 
 - communicating with the community
 - weighing in pros and cons of every proposal
@@ -125,6 +113,10 @@ If none of these applies, the proposal is Rejected.
 ### Guests
 
 Experts in some fields may be invited to specific meetings as guests when discussing related HFTPs. Their input would be important to discuss the current state of the proposal, both its design and implementation.
+
+### Joining the HFTT
+
+If you would like to join the HFTT or would like to know how members are elected, please refer to the [charter](proposals/CHARTER.md).
 
 ## Proposal states
 
