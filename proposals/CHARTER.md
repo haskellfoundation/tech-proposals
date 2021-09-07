@@ -58,6 +58,8 @@ Members:
 
 Elections shall be held in a public manner, using the forum designated by the HF bylaws for formal discussion. The CTO shall approve all language for the election publication. All additional publication on the part of the HFTT for the purpose of socializing the election should link to the formal discussion. Elections should be announced publicly exactly 60 days before member terms expire, and submissions should cease to be accepted 14 days before member terms expire, with all membership decisions finalized and publicized 7 days before member terms expire. During this 7-day lame duck period, no votes may be made on proposals. 
 
+If not enough candidates apply for the number of seats expiring, the CTO may fill these seats as needed using their discretion.
+
 
 ## Voting Procedure
 
