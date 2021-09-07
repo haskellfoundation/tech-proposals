@@ -1,4 +1,4 @@
-An HFTP (*Haskell Foundation Technical Proposal*) is a process for submitting a proposal for a technical initiative to be undertaken by the Haskell Foundation (HF). This document describes how the community may propose, discuss, and implement technical initiatives to be carried out through the Haskell Foundation that will affect the Haskell ecosystem. Each HFTP goes through an iterative process in which it is discussed by the HF Technical Track (HFTT), the broader community, and any and all interested stakeholders. If a consensus is reached, the initiative is accepted and may then be executed by the Foundation (resources permitting). Only upon reaching a consensus are initiatives accepted to be merged and executed. 
+An HFTP (*Haskell Foundation Technical Proposal*) is a process for submitting a proposal for a technical initiative to that will be executed under the guidance of the Haskell Foundation (HF). This document describes how the community may propose, discuss, and implement technical initiatives to be carried out through the Haskell Foundation that will affect the Haskell ecosystem. Each HFTP goes through an iterative process in which it is discussed by the HF Technical Track (HFTT), the broader community, and any and all interested stakeholders. If a consensus is reached, the initiative is accepted and may then be executed by the Foundation (resources permitting). Only upon reaching a consensus are initiatives accepted and executed. Upon accepted, an HFTP and its associated discussion are merged into this repository, and serve as a historical document that details a specification and rationale for work detailed within the process.
 
 The aim of the HFTP process is to apply the openness and collaboration that have shaped Haskell's documentation and implementation to a process of evolving the HF and the broader Haskell ecosystem. This document captures our guidelines, commitments and expectations regarding this process.
 
@@ -13,6 +13,12 @@ HFTPs are key to making the HF and its initiatives better for the good of everyo
 It's important to note that seeing a proposal through to its conclusion is an involved task. On the one hand, it takes time to convince people that your suggestions are a worthwhile change for hundreds of thousands of developers to accept. Particularly given the sheer volume of developers that could be affected by a proposal, its acceptance is conservative and carefully thought through. Typically, this includes many rounds of discussion with HF leaders, Haskell library maintainers, and the broader community, several iterations on the design of the proposal, and some effort at prototyping the proposed change. Often, it takes weeks to months of discussion, re-design, and prototyping for a proposal to be accepted. It is therefore important to note that seeing a proposal through to its conclusion can be time-consuming and not all proposals may end up accepted, although they may teach us all something!
 
 If you’re motivated enough to go through this involved but rewarding process, go on with writing and keep on reading.
+
+## What kind of proposals are appropriate for an HFTP?
+
+Many people in Haskell donate a considerable amount of their time to improving Haskell and its ecosystem for free. However, sometimes the financial or human cost of a project is too great for the individual, or creates an undue out-of-pocket expense in order to support those contributions. This is where the HFTP process comes in, and what separates this process from the core libraries process, or a GHC proposal: the HF is capable of contributing time, money, and resources to make a proposal happen. 
+
+For example, suppose a contributor needs computational resources for CI, or to produce stable Hackage subsets. Or for another example, say a contributor wants to write educational materials covering a yet-unwritten-about portion of Haskell, but requires an editor. Yet another example would be funding Summer of Code-type work on core tooling for Haskell. These costs should not come out of pocket. 
 
 ## What's the process for submitting a HFTP?
 
@@ -37,7 +43,7 @@ Before submitting a HFTP, it is required that you perform necessary preparations
 A HFTP is a Markdown document written in conformance with the [process template](https://github.com/haskellfoundation/tech-proposals/blob/main/TEMPLATE.md). When such changes significantly alter an existing library or tool, the author is invited to provide a proof of concept. Delivering a basic implementation can speed up the process dramatically. If your changes are big or somewhat controversial, don’t let people hypothesize about them and show results upfront. Additionally, it would be ideal if the author of the proposal reached out to any stakeholders (e.g. library authors, maintainers) affected by the proposal and bring them into the formal discussion at this point.
 
 A HFTP is submitted as a pull request against [the official Haskell tech proposal
-repo](https://github.com/haskellfoundation/tech-proposals). Within a week of receiving the pull request, members of the HFTT will acknowledge your submission, validate that it conforms to the proposal template guidelines (see: [TEMPLATE.md](TEMPLATE.md)) and provide feedback to improve the overall quality of the document (if necessary). When the document conforms to the template guidelines, it is ready for formal evaluation by the HFTT members, as well as the broader community. 
+repo](https://github.com/haskellfoundation/tech-proposals). Within a week of receiving the pull request, members of the HFTT will acknowledge your submission, validate that it conforms to the proposal template guidelines (see: [TEMPLATE.md](TEMPLATE.md)) and provide feedback to improve the overall quality of the document (if necessary). When the document conforms to the template guidelines, it is ready for formal evaluation by the HFTT members, as well as the broader community.
 
 ### Formal Review (up to 5 iterations)
 
@@ -67,9 +73,13 @@ At this point where a proposal is being reviewed, if there are relevant stakehol
 
 If the author of a particular proposal wants to update the status of their proposal, they should comment on the issue and alert the HFTT using the Github team tag `haskellfoundation/tech-proposals` with a note regarding what status they would like to update the proposal to. It is good to be redundant and raise the question in our other fora as well: Slack and Discourse. However, Github is required.  
 
+### Acceptance
+
+Upon acceptance, an HFTP is merged into the repository by an HFTT member, and the HFTP is assigned a shepherd from the HFTT. A shepherd is chosen at random, and will serve as a liason for the project, guiding its progress. Shepherds are required to report dutifully and accurately on the progress at the bi-weekly HFTT standup meetings. Project leaders are welcome to arrange alternative reporting schema (e.g. as their schedules allow, or if time off is required) upon request, as long as reports are given on a consistent basis. 
+
 ## The Role of the HFTT
 
-Authors are responsible for building consensus within the community and documenting dissenting opinions before the HFTP is officially discussed by the HFTT. Their goal is to convince the HFTT that their proposal is useful and addresses pertinent problems in the Haskell ecosystem as well as interactions with already existing features. Authors can change over the life-cycle of the HFTP.
+Authors are responsible for building consensus within the community and documenting dissenting opinions before the HFTP is officially discussed by the HFTT. Their goal is to convince the HFTT that their proposal is useful and addresses pertinent problems in the Haskell ecosystem as well as interactions with already existing features. Authors can change over the life-cycle of the HFTP. For a formal charter, please see [CHARTER.md](CHARTER.md).
 
 ### The HF Technical Track
 
@@ -105,8 +115,11 @@ If none of these applies, the proposal is Rejected.
 
 ### Responsibilities of the members
 
-- Review all HFTPs 
 - Play a role in the discussions, learn in advance about the topic if needed, and make up their mind in the voting process.
+- communicating with the community regarding technical the Haskell Foundation Technical Proposal (HFTP) process goings-on
+- weighing in pros and cons of every HFTP
+- accepting, postponing or rejecting each HFTP
+- If shepherding, accurately and dutifully report the status of HFTPs 
 
 ### Guests
 
@@ -114,7 +127,7 @@ Experts in some fields may be invited to specific meetings as guests when discus
 
 ### Joining the HFTT
 
-If you would like to join the HFTT or would like to know how members are elected, please refer to the [charter](proposals/CHARTER.md)
+If you would like to join the HFTT or would like to know how members are elected, please refer to the [charter](CHARTER.md)
 
 ## Proposal states
 
@@ -122,7 +135,7 @@ The state of a proposal changes over time depending on the phase of the process 
 
 0. **Discussion:** The proposal is being discussed informally on discourse. In this phase the proposal only exists informally, no pull request exists yet.
 1. **Submitted:** A pull request has been opened against the proposals repo.
-2. **Validated:** The submitted proposal has been validated for conformity to the [proposal template](proposals/TEMPLATE.md), and made all necessary changes to the proposal name and its location in the repo.
+2. **Validated:** The submitted proposal has been validated for conformity to the [proposal template](TEMPLATE.md), and made all necessary changes to the proposal name and its location in the repo.
 3. **Under review:** The proposal will be under review until the next available Tech Track meeting takes place.
 4. **Under revision:** Authors are addressing the issues pinpointed throughout the discussion and feedback process from the community and/or the HFTT.
 5. **Dormant:** When a HFTP has been under revision for more than two iterations (that is, no progress has been made since the last review), it’s considered dormant, in which case any related activity will be paralyzed and the HFTT will not allocate more resources to it.
