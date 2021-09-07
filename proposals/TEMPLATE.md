@@ -46,7 +46,7 @@ This section should detail the following people:
 
 This section should describe the estimated resource cost of the project
 as it pertains to the Haskell Foundation. Does the project need funding?
-Is there a human cost in terms of hours and effort? We need to know!
+Is there a human cost in terms of hours and effort? We need to know! In general, projects may require publicity, coordination among projects, funding, technical oversight, volunteer pool, etc. Enumerate these to the best of your ability.
 
 ## Timeline
 
