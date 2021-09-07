@@ -18,7 +18,19 @@ If you’re motivated enough to go through this involved but rewarding process, 
 
 Many people in Haskell donate a considerable amount of their time to improving Haskell and its ecosystem for free. However, sometimes the financial or human cost of a project is too great for the individual, or creates an undue out-of-pocket expense in order to support those contributions. This is where the HFTP process comes in, and what separates this process from the core libraries process, or a GHC proposal: the HF is capable of contributing time, money, and resources to make a proposal happen. 
 
-For example, suppose a contributor needs computational resources for CI, or to produce stable Hackage subsets. Or for another example, say a contributor wants to write educational materials covering a yet-unwritten-about portion of Haskell, but requires an editor. Yet another example would be funding Summer of Code-type work on core tooling for Haskell. These costs should not come out of pocket. 
+### Resourcing 
+
+Consider the following examples: 
+
+- A contributor needs computational resources for CI, or to produce stable Hackage subsets
+- A contributor wants to write educational materials covering a yet-unwritten-about portion of Haskell, but requires an editor
+- An open source project requires funding for volunteers engaged in Summer of Code-type work on core tooling for Haskell 
+
+In each of these cases, the author of the sassociated HFTP should detail the resource request for machines, an editor, or in terms of volunteer funding needed to meet their delivery goals. Throughout the HFTP process, these resource requests will be considered and weighed against the existing demand for HF resources. If accepted, these resource requests will be honored by the HF.
+
+### Proposal Size
+
+There is no size floor or ceiling for project submissions. Each HFTP will be weighed against the existing resource pool to decide whether a proposal is ready for acceptance. In particular, small quality of life proposals are as welcome as epic community-shifting proposals - we do not judge. However, this is why step 1 (informal discussion) is so important: often, it may be faster and easier to just make that Pull Request and find people who are free to do it with you! If, for some reason, the discovery and discussion phase does not catch these issues, it will be raised by HFTT members when appropriate. When a proposal, big or small, is inappropriate for the venue, we will be sure to make it known.   
 
 ## What's the process for submitting a HFTP?
 

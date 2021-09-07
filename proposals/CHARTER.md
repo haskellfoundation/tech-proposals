@@ -17,6 +17,7 @@ HFTT Members are tasked with the following responsibilities:
 - Attend monthly HFTP meetings, weighing in pros and cons of every HFTP
 - accepting, postponing or rejecting each HFTP
 - Shepherding and reporting regarding the status of their assigned HFTPs.
+- Hold elections as members' terms expire
 
 ## Delegated powers
 
@@ -50,6 +51,12 @@ Members:
 - Reporting must be accurate, consistent, and in good faith
 - Changes to HFTT membership require simple majority approval
 - 1 CTO and 8 general members shall be required for a functioning HFTT 
+- No one may serve two terms consecutively, except for the CTO.
+- Elections *must* be held such that there is no period when the HFTT is not at full membership
+
+## Election Procedure 
+
+Elections shall be held in a public manner, using the forum designated by the HF bylaws for formal discussion. The CTO shall approve all language for the election publication. All additional publication on the part of the HFTT for the purpose of socializing the election should link to the formal discussion. Elections should be announced publicly exactly 60 days before member terms expire, and submissions should cease to be accepted 14 days before member terms expire, with all membership decisions finalized and publicized 7 days before member terms expire. During this 7-day lame duck period, no votes may be made on proposals. 
 
 
 ## Voting Procedure
@@ -67,7 +74,7 @@ If none of these applies, the proposal is Rejected.
 
 ### Membership changes
 
-Requires 66% majority for approval.
+Requires 66% majority for approval. All initial membership seats shall be appointed by the CTO at their discretion. 
 
 
 ## Reporting
