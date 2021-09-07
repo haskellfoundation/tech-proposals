@@ -13,11 +13,11 @@ The HF Technical Track is an experienced group of people with knowledge of the H
 
 HFTT Members are tasked with the following responsibilities:
 
-- communicating with the community regarding technical the Haskell Foundation Technical Proposal (HFTP) process goings-on
+- Communicate with the community regarding technical the Haskell Foundation Technical Proposal (HFTP) process goings-on
 - Attend monthly HFTP meetings, weighing in pros and cons of every HFTP
-- accepting, postponing or rejecting each HFTP
-- Shepherding and reporting regarding the status of their assigned HFTPs.
-- Hold elections as members' terms expire
+- Accept, postpone or reject each HFTP
+- Report regarding the status of assigned HFTPs when designated a shepherd
+- Hold elections as member terms expire
 
 ## Delegated powers
 
@@ -94,9 +94,9 @@ Foundation Google Drive folder (see: https://drive.google.com/drive/u/0/folders/
 
 Any change to this charter requires a 66% majority vote from the HFTT, with two exceptions:
 
-* The HFTT may change its method of document storage, but not repository.
+* The HFTT may change its method of document storage at will.
 * The HFTT may make changes to its membership according to the rules set
-out in the *Membership Rules* section above.
+  out in the *Membership Rules* section above.
 
 
 
