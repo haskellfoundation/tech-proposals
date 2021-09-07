@@ -42,7 +42,7 @@ Members:
 - Michael Snoyman ([@snoyberg](https://github.com/snoyberg)), FPComplete
 - Andrew Lelechenko ([@Bodigrim](https://github.com/Bodigrim)), Barclays
 - Davean Scies ([@davean](https://github.com/davean)), XKCD
-- Edward Kmett ([@ekmett](https://github.com/ekmett)), MIRI
+- Edward Kmett ([@ekmett](https://github.com/ekmett)), Groq
 - Theophile Choutri ([@Kleidukos](https://github.com/Kleidukos)), Scrive
 - Gil Mizrahi (@soupi)
 
