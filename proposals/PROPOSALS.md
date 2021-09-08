@@ -4,11 +4,11 @@ The aim of the HFTP process is to apply the openness and collaboration that have
 
 ## Why Write a Proposal?
 
-HFTPs are key to making the HF and its initiatives better for the good of everyone. If you decide to invest the time and effort of putting a proposal forward and see it through, your time and efforts will shape and improve the Haskell ecosystem, which means that your proposal may impact the life of a myriad of developers all over the world, including those on your own team. For many, this aspect alone can be quite worthwhile, however, the proposal process itself offers several key benefits to the broader community: 
+HFTPs are key to making the HF and its initiatives better for the good of everyone. If you decide to invest the time and effort of putting a proposal forward and see it through, your time and efforts will shape and improve the Haskell ecosystem, which means that your proposal may impact the life of a myriad of developers all over the world, including those on your own team. For many, this aspect alone can be quite worthwhile, however, the proposal process itself offers several key benefits to the broader community:
 
-1. **Concretizing ideas:** as ideas for proposals are fleshed out, so too are the resource requirements, timelines, stakeholders, and available approaches. In this sense, a proposal allows us to fully concretize a proposal idea in terms of the work needed to complete the task. 
-2. **Implementation guidance:**  the myriad of subject matter experts and stakeholders affected by a proposal can comment in a centralized place to form a consensus and guide the implementation strategy for a particular task. 
-3. **Resource requirements:** ideas are often discussed in the abstract, without the consideration for the cost of work required for their implementation. This process allows for discussion that reifies the resource requirements for proposals, and allows the community to more accurately weigh the cost and benefits of an implementation. 
+1. **Concretizing ideas:** as ideas for proposals are fleshed out, so too are the resource requirements, timelines, stakeholders, and available approaches. In this sense, a proposal allows us to fully concretize a proposal idea in terms of the work needed to complete the task.
+2. **Implementation guidance:**  the myriad of subject matter experts and stakeholders affected by a proposal can comment in a centralized place to form a consensus and guide the implementation strategy for a particular task.
+3. **Resource requirements:** ideas are often discussed in the abstract, without the consideration for the cost of work required for their implementation. This process allows for discussion that reifies the resource requirements for proposals, and allows the community to more accurately weigh the cost and benefits of an implementation.
 
 It's important to note that seeing a proposal through to its conclusion is an involved task. On the one hand, it takes time to convince people that your suggestions are a worthwhile change for hundreds of thousands of developers to accept. Particularly given the sheer volume of developers that could be affected by a proposal, its acceptance is conservative and carefully thought through. Typically, this includes many rounds of discussion with HF leaders, Haskell library maintainers, and the broader community, several iterations on the design of the proposal, and some effort at prototyping the proposed change. Often, it takes weeks to months of discussion, re-design, and prototyping for a proposal to be accepted. It is therefore important to note that seeing a proposal through to its conclusion can be time-consuming and not all proposals may end up accepted, although they may teach us all something!
 
@@ -16,27 +16,27 @@ If you’re motivated enough to go through this involved but rewarding process, 
 
 ## What kind of proposals are appropriate for an HFTP?
 
-Many people in Haskell donate a considerable amount of their time to improving Haskell and its ecosystem for free. However, sometimes the financial or human cost of a project is too great for the individual, or creates an undue out-of-pocket expense in order to support those contributions. This is where the HFTP process comes in, and what separates this process from the core libraries process, or a GHC proposal: the HF is capable of contributing time, money, and resources to make a proposal happen. 
+Many people in Haskell donate a considerable amount of their time to improving Haskell and its ecosystem for free. However, sometimes the financial or human cost of a project is too great for the individual, or creates an undue out-of-pocket expense in order to support those contributions. This is where the HFTP process comes in, and what separates this process from the core libraries process, or a GHC proposal: the HF is capable of contributing time, money, and resources to make a proposal happen.
 
-### Resourcing 
+### Resourcing
 
-Consider the following examples: 
+Consider the following examples:
 
 - A contributor needs computational resources for CI, or to produce stable Hackage subsets
 - A contributor wants to write educational materials covering a yet-unwritten-about portion of Haskell, but requires an editor
-- An open source project requires funding for volunteers engaged in Summer of Code-type work on core tooling for Haskell 
+- An open source project requires funding for volunteers engaged in Summer of Code-type work on core tooling for Haskell
 
 In each of these cases, the author of the sassociated HFTP should detail the resource request for machines, an editor, or in terms of volunteer funding needed to meet their delivery goals. Throughout the HFTP process, these resource requests will be considered and weighed against the existing demand for HF resources. If accepted, these resource requests will be honored by the HF.
 
 ### Proposal Size
 
-There is no size floor or ceiling for project submissions. Each HFTP will be weighed against the existing resource pool to decide whether a proposal is ready for acceptance. In particular, small quality of life proposals are as welcome as epic community-shifting proposals - we do not judge. However, this is why step 1 (informal discussion) is so important: often, it may be faster and easier to just make that Pull Request and find people who are free to do it with you! If, for some reason, the discovery and discussion phase does not catch these issues, it will be raised by HFTT members when appropriate. When a proposal, big or small, is inappropriate for the venue, we will be sure to make it known.   
+There is no size floor or ceiling for project submissions. Each HFTP will be weighed against the existing resource pool to decide whether a proposal is ready for acceptance. In particular, small quality of life proposals are as welcome as epic community-shifting proposals - we do not judge. However, this is why step 1 (informal discussion) is so important: often, it may be faster and easier to just make that Pull Request and find people who are free to do it with you! If, for some reason, the discovery and discussion phase does not catch these issues, it will be raised by HFTT members when appropriate. When a proposal, big or small, is inappropriate for the venue, we will be sure to make it known.
 
 ## What's the process for submitting a HFTP?
 
 There are four major steps in the HFTP process:
 
-1. Initial informal discussion 
+1. Initial informal discussion
 2. Submission
 3. Formal Review
 4. Acceptance
@@ -61,9 +61,9 @@ repo](https://github.com/haskellfoundation/tech-proposals). Within a week of rec
 
 While the majority of general technical commentary and feedback will occur on the proposal pull request and its associated issue, it's hard to tell when a particular proposal is finalized. This what we call "Formal Review".  The entire community is strongly encouraged to comment on, and help improve, a proposal. Ultimately, however, the Foundation needs a mechanism to make a decision, to accept, reject, or push back a proposal. This process is called "Formal Review", and is carried out by the HFTT working group.
 
-#### Formal Review 
+#### Formal Review
 
-Formal Review of a proposal is done in iterations. These iterations take place in the HFTT meetings and are usually monthly. However, they can last longer, in which case the author has more time to implement all the required changes. 
+Formal Review of a proposal is done in iterations. These iterations take place in the HFTT meetings and are usually monthly. However, they can last longer, in which case the author has more time to implement all the required changes.
 
 The maximum number of iterations is five. At the fifth iteration, the HFTT can only vote to Accept, Postpone, or Reject.
 
@@ -74,20 +74,20 @@ During every iteration, the HFTT reviews the changes (updated design document, p
 1. **Accepted**, in which case the HFTT has accepted the proposal, and it will be merged by the HFTT members.
 2. **Rejected**, in which case the HFTP is closed and no longer evaluated in the future.
 3. **Postponed**, in which case the HFTT sets aside the HFTP under some conditions. When those conditions are met, the HFTP can be resubmitted.
-4. **Under revision**, in which case the author needs to continue the formal evaluation and address all the HFTT feedback. Thus, the follow-up discussion is scheduled for the next iteration. 
+4. **Under revision**, in which case the author needs to continue the formal evaluation and address all the HFTT feedback. Thus, the follow-up discussion is scheduled for the next iteration.
 5. **Dormant**,  in which case no changes have been made to a HFTP in two iterations, it’s marked as dormant and both the PR and issue are closed. Dormant HFTPs can be reopened by any person, be it the same or different authors, at which point it will start from the formal evaluation phase.
 
 #### Involving Stakeholders
 
-At this point where a proposal is being reviewed, if there are relevant stakeholders from industry or in the community (e.g. library authors and maintainers who are affected), they should be solicited by the proposal author for comment and brought into the discussion. Remember, proposals may sound good, but it's best to iron out as many details as possible prior to their acceptance. This means that any hesitations stakeholders have with the project should be factored into the proposal's details. 
+At this point where a proposal is being reviewed, if there are relevant stakeholders from industry or in the community (e.g. library authors and maintainers who are affected), they should be solicited by the proposal author for comment and brought into the discussion. Remember, proposals may sound good, but it's best to iron out as many details as possible prior to their acceptance. This means that any hesitations stakeholders have with the project should be factored into the proposal's details.
 
 #### Updating Proposal Statuses
 
-If the author of a particular proposal wants to update the status of their proposal, they should comment on the issue and alert the HFTT using the Github team tag `haskellfoundation/tech-proposals` with a note regarding what status they would like to update the proposal to. It is good to be redundant and raise the question in our other fora as well: Slack and Discourse. However, Github is required.  
+If the author of a particular proposal wants to update the status of their proposal, they should comment on the issue and alert the HFTT using the Github team tag `haskellfoundation/tech-proposals` with a note regarding what status they would like to update the proposal to. It is good to be redundant and raise the question in our other fora as well: Slack and Discourse. However, Github is required.
 
 ### Acceptance
 
-Upon acceptance, an HFTP is merged into the repository by an HFTT member, and the HFTP is assigned a shepherd from the HFTT. A shepherd is chosen at random, and will serve as a liason for the project, guiding its progress. Shepherds are required to report dutifully and accurately on the progress at the bi-weekly HFTT standup meetings. Project leaders are welcome to arrange alternative reporting schema (e.g. as their schedules allow, or if time off is required) upon request, as long as reports are given on a consistent basis. 
+Upon acceptance, an HFTP is merged into the repository by an HFTT member, and the HFTP is assigned a shepherd from the HFTT. A shepherd is chosen at random, and will serve as a liason for the project, guiding its progress. Shepherds are required to report dutifully and accurately on the progress at the bi-weekly HFTT standup meetings. Project leaders are welcome to arrange alternative reporting schema (e.g. as their schedules allow, or if time off is required) upon request, as long as reports are given on a consistent basis.
 
 ## The Role of the HFTT
 
@@ -105,13 +105,13 @@ HFTT members should be either individuals responsible for a specific part of the
 
 The current HFTT members are:
 
-- Emily Pillmore ([@emilypi](https://github.com/emilypi)), Haskell Foundation
-- Richard Eisenberg ([@goldfirere](https://github.com/goldfirere)), Tweag
-- Michael Snoyman ([@snoyberg](https://github.com/snoyberg)), FPComplete
-- Andrew Lelechenko ([@Bodigrim](https://github.com/Bodigrim)), Barclays
-- Davean Scies ([@davean](https://github.com/davean)), XKCD
-- Edward Kmett ([@ekmett](https://github.com/ekmett)), Groq
-- Theophile Choutri ([@Kleidukos](https://github.com/Kleidukos)), Scrive
+- Emily Pillmore ([@emilypi](https://github.com/emilypi))
+- Richard Eisenberg ([@goldfirere](https://github.com/goldfirere))
+- Michael Snoyman ([@snoyberg](https://github.com/snoyberg))
+- Andrew Lelechenko ([@Bodigrim](https://github.com/Bodigrim))
+- Davean Scies ([@davean](https://github.com/davean))
+- Edward Kmett ([@ekmett](https://github.com/ekmett))
+- Hécate ([@Kleidukos](https://github.com/Kleidukos))
 - Gil Mizrahi (@soupi)
 
 ### Voting
@@ -131,7 +131,7 @@ If none of these applies, the proposal is Rejected.
 - communicating with the community regarding technical the Haskell Foundation Technical Proposal (HFTP) process goings-on
 - weighing in pros and cons of every HFTP
 - accepting, postponing or rejecting each HFTP
-- If shepherding, accurately and dutifully report the status of HFTPs 
+- If shepherding, accurately and dutifully report the status of HFTPs
 
 ### Guests
 

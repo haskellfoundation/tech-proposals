@@ -6,7 +6,7 @@ The Haskell Foundation Technical Track (HFTT) is a task force of the Haskell Fou
 
 ## Purpose
 
-The HF Technical Track is an experienced group of people with knowledge of the Haskell ecosystem, responsible for the strategic technical direction on behalf of the Haskell Foundation. HFTT members should be either individuals responsible for a specific part of the Haskell ecosystem, or contributors and committers to parts of it. The members are selected by the HF CTO based on their expertise and reputation in the community. 
+The HF Technical Track is an experienced group of people with knowledge of the Haskell ecosystem, responsible for the strategic technical direction on behalf of the Haskell Foundation. HFTT members should be either individuals responsible for a specific part of the Haskell ecosystem, or contributors and committers to parts of it. The members are selected by the HF CTO based on their expertise and reputation in the community.
 
 
 ## Responsibilities
@@ -28,7 +28,7 @@ The HFTT may make decisions regarding accepted technical projects. The CTO shall
 
 ## Term
 
-CTO participation is required and indefinite. General HFTT members serve for 2 years. 
+CTO participation is required and indefinite. General HFTT members serve for 2 years.
 
 ## Membership
 
@@ -38,32 +38,32 @@ CTO:
 
 Members:
 
-- Richard Eisenberg ([@goldfirere](https://github.com/goldfirere)), Tweag
-- Michael Snoyman ([@snoyberg](https://github.com/snoyberg)), FPComplete
-- Andrew Lelechenko ([@Bodigrim](https://github.com/Bodigrim)), Barclays
-- Davean Scies ([@davean](https://github.com/davean)), XKCD
-- Edward Kmett ([@ekmett](https://github.com/ekmett)), Groq
-- Theophile Choutri ([@Kleidukos](https://github.com/Kleidukos)), Scrive
+- Richard Eisenberg ([@goldfirere](https://github.com/goldfirere))
+- Michael Snoyman ([@snoyberg](https://github.com/snoyberg))
+- Andrew Lelechenko ([@Bodigrim](https://github.com/Bodigrim))
+- Davean Scies ([@davean](https://github.com/davean))
+- Edward Kmett ([@ekmett](https://github.com/ekmett))
+- Hécate ([@Kleidukos](https://github.com/Kleidukos))
 - Gil Mizrahi (@soupi)
 
 ## Membership Rules
 
 - Reporting must be accurate, consistent, and in good faith
 - Changes to HFTT membership require simple majority approval
-- 1 CTO and 8 general members shall be required for a functioning HFTT 
+- 1 CTO and 8 general members shall be required for a functioning HFTT
 - No one may serve two terms consecutively, except for the CTO.
 - Elections *must* be held such that there is no period when the HFTT is not at full membership
 
-## Election Procedure 
+## Election Procedure
 
-Elections shall be held in a public manner, using the forum designated by the HF bylaws for formal discussion. The CTO shall approve all language for the election publication. All additional publication on the part of the HFTT for the purpose of socializing the election should link to the formal discussion. Elections should be announced publicly exactly 60 days before member terms expire, and submissions should cease to be accepted 14 days before member terms expire, with all membership decisions finalized and publicized 7 days before member terms expire. During this 7-day lame duck period, no votes may be made on proposals. 
+Elections shall be held in a public manner, using the forum designated by the HF bylaws for formal discussion. The CTO shall approve all language for the election publication. All additional publication on the part of the HFTT for the purpose of socializing the election should link to the formal discussion. Elections should be announced publicly exactly 60 days before member terms expire, and submissions should cease to be accepted 14 days before member terms expire, with all membership decisions finalized and publicized 7 days before member terms expire. During this 7-day lame duck period, no votes may be made on proposals.
 
 If not enough candidates apply for the number of seats expiring, the CTO may fill these seats as needed using their discretion.
 
 
 ## Voting Procedure
 
-Voting is only required for two procedures. 
+Voting is only required for two procedures.
 
 ### HFTP Statuses
 
@@ -76,12 +76,12 @@ If none of these applies, the proposal is Rejected.
 
 ### Membership changes
 
-Requires 66% majority for approval. All initial membership seats shall be appointed by the CTO at their discretion. 
+Requires 66% majority for approval. All initial membership seats shall be appointed by the CTO at their discretion.
 
 
 ## Reporting
 
-HFTT members are expected to join monthly HFTP review meetings. If shepherding, project statuses should be reported at the bi-monthly HFTT standups. 
+HFTT members are expected to join monthly HFTP review meetings. If shepherding, project statuses should be reported at the bi-monthly HFTT standups.
 
 
 ## Documents
@@ -97,6 +97,3 @@ Any change to this charter requires a 66% majority vote from the HFTT, with two 
 * The HFTT may change its method of document storage at will.
 * The HFTT may make changes to its membership according to the rules set
   out in the *Membership Rules* section above.
-
-
-
