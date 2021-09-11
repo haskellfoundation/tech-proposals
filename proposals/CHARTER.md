@@ -6,7 +6,7 @@ The Haskell Foundation Technical Track (HFTT) is a task force of the Haskell Fou
 
 ## Purpose
 
-The HF Technical Track is an experienced group of people with knowledge of the Haskell ecosystem, responsible for the strategic technical direction on behalf of the Haskell Foundation. HFTT members should be either individuals responsible for a specific part of the Haskell ecosystem, or contributors and committers to parts of it. The members are selected by the HF CTO based on their expertise and reputation in the community. 
+The HF Technical Track is an experienced group of people with knowledge of the Haskell ecosystem, responsible for the strategic technical direction on behalf of the Haskell Foundation. HFTT members should be either individuals responsible for a specific part of the Haskell ecosystem, or contributors and committers to parts of it.  
 
 
 ## Responsibilities
@@ -28,7 +28,7 @@ The HFTT may make decisions regarding accepted technical projects. The CTO shall
 
 ## Term
 
-CTO participation is required and indefinite. General HFTT members serve for 2 years. 
+CTO participation is required and indefinite. General HFTT members serve for 3 years. 
 
 ## Membership
 
@@ -38,12 +38,12 @@ CTO:
 
 Members:
 
-- Richard Eisenberg ([@goldfirere](https://github.com/goldfirere)), Tweag
-- Michael Snoyman ([@snoyberg](https://github.com/snoyberg)), FPComplete
-- Andrew Lelechenko ([@Bodigrim](https://github.com/Bodigrim)), Barclays
-- Davean Scies ([@davean](https://github.com/davean)), XKCD
-- Edward Kmett ([@ekmett](https://github.com/ekmett)), Groq
-- Theophile Choutri ([@Kleidukos](https://github.com/Kleidukos)), Scrive
+- Richard Eisenberg ([@goldfirere](https://github.com/goldfirere))
+- Michael Snoyman ([@snoyberg](https://github.com/snoyberg))
+- Andrew Lelechenko ([@Bodigrim](https://github.com/Bodigrim))
+- Davean Scies ([@davean](https://github.com/davean))
+- Edward Kmett ([@ekmett](https://github.com/ekmett))
+- Theophile Choutri ([@Kleidukos](https://github.com/Kleidukos))
 - Gil Mizrahi (@soupi)
 
 ## Membership Rules
@@ -60,19 +60,24 @@ Elections shall be held in a public manner, using the forum designated by the HF
 
 If not enough candidates apply for the number of seats expiring, the CTO may fill these seats as needed using their discretion.
 
+## Becoming a member
+
+It is not required to be a part of the HFTT in order to work on projects. In fact, it's quite the opposite: in order to find a list of projects on which to volunteer, one need only send a message (e.g. an email, slack DM, etc) to the leaders of individual projects. Likewise, individuals may freely contribute ideas and analysis of technical proposals by taking part in the HF Tech Proposal (HFTP) process commentary. However, the HFTT exists as the body empowered to ratify proposals and supervise projects to completion. 
+
+In order to become a member, one must apply at election time, and be elected to the HFTT. With the exception of the first iteration of the HFTT, all members are elected by means of the election process. 
+
 
 ## Voting Procedure
 
-Voting is only required for two procedures. 
+Ranked voting is used, with the following criteria required for each status: 
 
 ### HFTP Statuses
 
-- Accepance: 66% majority
+- Acceptance: 66% majority
 - Dormant: Simple majority
 - Postponed: Simple majority
 - Revision needed: Simple majority
-
-If none of these applies, the proposal is Rejected.
+- Rejected: 66% majority
 
 ### Membership changes
 

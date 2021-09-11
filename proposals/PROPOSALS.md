@@ -93,16 +93,6 @@ Upon acceptance, an HFTP is merged into the repository by an HFTT member, and th
 
 Authors are responsible for building consensus within the community and documenting dissenting opinions before the HFTP is officially discussed by the HFTT. Their goal is to convince the HFTT that their proposal is useful and addresses pertinent problems in the Haskell ecosystem as well as interactions with already existing features. Authors can change over the life-cycle of the HFTP. For a formal charter, please see [CHARTER.md](CHARTER.md).
 
-### The HF Technical Track
-
-The HF Technical Track is an experienced group of people with knowledge of the Haskell ecosystem, responsible for the strategic technical direction on behalf of the Haskell Foundation. Members are tasked with:
-
-- communicating with the community
-- weighing in pros and cons of every proposal
-- accepting, postponing or rejecting the proposal.
-
-HFTT members should be either individuals responsible for a specific part of the Haskell ecosystem, or contributors and committers to parts of it. The members are selected by the HF CTO based on their expertise and reputation in the community.
-
 The current HFTT members are:
 
 - Emily Pillmore ([@emilypi](https://github.com/emilypi)), Haskell Foundation
@@ -116,22 +106,13 @@ The current HFTT members are:
 
 ### Voting
 
-When a HFTP is scheduled at an HFTT meeting (i.e. it is in 'Under Review'), it can be held to a vote for one of the following outcomes (in case it makes a difference: the HFTP will be marked according to the first on this list to have a majority):
+When a HFTP is scheduled at an HFTT meeting (i.e. it is in 'Under Review'), it can be held to a vote for one of the following outcomes (in case it makes a difference: the HFTP will be marked according to the first on this list to have a majority) using a ranked voting method described in [CHARTER.md](CHARTER.md). 
 
 - Accepted (needs 66% of the HFTT to vote in favor, and the HFTP must specify a proposal lead, e.g. an implementor or project director, from the HFTT who will represent the work done on the project.)
 - Dormant (needs a simple majority, an HFTT member that voted in favor will close the issue and PR and mark it as Dormant)
 - Postponed (needs a simple majority, an HFTT member that voted to postpone will close the issue and PR, and write clear conditions for reopening)
 - Revision needed (needs a simple majority. This can only be the outcome of the vote four times, for a total of five rounds. An HFTT member will write up what revisions are needed.)
-
-If none of these applies, the proposal is Rejected.
-
-### Responsibilities of the members
-
-- Play a role in the discussions, learn in advance about the topic if needed, and make up their mind in the voting process.
-- communicating with the community regarding technical the Haskell Foundation Technical Proposal (HFTP) process goings-on
-- weighing in pros and cons of every HFTP
-- accepting, postponing or rejecting each HFTP
-- If shepherding, accurately and dutifully report the status of HFTPs 
+- Rejected (needs 66% of the HFTT to vote in favor)
 
 ### Guests
 
@@ -139,7 +120,7 @@ Experts in some fields may be invited to specific meetings as guests when discus
 
 ### Joining the HFTT
 
-If you would like to join the HFTT or would like to know how members are elected, please refer to the [charter](CHARTER.md)
+If you would like to join the HFTT or would like to know how members are elected, please refer to [CHARTER.md](CHARTER.md).
 
 ## Proposal states
 
