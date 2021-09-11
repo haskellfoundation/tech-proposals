@@ -6,7 +6,7 @@ The Haskell Foundation Technical Track (HFTT) is a task force of the Haskell Fou
 
 ## Purpose
 
-The HF Technical Track is an experienced group of people with knowledge of the Haskell ecosystem, responsible for the strategic technical direction on behalf of the Haskell Foundation. HFTT members should be either individuals responsible for a specific part of the Haskell ecosystem, or contributors and committers to parts of it.  
+The HF Technical Track is an experienced group of people with knowledge of the Haskell ecosystem, responsible for the strategic technical direction on behalf of the Haskell Foundation. HFTT members should be either individuals responsible for a specific part of the Haskell ecosystem, or contributors and committers to parts of it.
 
 
 ## Responsibilities
@@ -28,13 +28,13 @@ The HFTT may make decisions regarding accepted technical projects. The CTO shall
 
 ## Term
 
-CTO participation is required and indefinite. General HFTT members serve for 3 years. 
+CTO participation is required and indefinite. General HFTT members serve for 3 years.
 
 ## Membership
 
 CTO:
 
-- Emily Pillmore ([@emilypi](https://github.com/emilypi)), Haskell Foundation
+- Emily Pillmore ([@emilypi](https://github.com/emilypi))
 
 Members:
 
@@ -43,33 +43,33 @@ Members:
 - Andrew Lelechenko ([@Bodigrim](https://github.com/Bodigrim))
 - Davean Scies ([@davean](https://github.com/davean))
 - Edward Kmett ([@ekmett](https://github.com/ekmett))
-- Theophile Choutri ([@Kleidukos](https://github.com/Kleidukos))
+- Hécate ([@Kleidukos](https://github.com/Kleidukos))
 - Gil Mizrahi (@soupi)
 
 ## Membership Rules
 
 - Reporting must be accurate, consistent, and in good faith
 - Changes to HFTT membership require simple majority approval
-- 1 CTO and 8 general members shall be required for a functioning HFTT 
+- 1 CTO and 8 general members shall be required for a functioning HFTT
 - No one may serve two terms consecutively, except for the CTO.
 - Elections *must* be held such that there is no period when the HFTT is not at full membership
 
-## Election Procedure 
+## Election Procedure
 
-Elections shall be held in a public manner, using the forum designated by the HF bylaws for formal discussion. The CTO shall approve all language for the election publication. All additional publication on the part of the HFTT for the purpose of socializing the election should link to the formal discussion. Elections should be announced publicly exactly 60 days before member terms expire, and submissions should cease to be accepted 14 days before member terms expire, with all membership decisions finalized and publicized 7 days before member terms expire. During this 7-day lame duck period, no votes may be made on proposals. 
+Elections shall be held in a public manner, using the forum designated by the HF bylaws for formal discussion. The CTO shall approve all language for the election publication. All additional publication on the part of the HFTT for the purpose of socializing the election should link to the formal discussion. Elections should be announced publicly exactly 60 days before member terms expire, and submissions should cease to be accepted 14 days before member terms expire, with all membership decisions finalized and publicized 7 days before member terms expire. During this 7-day lame duck period, no votes may be made on proposals.
 
 If not enough candidates apply for the number of seats expiring, the CTO may fill these seats as needed using their discretion.
 
 ## Becoming a member
 
-It is not required to be a part of the HFTT in order to work on projects. In fact, it's quite the opposite: in order to find a list of projects on which to volunteer, one need only send a message (e.g. an email, slack DM, etc) to the leaders of individual projects. Likewise, individuals may freely contribute ideas and analysis of technical proposals by taking part in the HF Tech Proposal (HFTP) process commentary. However, the HFTT exists as the body empowered to ratify proposals and supervise projects to completion. 
+It is not required to be a part of the HFTT in order to work on projects. In fact, it's quite the opposite: in order to find a list of projects on which to volunteer, one need only send a message (e.g. an email, slack DM, etc) to the leaders of individual projects. Likewise, individuals may freely contribute ideas and analysis of technical proposals by taking part in the HF Tech Proposal (HFTP) process commentary. However, the HFTT exists as the body empowered to ratify proposals and supervise projects to completion.
 
-In order to become a member, one must apply at election time, and be elected to the HFTT. With the exception of the first iteration of the HFTT, all members are elected by means of the election process. 
+In order to become a member, one must apply at election time, and be elected to the HFTT. With the exception of the first iteration of the HFTT, all members are elected by means of the election process.
 
 
 ## Voting Procedure
 
-Ranked voting is used, with the following criteria required for each status: 
+Ranked voting is used, with the following criteria required for each status:
 
 ### HFTP Statuses
 
@@ -81,12 +81,12 @@ Ranked voting is used, with the following criteria required for each status:
 
 ### Membership changes
 
-Requires 66% majority for approval. All initial membership seats shall be appointed by the CTO at their discretion. 
+Membership changes require 66% majority for approval. All initial membership seats shall be appointed by the CTO at their discretion.
 
 
 ## Reporting
 
-HFTT members are expected to join monthly HFTP review meetings. If shepherding, project statuses should be reported at the bi-monthly HFTT standups. 
+HFTT members are expected to join monthly HFTP review meetings. If shepherding, project statuses should be reported at the bi-monthly HFTT standups.
 
 
 ## Documents
@@ -102,6 +102,3 @@ Any change to this charter requires a 66% majority vote from the HFTT, with two 
 * The HFTT may change its method of document storage at will.
 * The HFTT may make changes to its membership according to the rules set
   out in the *Membership Rules* section above.
-
-
-
