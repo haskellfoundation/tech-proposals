@@ -2,20 +2,20 @@
 
 ## Introduction
 
-This proposal is for the Haskell Foundation to undertake a direct small grant
-program, funded by individual donations to the foundation, to distribute funding
-where it can make a difference to the Haskell community.  The aim is to make the
-Haskell Foundation a more appealing target for individuals wishing to donate for
-the good of the entire Haskell community.  This indefinite ongoing program would
+This proposal is for the Haskell Foundation to undertake a direct grant program,
+funded by individual donations to the foundation, to distribute funding where it
+can make a difference to the Haskell community.  The aim is to make the Haskell
+Foundation a more appealing target for individuals wishing to donate for the
+good of the entire Haskell community.  This indefinite ongoing program would
 accept submissions from the community on a rolling basis, and award up to $2000
 grants to individuals as a stipend to support their work on the proposed
 project.
 
-The amount of money involved is small, so the primary risk of the proposal is
-that funding decisions would generate discouragement or ill will from rejected
-submissions.  The risk can be partially mitigated by the use of a random lottery
-system to select winners after an initial selection of submissions that the
-Foundation believes are worth accepting.
+The primary risk of the proposal is that funding decisions would generate
+discouragement or ill will from rejected submissions.  The risk can be partially
+mitigated by the use of a random lottery system to select winners after an
+initial selection of submissions that the Foundation believes are worth
+accepting.
 
 ## Background
 
@@ -40,13 +40,13 @@ several barriers to its being used directly by individuals or small projects for
 which funding could make a difference.  Note that "individuals and small
 projects" describes a vast portion of crucial Haskell libraries and tools.
 
-1. The HFTP process is not encouraging to individuals looking for small amounts
-   of funding, and says things like "Typically, this includes many rounds of
-   discussion with HF leaders, Haskell library maintainers, and the broader
-   community, several iterations on the design of the proposal, and some effort
-   at prototyping the proposed change."
-2. The benefit of small grants can depend on life circumstances, such as one's
-   need for child care, willingness to leave an employer, etc.  Individuals may
+1. The HFTP process is not encouraging to individuals or small projects, and
+   says things like "Typically, this includes many rounds of discussion with HF
+   leaders, Haskell library maintainers, and the broader community, several
+   iterations on the design of the proposal, and some effort at prototyping the
+   proposed change."
+2. The benefit of grants can depend on life circumstances, such as one's need
+   for child care, willingness to leave an employer, etc.  Individuals may
    prefer not to include this information in a document open for public comment.
 
 Thus, the HFTP process isn't a great fit for direct requests from individuals or
@@ -79,9 +79,9 @@ of the foundation itself.
 There are several secondary motivations, as well.
 
 * We hope to increase open source contributions to Haskell by finding high
-  efficiency investments where a small contribution can make a big difference
-  because someone is in a place where they are blocked from contributing.  This
-  doesn't necessarily have to be a top priority for the community.  If a small
+  efficiency investments where a contribution can make a big difference because
+  someone is in a place where they are blocked from contributing.  This doesn't
+  necessarily have to be a top priority for the community.  If a reasonable
   investment can help even a second-tier priority, it is still a good thing.
 * We hope to build more community support and awareness of people contributing
   to Haskell.  Bringing the community together in support of a shared goal can
@@ -89,7 +89,7 @@ There are several secondary motivations, as well.
 
 ## Goals
 
-The goal of this proposal is to set up a small grant program administered by the
+The goal of this proposal is to set up a grant program administered by the
 Haskell Foundation.
 
 Submissions to the grant program should come from individuals who feel they
@@ -105,18 +105,18 @@ they had extra funding.  Submissions may include:
 
 Certain submissions are not appropriate, and those submitting them would be
 referred to the HFTP process, instead.  This includes anything asking for
-financial support above $2000.  (This is less than other similar programs, but
-we feel it's important to limit the risk given the lower standard of review
-involved.)  It also includes any submission that might be controversial in any
-way, because the more private nature of these proposals isn't the right process
-for anything potentially controversial.  Submissions should also not ask for
-assistance from the Haskell Foundation beyond the grant money, so if someone
-wants to recruit contributors, find infrastructure, etc. that they don't intend
-to pay for themselves, this is not the right process for that.  (However, a
-submission that explains that someone has already lined up extra assistance is
-welcome.)  Grants must be awarded to a single individual, and not shared among
-multiple contributors.  More complex proposals like this are also better suited
-the the HFTP process.
+financial support above $2000.  (This is less than comparable programs in other
+communities, but we feel it's important to limit the risk given the lower
+standard of review involved versus the HFTP.)  It also includes any submission
+that might be controversial in any way, because the more private nature of these
+proposals isn't the right process for anything potentially controversial.
+Submissions should also not ask for assistance from the Haskell Foundation
+beyond the grant money, so if someone wants to recruit contributors, find
+infrastructure, etc. that they don't intend to pay for themselves, this is not
+the right process for that.  (However, a submission that explains that someone
+has already lined up extra assistance is welcome.)  Grants must be awarded to a
+single individual, and not shared among multiple contributors.  More complex
+proposals like this are also better suited the the HFTP process.
 
 These individuals would write a short summary of their intended work, limited to
 two pages, and answering the following questions:
@@ -217,7 +217,7 @@ random.  Projects not selected will be automatically pre-approved for the next
 selection, if the author confirms that they are still interested in continuing.
 
 A second risk is that Haskell Foundation funds are not spent on the best
-projects.  We mitigate this risk by limiting the amount of the grants so that
-the risk is lower.  Additionally, there's an initial assessment of all
-submissions to ensure they meet a high bar where investment of Haskell
-Foundation funds is likely to generate a good return.
+projects.  We mitigate this risk by limiting the amount of the grants to $2000.
+Additionally, there's an initial assessment of all submissions to ensure they
+meet a high bar where investment of Haskell Foundation funds is likely to
+generate a good return.
