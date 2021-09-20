@@ -98,7 +98,7 @@ they had extra funding.  Submissions may include:
 
 * Open source tools and libraries.  This should focus on tools that are broadly
   useful for Haskell developers.  Simply being written in Haskell is not enough.
-* Documentation and learning materialsthat are freely available to the
+* Documentation and learning materials that are freely available to the
   community.
 * Project leadership and support, including user support, project management,
   bug triage and coordination, code review, and technical writing.
