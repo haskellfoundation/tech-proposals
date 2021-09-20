@@ -54,6 +54,18 @@ small projects for financial support.  Furthermore, the HFTP process gives an
 explicit example of a "Summer of Code" style program as within scope for an HFTP
 proposal.  This is such a proposal.
 
+Several other communities have similar grant programs.  Some examples include:
+
+* Google Summer of Code, which awards between $1500 and $3300 per student,
+  scaled by cost of living, for a student to contribute to a project for a
+  summer.
+* Clojurists Together, which awards between $1500 and $9000 per grant for people
+  to contribute to a Clojure project for an indefinite period of time.
+* The Unitary Fund, which awards $4000 per grant for research-based
+  contributions to quantum technology.
+* The Tweag Open Source Fellowship, which states that it's twice the amount of
+  Google Summer of Code.
+
 ## Motivation
 
 As discussed above, the primary motivation for this proposal is to make the
@@ -82,39 +94,74 @@ Haskell Foundation.
 
 Submissions to the grant program should come from individuals who feel they
 could perform additional work on projects of benefit to the Haskell community if
-they had extra funding.  These individuals would write a short summary of their
-intended work, answering the following questions:
+they had extra funding.  Submissions may include:
+
+* Open source tools and libraries.  This should focus on tools that are broadly
+  useful for Haskell developers.  Simply being written in Haskell is not enough.
+* Documentation and learning materialsthat are freely available to the
+  community.
+* Project leadership and support, including user support, project management,
+  bug triage and coordination, code review, and technical writing.
+
+Certain submissions are not appropriate, and those submitting them would be
+referred to the HFTP process, instead.  This includes anything asking for
+financial support above $2000.  (This is less than other similar programs, but
+we feel it's important to limit the risk given the lower standard of review
+involved.)  It also includes any submission that might be controversial in any
+way, because the more private nature of these proposals isn't the right process
+for anything potentially controversial.  Submissions should also not ask for
+assistance from the Haskell Foundation beyond the grant money, so if someone
+wants to recruit contributors, find infrastructure, etc. that they don't intend
+to pay for themselves, this is not the right process for that.  (However, a
+submission that explains that someone has already lined up extra assistance is
+welcome.)  Grants must be awarded to a single individual, and not shared among
+multiple contributors.  More complex proposals like this are also better suited
+the the HFTP process.
+
+These individuals would write a short summary of their intended work, limited to
+two pages, and answering the following questions:
 
 * What are you intending to do, and how will it benefit the Haskell community?
-* Why are you the right person to do this work?
+* Why are you the right person to do this work?  If possible, submissions are
+  strongly encouraged to include a statement of support from an existing
+  maintainer of or core contributor to the project involved.
 * How much funding are you asking for, and how will it make your work possible?
 
-As a condition of receiving a grant, individuals will agree to report back to
-the Haskell community in detail within two months on the results of their
-efforts, in the form of a blog post shared on discourse.haskell.org.
-Individuals who do not follow through on this commitment are ineligible for
-future grants.
+As a prerequisite for receiving a grant, individuals will agree to write two
+blog posts and share a link to discourse.haskell.org.  The first is a project
+plan, which must be posted before funds are dispersed.  The second is a detailed
+report on the results, which should be posted after described work has been
+completed, regardless of its level of success.  Individuals who do not follow
+through on the second blog post are ineligible for future grants.
 
-Submissions will be evaluated by a Community Grant Committee, consisting of five
-members chosen by the Haskell Foundation executive team.  An email list will be
-set up, readable only by the executive team and Community Grant Committee, for
-receiving and discussing submissions.  Once per month, the Haskell Foundation
-executive team will a communicate to the committee how much funding is available
-for grants, based on the program's budget, which is at the discretion of the
-Foundation.
+A Community Grant Committee, consisting of five members, will be chosen by the
+Haskell Foundation executive team.  An email list will be set up, readable only
+by the executive team and Community Grant Committee, for receiving and
+discussing submissions.  Once per month, the Haskell Foundation executive team
+will a communicate to the committee how much funding is available for grants,
+based on the program's budget, which is at the discretion of the Foundation.
+
+Each proposal will be considered by members of the committee, using their
+informed judgement to determine whether accepting the submission is in the best
+interest of the Haskell community.  Among other factors, committee members
+should consider:
+1. Whether the proposal might be controversial.  It should be rejected it if
+   there is any likelihood that it will.
+2. How much difference the grant is likely to make on the probability for
+   success.  A good proposal will justify the amount asked for, which could be
+   used for paying expenses directly related to the project, removing obstacles
+   to contribution by, for example, paying for child care, or covering housing
+   and basic expenses if the alternative is to spend less time on project work.
+3. The overall impact if the effort succeeds.  In determining the impact, the
+   committee should keep in mind the long-term benefit of building expertise, if
+   the submission is likely to lead to opportunities for continuing work.
 
 Community Grant Committee members will use approval voting to determine which
-submissions to accept, using their informed judgement.  Committee members will
-consider whether there is broad consensus that the result would be desirable,
-how much impact the grant is likely to have on the probability for success, and
-the overall impact if the project succeeds.  The committee will not accept a
-proposal if its completion would be controversial in any way, and will instead
-refer the submitter to the HFTP process to build consensus and resolve any
-disagreement.  A submission is accepted if it receives majority support from
-the committee.  When a submission is not accepted, the committee may choose, by
-majority vote again, to provide feedback to the submitter on how their proposal
-could be improved.  Otherwise, the results of the vote are not announced, to
-avoid embarrassment or hard feelings.
+submissions to accept.   A submission is accepted if it receives majority
+support from the committee.  When a submission is not accepted, the committee
+may choose, by majority vote again, to provide feedback to the submitter on how
+their proposal could be improved.  Otherwise, the results of the vote are not
+announced, to avoid embarrassment or hard feelings.
 
 A random lottery system will then be used to award grants to accepted proposals,
 continuing until either the approved submissions are exhausted, or a submission
