@@ -63,8 +63,8 @@ Several other communities have similar grant programs.  Some examples include:
   to contribute to a Clojure project for an indefinite period of time.
 * The Unitary Fund, which awards $4000 per grant for research-based
   contributions to quantum technology.
-* The Tweag Open Source Fellowship, which states that it's twice the amount of
-  Google Summer of Code.
+* The Tweag Open Source Fellowship, which states that it is twice the amount
+  (and twice the length) of Google Summer of Code.
 
 ## Motivation
 
