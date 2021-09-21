@@ -53,18 +53,26 @@ Thus, the HFTP process isn't a great fit for direct requests from individuals or
 small projects for financial support.  Furthermore, the HFTP process gives an
 explicit example of a "Summer of Code" style program as within scope for an HFTP
 proposal.  This is such a proposal.
-
 Several other communities have similar grant programs.  Some examples include:
 
-* Google Summer of Code, which awards between $1500 and $3300 per student,
-  scaled by cost of living, for a student to contribute to a project for a
-  summer.
-* Clojurists Together, which awards between $1500 and $9000 per grant for people
-  to contribute to a Clojure project for an indefinite period of time.
-* The Unitary Fund, which awards $4000 per grant for research-based
-  contributions to quantum technology.
-* The Tweag Open Source Fellowship, which states that it is twice the amount
-  (and twice the length) of Google Summer of Code.
+* [Google Summer of Code](https://summerofcode.withgoogle.com/), which awards
+  between $1500 and $3300 per student, scaled by cost of living, for a student
+  to contribute to a project for a summer.
+* [Clojurists Together](https://www.clojuriststogether.org/), which awards
+  between $1500 and $9000 per grant for people to contribute to a Clojure
+  project for an indefinite period of time.
+    * See [notes from a previous discussion of duplicating the program for
+      Haskell](https://www.reddit.com/r/haskell/comments/89hnul/haskellers_together/dwrdc0y/)
+* [The Unitary Fund](https://unitary.fund/), which awards $4000 per grant for
+  research-based contributions to quantum technology.
+* The [Tweag Open Source Fellowship](https://boards.greenhouse.io/tweag/jobs/4638654002),
+  which states that it is twice the amount (and twice the length) of Google
+  Summer of Code.
+* The [PSF Grants Program](https://www.python.org/psf/grants/) and [Ruby
+  Central](https://www.rubycentral.org/grants) specifically fund events and
+  conferences.
+* The [Perl Foundation](https://www.perlfoundation.org/running-grants.html)
+  has no set amounts, and has given grants from $500 through $20000 in the past.
 
 ## Motivation
 
