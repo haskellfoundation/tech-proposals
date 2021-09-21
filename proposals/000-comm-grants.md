@@ -229,3 +229,6 @@ projects.  We mitigate this risk by limiting the amount of the grants to $2000.
 Additionally, there's an initial assessment of all submissions to ensure they
 meet a high bar where investment of Haskell Foundation funds is likely to
 generate a good return.
+
+A third risk is that the program will be biased in who is awarded grants or in
+who is encouraged to apply.  (TODO: mitigations to address this risk.)
