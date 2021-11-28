@@ -26,7 +26,7 @@ Consider the following examples:
 - A contributor wants to write educational materials covering a yet-unwritten-about portion of Haskell, but requires an editor
 - An open source project requires funding for volunteers engaged in Summer of Code-type work on core tooling for Haskell
 
-In each of these cases, the author of the sassociated HFTP should detail the resource request for machines, an editor, or in terms of volunteer funding needed to meet their delivery goals. Throughout the HFTP process, these resource requests will be considered and weighed against the existing demand for HF resources. If accepted, these resource requests will be honored by the HF.
+In each of these cases, the author of the associated HFTP should detail the resource request for machines, an editor, or in terms of volunteer funding needed to meet their delivery goals. Throughout the HFTP process, these resource requests will be considered and weighed against the existing demand for HF resources. If accepted, these resource requests will be honored by the HF.
 
 ### Proposal Size
 
