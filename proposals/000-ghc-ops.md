@@ -121,7 +121,7 @@ After the initial hiring process, this is expected to be an ongoing position. Pa
 ## Deliverables
 
 
-Deliver one hired developer operative within approximately 2-4 months.
+Deliver one full-time developer operative within approximately 2-4 months. The exact legal arrangement is left to the Haskell Foundation Officers.
 
 
 ## Outcomes
