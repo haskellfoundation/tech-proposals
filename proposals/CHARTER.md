@@ -39,10 +39,10 @@ Delegated Authority:
 Members:
 
 - Chris Smith ([@cdsmith](https://github.com/cdsmith))
-- Davean Scies ([@snoyberg](https://github.com/davean))
+- Davean Scies ([@davean](https://github.com/davean))
 - Gershom Bazerman ([@Bodigrim](https://github.com/gbaz))
-- John Ericson ([@davean](https://github.com/Ericson2314))
-- Andrew Lelechenko ([@ekmett](https://github.com/Bodigrim))
+- John Ericson ([@Ericson2314](https://github.com/Ericson2314))
+- Andrew Lelechenko ([@bodigrim](https://github.com/Bodigrim))
 - Hécate ([@Kleidukos](https://github.com/Kleidukos))
 - Koz Ross ([@KozRoss](https://github.com/kozross))
 - Evie Ciobanu ([@eviefp](https://github.com/eviefp))
