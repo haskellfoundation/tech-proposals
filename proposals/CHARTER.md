@@ -23,42 +23,44 @@ HFTT Members are tasked with the following responsibilities:
 
 None.
 
-The HFTT may make decisions regarding accepted technical projects. The CTO shall arrange budgetary or resource requests as needed, based on the outcome of decisions made by the HFTT, with the budget committee and Executive Director of the HF.
+The HFTT may make decisions regarding accepted technical projects. The CTO (or other delegated authority) shall arrange budgetary or resource requests as needed, based on the outcome of decisions made by the HFTT, with the budget committee and Executive Director of the HF.
 
 
 ## Term
 
-CTO participation is required and indefinite. General HFTT members serve for 3 years.
+The participation of least one person who is an HF Executive or delegated authority is required. General HFTT members serve for 3 years.
 
 ## Membership
 
-CTO:
+Delegated Authority:
 
 - Emily Pillmore ([@emilypi](https://github.com/emilypi))
 
 Members:
 
-- Richard Eisenberg ([@goldfirere](https://github.com/goldfirere))
-- Michael Snoyman ([@snoyberg](https://github.com/snoyberg))
-- Andrew Lelechenko ([@Bodigrim](https://github.com/Bodigrim))
+- Chris Smith ([@cdsmith](https://github.com/cdsmith))
 - Davean Scies ([@davean](https://github.com/davean))
-- Edward Kmett ([@ekmett](https://github.com/ekmett))
+- Gershom Bazerman ([@Bodigrim](https://github.com/gbaz))
+- John Ericson ([@Ericson2314](https://github.com/Ericson2314))
+- Andrew Lelechenko ([@bodigrim](https://github.com/Bodigrim))
 - Hécate ([@Kleidukos](https://github.com/Kleidukos))
-- Gil Mizrahi (@soupi)
+- Koz Ross ([@KozRoss](https://github.com/kozross))
+- Evie Ciobanu ([@eviefp](https://github.com/eviefp))
+- Joachim Breitner ([@nomeata](https://github.com/nomeata/))
 
 ## Membership Rules
 
 - Reporting must be accurate, consistent, and in good faith
 - Changes to HFTT membership require simple majority approval
-- 1 CTO and 8 general members shall be required for a functioning HFTT
-- No one may serve two terms consecutively, except for the CTO.
+- 1 Delegated authority and 8 general members shall be required for a functioning HFTT
+- No one may serve two terms consecutively, except for the CTO/delegated authority.
 - Elections *must* be held such that there is no period when the HFTT is not at full membership
 
 ## Election Procedure
 
-Elections shall be held in a public manner, using the forum designated by the HF bylaws for formal discussion. The CTO shall approve all language for the election publication. All additional publication on the part of the HFTT for the purpose of socializing the election should link to the formal discussion. Elections should be announced publicly exactly 60 days before member terms expire, and submissions should cease to be accepted 14 days before member terms expire, with all membership decisions finalized and publicized 7 days before member terms expire. During this 7-day lame duck period, no votes may be made on proposals.
+Elections shall be held in a public manner, using the forum designated by the HF bylaws for formal discussion. The CTO or other HF-delegated authority shall approve all language for the election publication. All additional publication on the part of the HFTT for the purpose of socializing the election should link to the formal discussion. Elections should be announced publicly exactly 60 days before member terms expire, and submissions should cease to be accepted 14 days before member terms expire, with all membership decisions finalized and publicized 7 days before member terms expire. During this 7-day lame duck period, no votes may be made on proposals.
 
-If not enough candidates apply for the number of seats expiring, the CTO may fill these seats as needed using their discretion.
+If not enough candidates apply for the number of seats expiring, the CTO or other HF-delegated authority may fill these seats as needed using their discretion.
 
 ## Becoming a member
 
