@@ -91,18 +91,7 @@ Upon acceptance, an HFTP is merged into the repository by an HFTT member, and th
 
 ## The Role of the HFTT
 
-Authors are responsible for building consensus within the community and documenting dissenting opinions before the HFTP is officially discussed by the HFTT. Their goal is to convince the HFTT that their proposal is useful and addresses pertinent problems in the Haskell ecosystem as well as interactions with already existing features. Authors can change over the life-cycle of the HFTP. For a formal charter, please see [CHARTER.md](CHARTER.md).
-
-The current HFTT members are:
-
-- Emily Pillmore ([@emilypi](https://github.com/emilypi))
-- Richard Eisenberg ([@goldfirere](https://github.com/goldfirere))
-- Michael Snoyman ([@snoyberg](https://github.com/snoyberg))
-- Andrew Lelechenko ([@Bodigrim](https://github.com/Bodigrim))
-- Davean Scies ([@davean](https://github.com/davean))
-- Edward Kmett ([@ekmett](https://github.com/ekmett))
-- Hécate ([@Kleidukos](https://github.com/Kleidukos))
-- Gil Mizrahi (@soupi)
+Authors are responsible for building consensus within the community and documenting dissenting opinions before the HFTP is officially discussed by the HFTT. Their goal is to convince the HFTT that their proposal is useful and addresses pertinent problems in the Haskell ecosystem as well as interactions with already existing features. Authors can change over the life-cycle of the HFTP. For a formal charter, as well as a list of current HFTT members, please see [CHARTER.md](CHARTER.md).
 
 ### Voting
 
