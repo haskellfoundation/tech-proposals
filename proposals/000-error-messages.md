@@ -93,14 +93,23 @@ This addresses problem 1.
 
 ### What we need
 
-There is Good Stuff happening in the space described by this proposal. But there are many opportunities for more volunteers. Here, I list a few ideas I have for ways people could contribute, numbered only for reference (not to imply priority).
+While volunteers in the community are providing some of this already, I am proposing for the
+HF to coordinate and promote these efforts, along the following lines:
 
-1. The error-messages repo (https://github.com/haskell/error-messages) is having some good conversations, but there would ideally be a much higher level of participation. In addition, making this repo work to produce good messages will require thoughtful care and someone leading conversations to conclusions. Currently, @ketzacoatl and I have been serving this need, but more hands here would be very helpful.
-2. Relatedly, once a new message is decided upon in the error-messages repo, someone has to implement the change in GHC (or other tool). Sometimes, the work is just around wording, and is suitable for a GHC newcomer.
-3. The error-datatypes work in GHC has already created the new infrastructure for datatype-based error messages. But we still need to have volunteers convert the many messages scattered throughout GHC to use this new structure. This is harder work and requires some familiarity with GHC.
-4. The error-datatypes work has already created lots and lots of error-message constructors. Not all of these are well documented or exemplified. For example, see https://gitlab.haskell.org/ghc/ghc/-/blob/master/compiler/GHC/Parser/Errors/Types.hs, which contains a few constructors with lovely, detailed documentation and examples, and many, many more that lack these niceties. A small army of volunteers could fix this! This work does not require nearly as much familiarity with GHC (really, you'd just need to build it and operate the testsuite).
-5. Structured error text would be a major step forward, but it would need someone dedicated to designing a great system and, likely, implementing it. This is, sadly, a large ask, and it might be appropriate for this to be a funded task -- not sure. Furthermore, it's hard to see how to easily break this down into smaller, separable sub-tasks.
-6. Now that we have lots of error-message constructors, we can start assigning ID codes to them and then creating web pages that describe each one. (This is related to volunteer opportunity 4, documenting the constructors.) Once we have structured error text, we can even imagine having special glossary-item components to messages, where users could click on terminology to get linked to a page explaining the term. (Examples: "rigid", "infinite type", "superclass", etc.) Setting up a space where this content could be hosted and kept up-to-date would be a great job for a volunteer, as would curating the site generally.
+1. The error-messages repo (https://github.com/haskell/error-messages) is having some good conversations, but there would ideally be a much higher level of participation. In addition, making this repo work to produce good messages will require thoughtful care and someone leading conversations to conclusions. Currently, @ketzacoatl and I have been serving this need. According to this proposal, the HF would arrange for someone to give consistent love
+to this repo, moving conversations toward conclusion and inviting broad attention from the community. There is
+not a specific task to complete here, but instead just steady attention.
+2. Relatedly, once a new message is decided upon in the error-messages repo, someone has to implement the change in GHC (or other tool). Sometimes, the work is just around wording, and is suitable for a GHC newcomer. The HF
+would push this work forward, finding a suitable implementor.
+3. The error-datatypes work in GHC has already created the new infrastructure for datatype-based error messages. But we still need to have volunteers convert the many messages scattered throughout GHC to use this new structure. This is harder work and requires some familiarity with GHC. The HF would source and coordinate the volunteers and track
+progress.
+4. The error-datatypes work has already created lots and lots of error-message constructors. Not all of these are well documented or exemplified. For example, see https://gitlab.haskell.org/ghc/ghc/-/blob/master/compiler/GHC/Parser/Errors/Types.hs, which contains a few constructors with lovely, detailed documentation and examples, and many, many more that lack these niceties. A small army of volunteers could fix this! This work does not require nearly as much familiarity with GHC (really, you'd just need to build it and operate the testsuite). The HF would
+source and coordinate the volunteers and track progress.
+5. Structured error text would be a major step forward, but it would need someone dedicated to designing a great system and, likely, implementing it. This is, sadly, a large ask, and it might be appropriate for this to be a funded task -- not sure. Furthermore, it's hard to see how to easily break this down into smaller, separable sub-tasks. The HF would either find a volunteer (or small team of volunteers) to complete this or would consider
+paying to complete this task, given the expertise required to do it well and the difficulty of breaking it
+down.
+6. Now that we have lots of error-message constructors, we can start assigning ID codes to them and then creating web pages that describe each one. (This is related to volunteer opportunity 4, documenting the constructors.) Once we have structured error text, we can even imagine having special glossary-item components to messages, where users could click on terminology to get linked to a page explaining the term. (Examples: "rigid", "infinite type", "superclass", etc.) Setting up a space where this content could be hosted and kept up-to-date would be a great job for a volunteer, as would curating the site generally. The HF could establish this website, perform quality
+control, control the error-code namespace, and source and coordinate volunteers to do the writing.
 
 While there's synergy among these different opportunities, they really are (I believe) mostly independent, and we could do all of them at once.
 
@@ -140,6 +149,9 @@ is to source volunteers, but afterwards, it's all about keeping people moving fo
 
 1. Error messages with error codes, merged into our major tools.
 1. A website where users can look up error codes and learn more about error messages.
+1. A vibrant place where the community participates in crafting excellent error messages. ("Vibrant"
+is a poor metric, but we could be more quantitative if we like: 50+ different users per year might
+be such a metric.)
 1. Support within HLS for navigating an interactive error message -- for example, pointing at a type
    mentioned in an error message and getting its kind.
 1. A blog post on the HF blog about this project and how it has helped improve things. We want to take
