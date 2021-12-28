@@ -71,6 +71,13 @@ Today, GHC produces pretty-printed strings ("ppstrings") for errors. A ppstring 
 
 The next technical part of this effort is adding structure to the error message texts. This is https://github.com/ghc-proposals/ghc-proposals/pull/307. The additional structure would allow us to embed, say, a `Type` into some error text, in a way that remembers it's a `Type`. This would allow for an IDE to support clickable error messages, where the user could click on the type mentioned in an error and, say, show its kinds explicitly. Or jump to its definition. Or show how GHC decided some expression had that type. The sky is the limit here -- but, critically, we need our error texts to remember what parts of the text are types (or expressions, or language extensions, or other goodies).
 
+The conversation on the [GHC proposal](https://github.com/ghc-proposals/ghc-proposals/pull/307) linked above
+is interesting. It points out that an inspectable document type mixes content and presentation, which is usually
+a bad idea. This is accurate, but I still think doing so would be useful: it allows tooling to rely on GHC to
+render some parts of error messages while allowing custom processing for other parts. Or maybe this really is
+a bad idea, overall -- I think the best way to find out is to work with potential clients of this facility to
+work out what the benefits would be.
+
 There is some design work here, but no implementation work that I'm aware of.
 
 This solution addresses problems 4, 5, and 6, by creating the possibility of fine-grained user control over the level of detail in error messages.
@@ -105,7 +112,10 @@ would push this work forward, finding a suitable implementor.
 progress.
 4. The error-datatypes work has already created lots and lots of error-message constructors. Not all of these are well documented or exemplified. For example, see https://gitlab.haskell.org/ghc/ghc/-/blob/master/compiler/GHC/Parser/Errors/Types.hs, which contains a few constructors with lovely, detailed documentation and examples, and many, many more that lack these niceties. A small army of volunteers could fix this! This work does not require nearly as much familiarity with GHC (really, you'd just need to build it and operate the testsuite). The HF would
 source and coordinate the volunteers and track progress.
-5. Structured error text would be a major step forward, but it would need someone dedicated to designing a great system and, likely, implementing it. This is, sadly, a large ask, and it might be appropriate for this to be a funded task -- not sure. Furthermore, it's hard to see how to easily break this down into smaller, separable sub-tasks. The HF would either find a volunteer (or small team of volunteers) to complete this or would consider
+5. Structured error text would be a major step forward, but it would need someone dedicated to designing a great system and, likely, implementing it. The first step for the HF would be to facilitate an exploratory conversation
+among stakeholders to figure out whether this (= structured error text) is a good idea or a bad one. (The idea has been floating within GHC
+for many years, and it powers the interactivity behind Idris's error messages, so it would seem to have *some*
+merit.) Then, if the design exploration agrees that this is worth pursuing, the HF would either find a volunteer (or small team of volunteers) to complete this or would consider
 paying to complete this task, given the expertise required to do it well and the difficulty of breaking it
 down.
 6. Now that we have lots of error-message constructors, we can start assigning ID codes to them and then creating web pages that describe each one. (This is related to volunteer opportunity 4, documenting the constructors.) Once we have structured error text, we can even imagine having special glossary-item components to messages, where users could click on terminology to get linked to a page explaining the term. (Examples: "rigid", "infinite type", "superclass", etc.) Setting up a space where this content could be hosted and kept up-to-date would be a great job for a volunteer, as would curating the site generally. The HF could establish this website, perform quality
