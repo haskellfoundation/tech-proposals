@@ -40,7 +40,7 @@ Members:
 
 - Chris Smith ([@cdsmith](https://github.com/cdsmith))
 - Davean Scies ([@davean](https://github.com/davean))
-- Gershom Bazerman ([@Bodigrim](https://github.com/gbaz))
+- Gershom Bazerman ([@gbaz](https://github.com/gbaz))
 - John Ericson ([@Ericson2314](https://github.com/Ericson2314))
 - Andrew Lelechenko ([@bodigrim](https://github.com/Bodigrim))
 - Hécate ([@Kleidukos](https://github.com/Kleidukos))
