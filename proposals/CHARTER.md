@@ -23,7 +23,7 @@ HFTT Members are tasked with the following responsibilities:
 
 None.
 
-The HFTT may make decisions regarding accepted technical projects. The CTO (or other delegated authority) shall arrange budgetary or resource requests as needed, based on the outcome of decisions made by the HFTT, with the budget committee and Executive Director of the HF.
+The HFTT may make decisions regarding accepted technical projects. The Delegated Authority shall arrange budgetary or resource requests as needed, based on the outcome of decisions made by the HFTT, with the budget committee and Executive Director of the HF.
 
 
 ## Term
@@ -34,7 +34,7 @@ The participation of least one person who is an HF Executive or delegated author
 
 Delegated Authority:
 
-- Emily Pillmore ([@emilypi](https://github.com/emilypi))
+- Andrew Boardman ([@myShoggoth](https://github.com/myShoggoth))
 
 Members:
 
@@ -83,7 +83,7 @@ Ranked voting is used, with the following criteria required for each status:
 
 ### Membership changes
 
-Membership changes require 66% majority for approval. All initial membership seats shall be appointed by the CTO at their discretion.
+Membership changes require 66% majority for approval. All initial membership seats shall be appointed by the Delegated Authority, at their discretion.
 
 
 ## Reporting
