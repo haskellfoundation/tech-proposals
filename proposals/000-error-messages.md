@@ -1,7 +1,9 @@
 ## Introduction
 
 This proposal seeks technical coordination from the Haskell Foundation
-for improving the interop story around Haskell tooling error messages.
+for improving the interop story between GHC and HLS. Once that is
+done well, we might imagine taking our gained knowledge to improve
+other interop around error messages.
 While much of the work may be doable by volunteers, the HF would play
 a role in harnessing and corralling the volunteers, as well as coordinating
 common APIs between tools that are both easy to implement and easy to use.
@@ -13,8 +15,8 @@ among all tooling central to Haskell.
 Currently, there is no discipline around error messages. This lack of
 structure manifests itself in a number of ways:
 
- - Some tools parse the error messages that other tools
-   produce. This is fragile, wasteful, and hard to keep up-to-date. For
+ - HLS must parse the error messages that GHC
+   produces. This is fragile, wasteful, and hard to keep up-to-date. For
    example, the HLS looks to see if a GHC extension name appears in an error
    message, in order to allow the user to automatically enable it via a pragma.
    But since `KindSignatures` is a substring of `StandaloneKindSignatures`, any
@@ -23,7 +25,7 @@ structure manifests itself in a number of ways:
    would actually work. While there is a workaround here, we can see that
    better communication between GHC and HLS would avoid this class of problem.
 
- - Many Haskell error messages refer to advanced concepts. This is unavoidable,
+ - Many GHC error messages refer to advanced concepts. This is unavoidable,
    as Haskell has advanced features. However, telling a user that their rigid
    type variable does not unify with a type because there is a kind mismatch
    is utterly bewildering to Haskell learners. Applying structure to error messages
@@ -43,15 +45,12 @@ not just as (fancy) strings. [This wiki page](https://gitlab.haskell.org/ghc/ghc
 and [this blog post](https://well-typed.com/blog/2021/08/the-new-ghc-diagnostic-infrastructure/) describe
 roughly the state of play. However, this work currently lacks a very important
 ingredient: clients. That is, if GHC is exporting new, fancy datatypes encoding
-its error messages, are these datatypes of use to, say, HLS? We've reached out
+its error messages, are these datatypes of use to HLS? We've reached out
 to potential clients for feedback, but the best response we've gotten is something
-along the lines of "sure, looks good". That's encouraging, but I would want to
+along the lines of "sure, looks good". That's encouraging, but I would want to have
 a little more coordination to make sure that the interface GHC is building is one
 that can be easily consumed. The HF could help here by coordinating this
 communication between projects.
-
-Furthermore, if this is successful in increasing interop between (say) GHC
-and HLS, then we can expand the idea to other tooling, as well.
 
 The website describing error messages and error-generator identification
 are both fresh in this proposal.
@@ -131,7 +130,8 @@ structured format.
 
 1. As capacity is available, the Coordinator would also organize (or encourage a volunteer
 to organize) a website where error messages could be explained. This might be a wiki,
-or a git repository, or something exportable to e.g. readthedocs.io. Figuring out a good
+or a git repository, or something exportable to e.g. readthedocs.io. This might even be
+incorporated into the user manual. Figuring out a good
 format would be the responsibility of the Coordinator, possibly by contacting stakeholders
 with a survey or looking at other language communities.
 
