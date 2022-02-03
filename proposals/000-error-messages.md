@@ -89,10 +89,10 @@ messages, other central tooling adopts a similar approach. This would, for examp
 enable the possibility that HLS can report more informative configuration errors
 to users, or even to repair some of the problems itself.
 
-1. Stretch goal: The HF would establish a global namespace for Haskell-tool error
-message codes, where each tool includes a code in each message. This would both
-broaden the domain of the website index of error messages and also serve to identify
-the producer of error messages.
+1. Stretch goal: The HF would establish a global namespace for Haskell-tool
+error message codes, where each tool is assigned (say) a prefix it should use
+for any error codes. The HF would then encourage tools to use these prefixes
+in error codes when presenting messages.
 
 ## What the Haskell Foundation Would Do
 
@@ -100,8 +100,10 @@ This section is meant to be suggestive of the concrete activity that would suppo
 this proposal. It is possible the HFTT or other HF people would have an alternative
 approach, which is fine, too.
 
-1. Devote the time of an HF employee (hereby called the Coordinator) to stay on top of
-this project. I think it would be reasonable to timebox this work at 5 hours / week from
+1. Devote the time of an HF person, hereby called the Coordinator, to stay on top of
+this project. The Coordinator could be an HF employee, an in-kind donation of labor,
+or perhaps a dedicated and trustworthy volunteer.
+I think it would be reasonable to timebox this work at 5 hours / week from
 the Coordinator.
 
 1. A key task of the Coordinator is to source volunteers to help with this initiative.
@@ -117,6 +119,7 @@ error messages in GHC, by working with current contributors (e.g. Alfredo di Nap
 Derbyshire, Richard Eisenberg) and looking at the GHC source code. The Coordinator
 would then identify an area within GHC that would be an appropriate next step to add
 similar structured error messages and source volunteers to contribute to that area.
+The Coordinator would help to shepherd any GHC MRs that would arise as part of this work.
 
 1. In parallel with the previous item, the Coordinator would work with representatives
 from the HLS team to figure out how HLS might take advantage of the structured error messages
@@ -203,6 +206,20 @@ offer more power to users to manipulate and reason about code.
 old hands) understand error messages better.
 
 ## Risks
+
+- It is currently unclear who would best serve as the Coordinator, which is why this
+proposal leaves this role abstract. Accordingly, a risk is that there is no one suitable.
+However, I still believe this proposal is worth considering (and perhaps approving) in this
+state: it would then serve as a concrete task the HF could have when an appropriate
+Coordinator arises. In the meantime, it could be used as an idea to show potential sponsors
+who might want to know what initiatives the HF is considering or to use as part of a motivation
+for expanding the HF employment base.
+
+- Much of the work in this proposal is designed to be done by volunteers, working in parallel.
+It is possible we will not find the right volunteers for this work. It is then possible
+for the Coordinator to do more work themselves. In any case, trying to source volunteers for
+this work could be an important learning experience in the lifetime of the HF, and it informs
+the design of future initiatives.
 
 - One risk is that the API being built around error messages is not useful to consumers.
 This risk is intended to be mitigated by an early consultation with HLS.
