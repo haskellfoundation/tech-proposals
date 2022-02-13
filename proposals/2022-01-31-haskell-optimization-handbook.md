@@ -319,6 +319,7 @@ progresses. An example checklist for an external tooling section could be:
 - [ ] if you read the first line of each paragraph, they are form a coherent story
   , and that story arrives at the point of the section, within reason.
 - [ ] The section has a closing summary that repeats: when to use the tool, what information can be retreived with the tool, which performance issues this tool helps with, and how to run/use the tool.
+- [ ] After the summary there is a summary of command line invocations and their corresponding meaning
 - [ ] The section has a reference subsection
 - [ ] The book builds with the PR (this should be CI)
 ```
