@@ -288,7 +288,8 @@ Part 2.2: Library agnostic code changes
 
 ### Phase 0: Initialization
 This is an initialization phase, its purpose is to get the project up and
-running and ready for external contributions. This phase is completed when:
+running and ready for external contributions. Note that the last item of each
+phases' checklist is a community check-in. Phase0 is completed when:
 
  - [ ] : Working repository for the book is setup.
  - [ ] : Continuous integration for the book is setup and the book builds for
@@ -303,8 +304,10 @@ running and ready for external contributions. This phase is completed when:
  - [ ] : Three section of Part 2 (Optimizations) are complete.
  - [ ] : One case study is complete.
  - [ ] : List of contributors is initialized.
+ - [ ] : Community check in has been done on Discourse.Haskell after each other
+       bullet is complete
 
-This deliverables for this phase constitute examples for other contributors, so
+The deliverables for this phase constitute examples for other contributors, so
 that when and if an external contributor tries to contribute they have something
 to work off of rather than a blank page. In particular they have checklists to
 work off of and example sections to refer to. This lowers the barrier of entry
@@ -356,13 +359,16 @@ Linux). This phase is complete when:
        either the Core reading guide or the benchmarking section.
  - [ ] : Two case studies are complete and show real world poor performance
        patterns in Core, and associated improvements in benchmarking data.
+ - [ ] : Community check in has been done on Discourse.Haskell after each other
+       bullet is complete
 
 ### Phase 2: Coasting
 By phase 2 we should have good working conventions setup and numerous example
 chapters for new contributors. This phase is complete when for each item in the
 table of contents a corresponding chapter has been merged into main. Thus
-constituting the first complete draft of the book.
-
+constituting the first feature complete draft of the book. If necessary, at this
+phase the project can regroup and define subsequent phases for additional
+material or extra parts.
 
 ## Timeline
 
