@@ -216,7 +216,11 @@ triangle implies memory leak): -hT -hC -hy etc.
 1.2.1 Valgrind+Massif
 
 1.2 Measurement: GHC based Methods
-1.2.1 command line flags, building with -prof
+1.2.1 command line flags, building with -prof, associated libraries for data exploration:
+ - ghc-prof
+ - profiteur
+ - viewprof
+ - profiterole
 1.2.2 -dtimings flag and parsing its output
 1.2.3 ticky ticky profiling
 1.2.4 Niel Mitchell's reduced stack method
