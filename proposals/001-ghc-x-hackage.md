@@ -177,7 +177,7 @@ Currently, the GHC.X.hackage maintainer role is effectively filled by the GHC de
 
 ### 6.1 GHC Maintainer Preview
 
-The[GHC Maintainer Preview proposal](https://github.com/ghc-proposals/ghc-proposals/pull/417) suggested cutting an early pre-release of new GHC versions in order to help maintainers update their packages before the “real” release. A frequent comment in the proposal discussion was that the Maintainer Previews would _not_ actually be directly useful to most maintainers, because they would still be stuck waiting for their (many levels of) dependencies to update before they could do anything. It’s no good having a maintainer pre-release if maintainers can’t _use_ it to fix their packages!
+The [GHC Maintainer Preview proposal](https://github.com/ghc-proposals/ghc-proposals/pull/417) suggested cutting an early pre-release of new GHC versions in order to help maintainers update their packages before the “real” release. A frequent comment in the proposal discussion was that the Maintainer Previews would _not_ actually be directly useful to most maintainers, because they would still be stuck waiting for their (many levels of) dependencies to update before they could do anything. It’s no good having a maintainer pre-release if maintainers can’t _use_ it to fix their packages!
 
 GHC.X.hackage alleviates this problem. Package maintainers could fix their packages and their dependencies by submitting patches to head.hackage, which would become GHC.X.hackage in due course.
 
