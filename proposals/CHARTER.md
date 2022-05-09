@@ -34,7 +34,7 @@ The participation of least one person who is an HF Executive or delegated author
 
 Delegated Authority:
 
-- Andrew Boardman ([@myShoggoth](https://github.com/myShoggoth))
+- David Thrane Christiansen ([@david-christiansen](https://github.com/david-christiansen))
 
 Members:
 
