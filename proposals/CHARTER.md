@@ -60,9 +60,13 @@ Members:
 
 ### Election Procedure
 
-The current membership of the TWG vote on new members. Elections shall be held in a public manner, using the forum designated by the HF bylaws for formal discussion. All language for the election publication requires prior approval by the ED or other delegated authority. All additional publication on the part of the TWG for the purpose of socializing the election should link to the formal discussion. Elections should be announced publicly between 60 and 70 days before member terms expire, and submissions should cease to be accepted 14 days before member terms expire, with all membership decisions finalized and publicized 7 days before member terms expire. During this 7-day lame duck period, no votes may be made on proposals.
 
-If not enough candidates apply for the number of seats expiring, the CTO or other HF-delegated authority may fill these seats as needed using their discretion.
+
+The current membership of the TWG vote on new members. Vacancies on the TWG are advertised using the forum designated by the HF bylaws for formal discussion, with a clear deadline and plenty of notice. Interested candidates will be encouraged to self-nominate. All language for the election publication requires prior approval by the ED or other delegated authority. All additional publication on the part of the TWG for the purpose of socializing the election should link to the formal discussion. Elections should be announced publicly between 60 and 70 days before member terms expire, and submissions should cease to be accepted 14 days before member terms expire, with all membership decisions finalized and publicized 7 days before member terms expire. During this 7-day lame duck period, no votes may be made on proposals.
+
+If not enough candidates apply for the number of seats that are expiring or have been vacated, the ED or other HF-delegated authority may fill these seats as needed using their discretion.
+
+Both discussion about potential members and final vote tallies must be kept confidential by members of the TWG.
 
 ### Becoming a member
 
