@@ -118,19 +118,4 @@ Experts in some fields may be invited to specific meetings as guests when discus
 
 If you would like to join the TWG or would like to know how members are elected, please refer to [CHARTER.md](CHARTER.md).
 
-## Proposal states
-
-The state of a proposal changes over time depending on the phase of the process and the decisions taken by the TWG. A given proposal can be in one of several states:
-
-0. **Discussion:** The proposal is being discussed informally on discourse. In this phase the proposal only exists informally, no pull request exists yet.
-1. **Submitted:** A pull request has been opened against the proposals repo.
-2. **Validated:** The submitted proposal has been validated for conformity to the [proposal template](TEMPLATE.md), and made all necessary changes to the proposal name and its location in the repo.
-3. **Under review:** The proposal will be under review until the next available Tech Track meeting takes place.
-4. **Under revision:** Authors are addressing the issues pinpointed throughout the discussion and feedback process from the community and/or the TWG.
-5. **Dormant:** When a HFTP has been under revision for more than two iterations (that is, no progress has been made since the last review), it’s considered dormant, in which case any related activity will be paralyzed and the TWG will not allocate more resources to it.
-6. **Postponed:** The HFTP has been postponed under some concrete conditions. When these are met, the HFTP can be resubmitted.
-7. **Rejected:** The HFTP has been rejected with a clear and full explanation.
-8. **Merged:** The HFTP has been accepted and has been merged into the repo.
-
-When a proposal has movede Haskell Foundation. Members are tasked with from one state to another, it will be appropriately labeled using the Github label system. The labels will be as they are above.
 
