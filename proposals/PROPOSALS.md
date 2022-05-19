@@ -1,6 +1,13 @@
-An HFTP (*Haskell Foundation Technical Proposal*) is a proposal for a technical initiative that will be executed under the guidance of the Haskell Foundation (HF). Each HFTP goes through an iterative process in which it is discussed by the HF Technical Working Group (TWG), the broader community, and any and all interested stakeholders. If the initiative is accepted, then it will be added to the HF's technical agenda and may then be executed by the Foundation, resources permitting. Upon acceptance, an HFTP and its associated discussion are merged into this repository, and both serve as a historical document that details a specification and rationale for work detailed within the process.
+An HFTP (*Haskell Foundation Technical Proposal*) is a proposal for a technical initiative that will be executed under the guidance of the Haskell Foundation (HF). Each HFTP goes through an iterative process in which it is discussed by the HF Technical Working Group (TWG), the broader community, and any and all interested stakeholders. As part of this process, resources are identified that could ease or make possible the implementation of the proposal.
 
 The aim of the HFTP process is to apply the openness and collaboration that have shaped Haskell's documentation and implementation to a process of evolving the HF and the broader Haskell ecosystem. This document captures our guidelines, commitments and expectations regarding this process.
+
+## Acceptance
+
+Upon acceptance, an HFTP and its associated discussion are merged into this repository, and both serve as a historical document that details a specification and rationale for work detailed within the process. Acceptance of a proposal does not constitute a firm commitment by the Haskell Foundation to execute on the proposal, or to provide the necessary or helpful resources that were identified in the proposal. Fundamentally, acceptance indicates that the TWG believes that the Haskell ecosystem would be better off if the proposal were implemented, and that it is sufficiently well-considered.
+
+That said, the Haskell Foundation is keenly interested in making the Haskell ecosystem better off. Within the constraints of the Foundation's resources and strategic plans, accepted proposals will be considered as good candidates for tasks to be executed on.
+
 
 ## Submission process summary
 
