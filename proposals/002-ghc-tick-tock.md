@@ -85,7 +85,7 @@ what GHC has been doing for quite some time:
  * GHC 8.8 was comparatively shorter, having only three minor releases over seven months
  * GHC 8.10 was quite long-lived and even had significant additions well after 8.10.1 (e.g. with the addition of AArch64/Darwin support)
  * GHC 9.0 was something of a runt release as focus remained on stabilizing GHC 8.10's AArch64/Darwin support
- * GHC 9.2 is still young but the GHC developers are currently planning on supporting it into 2022.
+ * GHC 9.2 is still young but the GHC developers are currently planning on supporting it into 2023.
 
 ```
 
