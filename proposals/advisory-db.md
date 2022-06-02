@@ -100,10 +100,10 @@ The TOML frontmatter must contain a table called `advisory` and a table called `
 The `affected` table, if present, contains the following fields, all of which are optional:
  * `arch`, an array of strings, each of which is the value of `System.Info.arch` on the affected systems. The advisory only applies to the specified architectures. If this key is absent, then the advisory applies to all architectures.
  * `os`, an array of strings, each of which is the value of `System.Info.os` on the affected systems. The advisory only applies to the specified operating systems. If this key is absent, then the advisory applies to all operating systems.
- * `declarations`, a table that maps fully-qualified names from the package to Cabal v2.4 version ranges. These ranges must all be contained in the affected versions (specified later), and they specify that the given name is the source of the advisory in that sub-range. This allows one advisory to mention a function or datatype that is renamed at some point during development.
-The `versions` table contains a single mandatory key, `affected`, whose value is a string that contains a Cabal v2.4 version range.
+ * `declarations`, a table that maps fully-qualified names from the package to Cabal v2.0 version ranges. These ranges must all be contained in the affected versions (specified later), and they specify that the given name is the source of the advisory in that sub-range. This allows one advisory to mention a function or datatype that is renamed at some point during development.
+The `versions` table contains a single mandatory key, `affected`, whose value is a string that contains a Cabal v2.0 version range.
 
-Cabal v2.4 version ranges are specified using the following grammar: TODO
+Cabal v2.0 version ranges are specified using the following grammar: TODO
 
 Tools that detect vulnerabilities will need to check whether advisory version ranges overlap with dependency version constraints. The algorithm for this is TODO.
 
