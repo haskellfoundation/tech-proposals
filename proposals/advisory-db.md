@@ -103,17 +103,52 @@ The `affected` table, if present, contains the following fields, all of which ar
  * `declarations`, a table that maps fully-qualified names from the package to Cabal v2.0 version ranges. These ranges must all be contained in the affected versions (specified later), and they specify that the given name is the source of the advisory in that sub-range. This allows one advisory to mention a function or datatype that is renamed at some point during development.
 The `versions` table contains a single mandatory key, `affected`, whose value is a string that contains a Cabal v2.0 version range.
 
-Cabal v2.0 version ranges are specified using the following grammar: TODO
+Cabal v2.0 version ranges are specified using the following grammar:
 
-Tools that detect vulnerabilities will need to check whether advisory version ranges overlap with dependency version constraints. The algorithm for this is TODO.
+```
+VersionNum ::= "0" | [1-9][0-9]{0-8}   -- Up to nine digits, no leading 0
+
+Version ::= VersionNum | VersionNum "." Version -- Any number of VersionNum, dot-separated
+
+VersionRange ::=
+  "==" Version |
+  ">" Version |
+  "<" Version |
+  "<=" Version |
+  ">=" Version |
+  "^>=" Version |
+  VersionRange "&&" VersionRange |
+  VersionRange "||" VersionRange |
+  "(" VersionRange ")"
+```
+
+In the above, `&&` binds more tightly than `||`, so `VersionRange1 && VersionRange2 || VersionRange3` is equivalent to `(VersionRange1 && VersionRange2) || VersionRange3`.
+
+Ordering (and thus equality) of version numbers is defined in the Haskell [Package Versioning Policy](https://pvp.haskell.org). Ordering is defined lexicographically with respect to the numeric values of version number components. This means, for instance, that `1.5.3.0 > 1.5.3`.
+
+The `^>=` operator defines both lower and upper bounds for a dependency according to the following desugaring:
+ * `^>= x ↝ >= x && < x.1`
+ * `^>= x.y ↝ >= x.y && < x.(y+1)`
+ * `^>= x.y.z ↝ >= x.y.z && < x.(y+1)`
+ * `^>= x.y.z.u ↝ >= x.y.z.u && < x.(y+1)`
+ * and so forth
+
+
 
 ### Recommendations Regarding Build/Freeze Files
 
-TODO: Which formats do we recommend they look in to start with? `.cabal`, `cabal.freeze`? Stack users' constraints mostly come from their snapshot - how can we make this work for people with no constraints in `.cabal` and a `stack.yaml` file?
+TODO: How do we actually let them look at cabal files? Common stanzas and conditionals make this fairly non-trivial.
+
+TODO - Recommendation will be to do the following:
+ * First process Cabal files
+ * Then do freeze files, which should allow processing Stackage resolver files as well
+ * Then read stack.yaml enough to get the resolver
 
 ### Governance and Administration
 
 The Haskell Foundation will be responsible for appointing the administrators of the database. Administrators are expected to be trusted community members who are willing to provide timely feedback in the repository. The Haskell Foundation should check from time to time that feedback is timely, and can serve as a final arbiter of disputes.
+
+To begin with, the HF executive team will assemble a group of five volunteers, who will be solicited from bodies such as the Core Libraries Committee and the Hackage trustees, asking for a one-year commitment. The HF will evaluate the size and composition of the group on an ongoing basis, and may make adjustments to membership. We will recruit a set of volunteers with knowledge of cryptography, low-level exploits such as buffer overflows, the GHC RTS, network security, and security organization best practices, as well as good communication skills, and will adjust the size of the volunteer group until these areas are covered.
 
 ## Resources
 
