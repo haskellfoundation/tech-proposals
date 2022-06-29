@@ -113,7 +113,7 @@ While the committee should take community discussion into account, they are expe
 Fundamentally, there are three potential recommendations: rejection, revision, and acceptance.
 *Rejection* means that the committee does not believe that the proposal would, in the balance, bring value to the community, and that it should not be acted upon.
 Furthermore, rejection implies that the committee sees no route to making the proposal acceptable that is short of rewriting it from scratch.
-Rejection may be because the problem statement itself is considered to be not one that should be solved, or that the harms of the proposed solution would be greater than the benefits.
+Among reasons for rejection may be that the problem itself is not considered significant, that the proposal has costs, harms, or overheads that outweigh the benefits, or that the proposal is simply unworkable or based on incorrect understanding and assumptions.
 *Acceptance* means that the committee believes that the proposal should be acted upon as-written.
 *Revision* means that the committee believes that the proposal as written should not be accepted, but that with some changes it could be accepted.
 This may be technical details, project governance issues, or clarity.
