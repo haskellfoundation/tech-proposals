@@ -46,8 +46,7 @@ The current members of the TWG are:
 ## Decisions
 
 The committee will make all decisions using a simple majority without secret ballots.
-Committee vote tallies are to be kept confidential, _especially_ those regarding membership.
-In particular, membership vote tallies shall be kept secret from everyone who did not vote.
+Discussions and vote tallies regarding potential committee members are to be kept strictly confidential, while other discussions and votes should be transparent to the public.
 Decisions should be made with the participation of 2/3 of the current members of the committee, rounded up.
 The committee may decide to hold regular meetings, or to collaborate asynchronously, or some mix of the two.
 For instance, a valid decision can be made by having a non-quorum meeting discuss a matter, summarize the results for the other members, and then vote by email based on the summary.
