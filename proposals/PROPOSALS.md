@@ -56,7 +56,7 @@ Disputes will be resolved by the ED.
 
 The TWG, as an advisory committee to the Haskell Foundation and to the community at large, exists primarily to aid in making good decisions. 
 
-Proposals should explicitly state which **category** they are in (RFC, Community Project, HF Project), or describe why they do not fit into them but should be considered by the committee anyway.
+Proposals should explicitly state which **category** they are in (RFC, Community Project, HF Project), or describe why they do not fit into an existing category but should be considered by the committee anyway.
 Additionally, all proposals should address the following concerns:
  * **Problem statement:** What problem is the proposed work intended to solve? What are the requirements against which a solution should be evaluated? How will solving this problem benefit the community?
  * **Prior art:** What other similar work has been done in the community, and how is the proposal related to it?
