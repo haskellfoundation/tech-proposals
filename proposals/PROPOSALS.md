@@ -82,14 +82,12 @@ It is sufficient to post a link to an existing draft of the proposal to solicit 
 
 ### Proposal
 Having gathered initial feedback, the next step is to write and submit a proposal.
-This is done as follows:
- 1. Fork the Haskell Foundation tech-proposals repository, [https://github.com/haskellfoundation/tech-proposals](https://github.com/haskellfoundation/tech-proposals).
- 2. Create a new HFTP file in the `proposals/` directory. The [templates](templates/) provide a starting point for addressing the important concerns.
+Proposals should be submitted as pull requests to the Haskell Foundation `tech-proposals` repository, [https://github.com/haskellfoundation/tech-proposals](https://github.com/haskellfoundation/tech-proposals). Please notify the TWG on Github using the team label `@haskellfoundation/tech-proposals`.
+The pull request should add a new HFTP file in the `proposals/` directory.
+
+When writing a proposal, the [templates](templates/) provide a starting point for addressing the important concerns.
    * The proposal should be written in a single Markdown file.
    * The file should be named `0000-NAME.md`. Supporting materials, such as diagrams, example code, or spreadsheets, should be placed in a directory named `0000-NAME`, and all files should be in standard formats that are readable and editable using open-source software.
- 3. Commit your changes to your forked repository
- 4. Create a new [pull request](https://github.com/haskellfoundation/tech-proposals/pull/new).
- 5. Notify the TWG on Github using the team label `@haskellfoundation/tech-proposals`.
  
 The committee will publicize the proposal in a variety of Haskell fora, as they deem appropriate for the contents of the proposal.
 At the very least, all proposals will be announced on Discourse.
