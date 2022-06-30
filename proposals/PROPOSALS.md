@@ -56,16 +56,18 @@ Disputes will be resolved by the ED.
 
 The TWG, as an advisory committee to the Haskell Foundation and to the community at large, exists primarily to aid in making good decisions. 
 
-All proposals should address the following concerns:
+Proposals should explicitly state which **category** they are in (RFC, Community Project, HF Project), or describe why they do not fit into them but should be considered by the committee anyway.
+Additionally, all proposals should address the following concerns:
  * **Problem statement:** What problem is the proposed work intended to solve? What are the requirements against which a solution should be evaluated? How will solving this problem benefit the community?
  * **Prior art:** What other similar work has been done in the community, and how is the proposal related to it?
  * **Related efforts:** What other related activities are planned or ongoing? How is the proposal connected to them?
  * **Technical and organizational work**: What work is actually being proposed? What technology should be developed, and how will it be managed and cared for going forward?
+ * **People:** Who will do the work?
  * **Success:** What does it mean for the project to have succeeded?
  * **Stakeholders:** Who will be affected, and how?
  * **Time:** How long will the proposal take to implement?
 
-Additionally, projects seeking HF support or execution should additionally address:
+Projects seeking HF support or execution (i.e. Community Projects and HF Projects) should additionally address:
  * **Budget:** How much time and money will the project cost initially? What about ongoing maintenance?
  * **Additional partners:** Who else will participate in the project?
 
@@ -75,8 +77,8 @@ One way to address these concerns is to begin with one of the [proposal template
 ### Pre-Proposal
 Prior to submitting a detailed proposal, please post to the Haskell Discourse instance with a summary of the proposal's contents and a subject line that begins with "Pre-HFTP:".
 This helps address the prior art and related efforts concerns, and can save time needed to rewrite a proposal in light of previously-unknown opportunities for collaboration.
-While submitters are strongly encouraged to discuss their proposal on Discourse ahead of time, proposals will not be summarily rejected for not having done so.
-It is sufficient to post a link to the final discussion thread and invite comments and discussion.
+While submitters are strongly encouraged to discuss their proposal on Discourse before writing them, proposals will not be summarily rejected for not having done so.
+It is sufficient to post a link to an existing draft of the proposal to solicit prior art and related work before revising and formally submitting the proposal.
 
 ### Proposal
 Having gathered initial feedback, the next step is to write and submit a proposal.
@@ -110,13 +112,15 @@ From time to time, the committee will summarize the current state of knowledge i
 
 The final step of a proposal is for the committee to give a recommendation.
 While the committee should take community discussion into account, they are expected to make recommendations based on their own knowledge, rather than simply reflecting the voices of the participants in the discussion.
-Fundamentally, there are three potential recommendations: rejection, revision, and acceptance.
-*Rejection* means that the committee does not believe that the proposal would, in the balance, bring value to the community, and that it should not be acted upon.
-Furthermore, rejection implies that the committee sees no route to making the proposal acceptable that is short of rewriting it from scratch.
-Among reasons for rejection may be that the problem itself is not considered significant, that the proposal has costs, harms, or overheads that outweigh the benefits, or that the proposal is simply unworkable or based on incorrect understanding and assumptions.
-*Acceptance* means that the committee believes that the proposal should be acted upon as-written.
-*Revision* means that the committee believes that the proposal as written should not be accepted, but that with some changes it could be accepted.
-This may be technical details, project governance issues, or clarity.
+Fundamentally, there are three potential recommendations: rejection, revision, and acceptance:
+
+ * *Rejection* means that the committee does not believe that the proposal would, in the balance, bring value to the community, and that it should not be acted upon.
+   Furthermore, rejection implies that the committee sees no route to making the proposal acceptable that is short of rewriting it from scratch.
+   Among reasons for rejection may be that the problem itself is not considered significant, that the proposal has costs, harms, or overheads that outweigh the benefits, or that the proposal is simply unworkable or based on incorrect understanding and assumptions.
+ * *Acceptance* means that the committee believes that the proposal should be acted upon as-written.
+ * *Revision* means that the committee believes that the proposal as written should not be accepted, but that with some changes it could be accepted.
+   This may be technical details, project governance issues, or clarity.
+
 At most five revisions will be recommended.
 After five revisions, the committee may only recommend acceptance or rejection.
 
