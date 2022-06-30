@@ -33,7 +33,7 @@ In other words, volunteers should be recruited who have knowledge of and experie
  * Domain knowledge such as cryptography, security, performance, and databases
 The ED will report on the current state of the committee's coverage of these areas as membership is updated.
 Applications to join the committee will be decided on by the committee's members.
-Inactive members may be removed by the ED after making a good-faith effort to contact them.
+Inactive members may be removed by the ED after making a good-faith effort to contact and engage them.
 
 The current members of the TWG are:
  * Davean Scies (@davean)
