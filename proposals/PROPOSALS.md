@@ -21,7 +21,7 @@ If the TWG does not reach a consensus, then the working group's decision will be
 
 Projects undertaken by the Haskell Foundation need not go through this process, and approval of a project by this working group does not guarantee that the Haskell Foundation will actually commit resources. Committee members are tasked with recommending whether a project is likely to be of benefit to the community, not for prioritizing the Foundation's limited resources. However, we expect that, given sufficient resources, recommended projects will be supported by the executive team.
 
-The TWG is a successor to Haskell Foundation Tech Track (HFTT), and will initially consist of its members.
+The TWG is a successor to [Haskell Foundation Tech Track (HFTT)](https://github.com/haskellfoundation/tech-proposals/blob/99fa1bcfef1efff47ea8ca5489c0fc73c75707e4/proposals/CHARTER.md), and will initially consist of its members.
 
 ## Membership
 
