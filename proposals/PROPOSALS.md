@@ -79,6 +79,7 @@ All that's required is a good faith attempt to address these concerns in the fir
 
 ### Pre-Proposal
 Prior to submitting a detailed proposal, please post to the [Haskell Discourse instance](https://discourse.haskell.org/) with a summary of the proposal's contents and a subject line that begins with "Pre-HFTP:".
+Please use the "Haskell Foundation" category.
 This helps address the prior art and related efforts concerns, and can save time needed to rewrite a proposal in light of previously-unknown opportunities for collaboration.
 While submitters are strongly encouraged to discuss their proposal on Discourse before writing them, proposals will not be summarily rejected for not having done so.
 It is sufficient to post a link to an existing draft of the proposal to solicit prior art and related work before revising and formally submitting the proposal.
