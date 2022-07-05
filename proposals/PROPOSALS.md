@@ -72,6 +72,9 @@ Projects seeking HF support or execution (i.e. Community Projects and HF Project
  * **Additional partners:** Who else will participate in the project?
 
 One way to address these concerns is to begin with one of the [proposal templates](templates/).
+Perfection is not necessary.
+For instance, a missing piece of prior art, a technical plan that is missing an important step, or an overlooked group of stakeholders will not doom a proposal, and the committee will suggest improvements and additions as needed.
+All that's required is a good faith attempt to address these concerns in the first draft.
 
 
 ### Pre-Proposal
