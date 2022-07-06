@@ -45,9 +45,9 @@ The current members of the TWG are:
 
 ## Decisions
 
-The committee will make all decisions using a simple majority without secret ballots.
+The committee will make all decisions based on a 51% majority of the members, either made at a meeting with a 2/3 quorum present, or followed up by an asynchronous decision with a five day deadline.
+Committee votes are taken without secret ballots.
 Discussions and vote tallies regarding potential committee members are to be kept strictly confidential, while other discussions and votes should be transparent to the public.
-Decisions are made by a simple majority of the members of the committee.
 The committee may decide to hold regular meetings, or to collaborate asynchronously, or some mix of the two.
 For instance, a valid decision can be made by having a non-quorum meeting discuss a matter, summarize the results for the other members, and then vote by email based on the summary.
 Disputes will be resolved by the ED.
