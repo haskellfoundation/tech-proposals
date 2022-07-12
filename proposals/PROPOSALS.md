@@ -17,8 +17,7 @@ The TWG will address the following concerns:
  * Ensuring that relevant stakeholders have been contacted and that their input and needs have been considered
  * Guiding discussions in a kind and productive direction
  * Providing a final recommendation as to whether a project should continue
- * 
-If the TWG does not reach a consensus, then the working group's decision will be made by majority vote.
+ * If the TWG does not reach a consensus, then the working group's decision will be made by majority vote.
 
 Projects undertaken by the Haskell Foundation need not go through this process, and approval of a project by this working group does not guarantee that the Haskell Foundation will actually commit resources. Committee members are tasked with recommending whether a project is likely to be of benefit to the community, not for prioritizing the Foundation's limited resources. However, we expect that, given sufficient resources, recommended projects will be supported by the executive team.
 
