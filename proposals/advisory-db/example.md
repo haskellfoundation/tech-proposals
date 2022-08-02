@@ -6,19 +6,17 @@
 id = "HSEC-0000-0000"
 
 # Name of the affected package on Hackage (mandatory)
-package = "mycrate"
+package = "acme-broken"
 
 # Disclosure date of the advisory as an RFC 3339 date (mandatory)
 date = 2021-01-31
 
 # URL to a long-form description of this issue, e.g. a GitHub issue/PR,
 # a change log entry, or a blogpost announcing the release (optional)
-url = "https://github.com/mystuff/package/issues/123"
+url = "https://github.com/username/package/issues/123"
 
-# Optional: Categories this advisory falls under. Valid categories are:
-# "code-execution", "crypto-failure", "denial-of-service", "file-disclosure"
-# "format-injection", "memory-corruption", "memory-exposure", "privilege-escalation"
-categories = ["crypto-failure"]
+# Optional: Classification of the advisory with respect to the Common Weakness Enumeration.
+cwe = [820]
 
 # Optional: a Common Vulnerability Scoring System score. More information
 # can be found on the CVSS website, https://www.first.org/cvss/.
@@ -56,7 +54,7 @@ keywords = ["ssl", "mitm"]
 # name (e.g. if an affected function or datatype was renamed between versions). 
 # The path syntax is the module import path, without any type signatures or
 # additional information, followed by the affected versions.
-#declarations = { "Acme.Broken.function" = ">= 1.1.0 && < 1.2.0", "Acme.Broken.renamedFunction = ">= 1.2.0 && < 1.2.0.5"}
+#declarations = { "Acme.Broken.function" = ">= 1.1.0 && < 1.2.0", "Acme.Broken.renamedFunction" = ">= 1.2.0 && < 1.2.0.5"}
 
 # Versions affected by the vulnerability
 [versions]

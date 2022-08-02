@@ -29,7 +29,7 @@ executable advisory-proposal
 
     -- LANGUAGE extensions used by modules in this package.
     -- other-extensions:
-    build-depends:    base ^>=4.14.3.0,
+    build-depends:    base >=4.14 && < 4.17,
                       commonmark ^>= 0.2.2,
                       text ^>= 1.2,
                       time ^>= 1.9,

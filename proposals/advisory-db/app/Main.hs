@@ -68,7 +68,7 @@ main = do
 
       exitSuccess
 
-data Category = CodeExecution | CryptoFailure | PrivilegeEscalation | DOS | FileDisclosure | FormatInjection | MemoryCorruption | MemoryExposure
+newtype CWE = CWE { unCWE :: Integer }
   deriving (Show)
 
 data Architecture = AArch64 | Alpha | Arm | HPPA | HPPA1_1 | I386 | IA64 | M68K | MIPS | MIPSEB | MIPSEL | NIOS2 | PowerPC | PowerPC64 | PowerPC64LE | RISCV32 | RISCV64 | RS6000 | S390 | S390X | SH4 | SPARC | SPARC64 | VAX | X86_64
@@ -89,7 +89,7 @@ data Advisory = Advisory
     advisoryPackage :: Text,
     advisoryDate :: Date,
     advisoryUrl :: Text,
-    advisoryCategories :: [Category],
+    advisoryCWEs :: [CWE],
     advisoryKeywords :: [Keyword],
     advisoryAliases :: [Text],
     advisoryCVSS :: Maybe Text,
@@ -112,7 +112,7 @@ renderAdvisory adv =
             row "Package" advisoryPackage,
             row "Date" (date . advisoryDate),
             row "URL" advisoryUrl,
-            row "Categories" (T.intercalate ", " . map (T.pack . show) . advisoryCategories),
+            row "CWEs" (T.intercalate ", " . map (T.pack . show . unCWE) . advisoryCWEs),
             row "Keywords" (T.intercalate ", " . map (T.pack . show) . advisoryKeywords),
             row "Aliases" (T.intercalate ", " . advisoryAliases),
             row "CVSS" (fromMaybe "" . advisoryCVSS),
@@ -139,7 +139,7 @@ parseAdvisory table = runTableParser $ do
   package <- mandatory advisory "package" isString
   date <- mandatory advisory "date" isDate <&> uncurry3 Date . toGregorian
   url <- mandatory advisory "url" isString
-  cats <- fromMaybe [] <$> optional advisory "categories" (isArrayOf (isString >=> category))
+  cats <- fromMaybe [] <$> optional advisory "cwe" (isArrayOf (fmap CWE . isInt))
   kwds <- fromMaybe [] <$> optional advisory "keywords" (isArrayOf (fmap Keyword . isString))
   aliases <- fromMaybe [] <$> optional advisory "aliases" (isArrayOf isString)
   cvss <- optional advisory "cvss" isString
@@ -162,7 +162,7 @@ parseAdvisory table = runTableParser $ do
         advisoryPackage = package,
         advisoryDate = date,
         advisoryUrl = url,
-        advisoryCategories = cats,
+        advisoryCWEs = cats,
         advisoryKeywords = kwds,
         advisoryAliases = aliases,
         advisoryCVSS = cvss,
@@ -175,17 +175,6 @@ parseAdvisory table = runTableParser $ do
 
 uncurry3 :: (a -> b -> c -> d) -> (a, b, c) -> d
 uncurry3 f (x, y, z) = f x y z
-
-category :: Text -> TableParser Category
-category "code-execution" = pure CodeExecution
-category "crypto-failure" = pure CryptoFailure
-category "denial-of-service" = pure DOS
-category "file-disclosure" = pure FileDisclosure
-category "format-injection" = pure FormatInjection
-category "memory-corruption" = pure MemoryCorruption
-category "memory-exposure" = pure MemoryExposure
-category "privilege-escalation" = pure PrivilegeEscalation
-category other = throwError $ InvalidCategory other
 
 operatingSystem :: Text -> TableParser OS
 operatingSystem "darwin" = pure MacOS
@@ -236,7 +225,6 @@ data TableParseErr
   = UnexpectedKeys (NonEmpty Text)
   | MissingKey Text
   | InvalidFormat Text Text
-  | InvalidCategory Text
   | InvalidOS Text
   | InvalidArchitecture Text
   | UnderlyingParserError Text
@@ -262,6 +250,10 @@ mandatory tbl k act = onKey tbl k (throwError $ MissingKey k) act
 
 onKey :: TOML.Table -> Text -> TableParser a -> (TOML.Value -> TableParser a) -> TableParser a
 onKey tbl k absent present = maybe absent present $ Map.lookup k tbl
+
+isInt :: TOML.Value -> TableParser Integer
+isInt (TOML.Integer i) = pure i
+isInt other = throwError $ InvalidFormat "Integer" (describeValue other)
 
 isString :: TOML.Value -> TableParser Text
 isString (TOML.String txt) = pure txt

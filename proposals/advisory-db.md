@@ -92,8 +92,8 @@ The TOML frontmatter must contain a table called `advisory` and a table called `
  * `package`, a string, the name of the affected Hackage package
  * `date`, a TOML local date, which is the disclosure date.
  * `url`, an optional string, which is a link to a resource such as release notes or a blog post that describes the issue in detail
- * `categories`, an optional array of strings, each of which one of `...` TODO
- * `cvss`, an optional string, which is a CVSS 3.1 vector
+ * `cwe`, an optional array of integers, each of which is a [CWE identifier](https://cwe.mitre.org/index.html)
+ * `cvss`, an optional string, which is a [CVSS 3.1 vector](https://www.first.org/cvss/)
  * `keywords`, an optional array of strings, which may be any string that the submitter finds relevant. By convention, they are written in lowercase.
  * `aliases`, an optional array of strings, each of which is another identifier such as a CVE
  * `related`, an optional array of strings, each of which is an identifier for a related advisory (such as for a wrapped C library)
