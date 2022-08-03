@@ -11,10 +11,28 @@
 module Main where
 
 import Commonmark.Html (Html, renderHtml)
-import Commonmark.Parser
+import Commonmark.Parser (commonmark)
 import Commonmark.Types
+  ( Attributes,
+    Format,
+    HasAttributes (..),
+    IsBlock (..),
+    IsInline (..),
+    ListSpacing,
+    ListType,
+    Rangeable (..),
+    SourceRange,
+  )
 import Control.Monad ((>=>))
-import Control.Monad.Except (ExceptT (ExceptT), MonadError, throwError)
+import Control.Monad.Except
+  ( ExceptT (ExceptT),
+    MonadError,
+    catchError,
+    runExceptT,
+    throwError,
+  )
+import Control.Monad.IO.Class (liftIO)
+import Data.Bifunctor
 import Data.Functor ((<&>))
 import Data.Functor.Identity (Identity (Identity))
 import qualified Data.HashMap.Lazy as V
@@ -29,52 +47,73 @@ import qualified Data.Text as T
 import qualified Data.Text.IO as T
 import qualified Data.Text.Lazy as T (toStrict)
 import Data.Time.Calendar
-import Data.Time.Calendar.OrdinalDate
 import Data.Time.Clock (UTCTime (..))
 import Distribution.Parsec (eitherParsec)
 import Distribution.Types.VersionRange (VersionRange)
 import GHC.Exts (IsList (..))
 import System.Exit (exitFailure, exitSuccess)
 import System.IO (hPrint, hPutStrLn, stderr)
--- import Text.Toml (parseTomlDoc)
--- import qualified Text.Toml.Types as Toml
-
 import qualified TOML
 
 main :: IO ()
 main = do
   input <- T.getContents
-  case commonmark "stdin" input of
-    Left err -> do
-      hPrint stderr err
-      exitFailure
-    Right markdown -> do
-      case advisoryDoc markdown of
-        Nothing -> hPrint stderr "Does not have toml code block as first element"
-        Just (frontMatter, text) -> do
-          table <- case TOML.decode frontMatter of
-            Left err -> do
-              hPutStrLn stderr "Couldn't parse front matter as TOML:"
-              T.hPutStrLn stderr (TOML.renderTOMLError err)
-              exitFailure
-            Right tbl -> do
-              pure tbl
-          case parseAdvisory table of
-            Left err -> do
-              hPrint stderr (show err)
-              exitFailure
-            Right f ->
-              T.putStrLn $ renderAdvisory $ f $ T.toStrict $ renderHtml (fromBlock text :: Html ())
+  markdown <- runH (T.pack . show) $ commonmark "stdin" input
+  (frontMatter, text) <- run $ advisoryDoc markdown
+  table <-
+    runH (("Couldn't parse front matter as TOML:\n" <>) . TOML.renderTOMLError) $
+      TOML.decode frontMatter
+  f <- runH (T.pack . show) $ parseAdvisory table
+  T.putStrLn $
+    renderAdvisory $
+      f $
+        T.toStrict $
+          renderHtml (fromBlock text :: Html ())
+  exitSuccess
+  where
+    panic err = T.hPutStrLn stderr err >> exitFailure
+    run = either panic pure
+    runH f = run . first f
 
-      exitSuccess
-
-newtype CWE = CWE { unCWE :: Integer }
+newtype CWE = CWE {unCWE :: Integer}
   deriving (Show)
 
-data Architecture = AArch64 | Alpha | Arm | HPPA | HPPA1_1 | I386 | IA64 | M68K | MIPS | MIPSEB | MIPSEL | NIOS2 | PowerPC | PowerPC64 | PowerPC64LE | RISCV32 | RISCV64 | RS6000 | S390 | S390X | SH4 | SPARC | SPARC64 | VAX | X86_64
+data Architecture
+  = AArch64
+  | Alpha
+  | Arm
+  | HPPA
+  | HPPA1_1
+  | I386
+  | IA64
+  | M68K
+  | MIPS
+  | MIPSEB
+  | MIPSEL
+  | NIOS2
+  | PowerPC
+  | PowerPC64
+  | PowerPC64LE
+  | RISCV32
+  | RISCV64
+  | RS6000
+  | S390
+  | S390X
+  | SH4
+  | SPARC
+  | SPARC64
+  | VAX
+  | X86_64
   deriving (Show)
 
-data OS = Windows | MacOS | Linux | FreeBSD | Android | NetBSD | OpenBSD
+data OS
+  = Windows
+  | MacOS
+  | Linux
+  | FreeBSD
+  | Android
+  | NetBSD
+  | OpenBSD
   deriving (Show)
 
 data Date = Date {dateYear :: Integer, dateMonth :: Int, dateDay :: Int}
@@ -82,7 +121,7 @@ data Date = Date {dateYear :: Integer, dateMonth :: Int, dateDay :: Int}
 
 newtype Keyword = Keyword Text
   deriving (Eq, Ord)
-  deriving Show via Text
+  deriving (Show) via Text
 
 data Advisory = Advisory
   { advisoryId :: Text,
@@ -117,9 +156,22 @@ renderAdvisory adv =
             row "Aliases" (T.intercalate ", " . advisoryAliases),
             row "CVSS" (fromMaybe "" . advisoryCVSS),
             row "Versions" (T.pack . show . advisoryVersions),
-            row "Architectures" (maybe "All" ( T.intercalate ", " . map (T.pack . show)) . advisoryArchitectures),
-            row "OS" (maybe "All" ( T.intercalate ", " . map (T.pack . show)) . advisoryOS),
-            row "Affected exports" (T.intercalate ", " . map (\(name, version) -> name <> " in " <> T.pack (show version)) . advisoryNames)
+            row
+              "Architectures"
+              ( maybe
+                  "All"
+                  ( T.intercalate ", "
+                      . map (T.pack . show)
+                  )
+                  . advisoryArchitectures
+              ),
+            row "OS" (maybe "All" (T.intercalate ", " . map (T.pack . show)) . advisoryOS),
+            row
+              "Affected exports"
+              ( T.intercalate ", "
+                  . map (\(name, version) -> name <> " in " <> T.pack (show version))
+                  . advisoryNames
+              )
           ],
       "</table>",
       advisoryHtml adv
@@ -139,18 +191,30 @@ parseAdvisory table = runTableParser $ do
   package <- mandatory advisory "package" isString
   date <- mandatory advisory "date" isDate <&> uncurry3 Date . toGregorian
   url <- mandatory advisory "url" isString
-  cats <- fromMaybe [] <$> optional advisory "cwe" (isArrayOf (fmap CWE . isInt))
-  kwds <- fromMaybe [] <$> optional advisory "keywords" (isArrayOf (fmap Keyword . isString))
-  aliases <- fromMaybe [] <$> optional advisory "aliases" (isArrayOf isString)
+  cats <-
+    fromMaybe []
+      <$> optional advisory "cwe" (isArrayOf (fmap CWE . isInt))
+  kwds <-
+    fromMaybe []
+      <$> optional advisory "keywords" (isArrayOf (fmap Keyword . isString))
+  aliases <-
+    fromMaybe []
+      <$> optional advisory "aliases" (isArrayOf isString)
   cvss <- optional advisory "cvss" isString
 
   (os, arch, decls) <-
     optional table "affected" isTable >>= \case
       Nothing -> pure (Nothing, Nothing, [])
       Just tbl -> do
-        os <- optional tbl "os" $ isArrayOf (isString >=> operatingSystem)
-        arch <- optional tbl "os" $ isArrayOf (isString >=> architecture)
-        decls <- maybe [] Map.toList <$> optional tbl "declarations" (isTableOf versionRange)
+        os <-
+          optional tbl "os" $
+            isArrayOf (isString >=> operatingSystem)
+        arch <-
+          optional tbl "os" $
+            isArrayOf (isString >=> architecture)
+        decls <-
+          maybe [] Map.toList
+            <$> optional tbl "declarations" (isTableOf versionRange)
         pure (os, arch, decls)
 
   versions <- mandatory table "versions" isTable
@@ -231,7 +295,13 @@ data TableParseErr
   deriving (Show)
 
 newtype TableParser a = TableParser {runTableParser :: Either TableParseErr a}
-  deriving (Functor, Applicative, Monad, MonadError TableParseErr) via ExceptT TableParseErr Identity
+  deriving
+    ( Functor,
+      Applicative,
+      Monad,
+      MonadError TableParseErr
+    )
+    via ExceptT TableParseErr Identity
 
 hasNoKeysBut :: [Text] -> TOML.Table -> TableParser ()
 hasNoKeysBut keys tbl =
@@ -242,14 +312,30 @@ hasNoKeysBut keys tbl =
         [] -> pure ()
         k : ks -> throwError (UnexpectedKeys $ k :| ks)
 
-optional :: TOML.Table -> Text -> (TOML.Value -> TableParser a) -> TableParser (Maybe a)
-optional tbl k act = onKey tbl k (pure Nothing) (fmap Just . act)
+optional ::
+  TOML.Table ->
+  Text ->
+  (TOML.Value -> TableParser a) ->
+  TableParser (Maybe a)
+optional tbl k act =
+  onKey tbl k (pure Nothing) (fmap Just . act)
 
-mandatory :: TOML.Table -> Text -> (TOML.Value -> TableParser a) -> TableParser a
-mandatory tbl k act = onKey tbl k (throwError $ MissingKey k) act
+mandatory ::
+  TOML.Table ->
+  Text ->
+  (TOML.Value -> TableParser a) ->
+  TableParser a
+mandatory tbl k act =
+  onKey tbl k (throwError $ MissingKey k) act
 
-onKey :: TOML.Table -> Text -> TableParser a -> (TOML.Value -> TableParser a) -> TableParser a
-onKey tbl k absent present = maybe absent present $ Map.lookup k tbl
+onKey ::
+  TOML.Table ->
+  Text ->
+  TableParser a ->
+  (TOML.Value -> TableParser a) ->
+  TableParser a
+onKey tbl k absent present =
+  maybe absent present $ Map.lookup k tbl
 
 isInt :: TOML.Value -> TableParser Integer
 isInt (TOML.Integer i) = pure i
@@ -263,9 +349,14 @@ isTable :: TOML.Value -> TableParser TOML.Table
 isTable (TOML.Table table) = pure table
 isTable other = throwError $ InvalidFormat "Table" (describeValue other)
 
-isTableOf :: (TOML.Value -> TableParser a) -> TOML.Value -> TableParser (Map Text a)
-isTableOf elt (TOML.Table table) = traverse elt table
-isTableOf _ other = throwError $ InvalidFormat "Table" (describeValue other)
+isTableOf ::
+  (TOML.Value -> TableParser a) ->
+  TOML.Value ->
+  TableParser (Map Text a)
+isTableOf elt (TOML.Table table) =
+  traverse elt table
+isTableOf _ other =
+  throwError $ InvalidFormat "Table" (describeValue other)
 
 isDate :: TOML.Value -> TableParser Day
 isDate (TOML.LocalDate time) = pure time
@@ -275,8 +366,12 @@ isArray :: TOML.Value -> TableParser [TOML.Value]
 isArray (TOML.Array arr) = pure arr
 isArray other = throwError $ InvalidFormat "Array" (describeValue other)
 
-isArrayOf :: (TOML.Value -> TableParser a) -> TOML.Value -> TableParser [a]
-isArrayOf elt v = isArray v >>= traverse elt . toList
+isArrayOf ::
+  (TOML.Value -> TableParser a) ->
+  TOML.Value ->
+  TableParser [a]
+isArrayOf elt v =
+  isArray v >>= traverse elt . toList
 
 describeValue :: TOML.Value -> Text
 describeValue TOML.String {} = "string"
@@ -290,14 +385,14 @@ describeValue TOML.LocalDateTime {} = "local date/time"
 describeValue TOML.LocalDate {} = "local date"
 describeValue TOML.LocalTime {} = "local time"
 
-advisoryDoc :: Block -> Maybe (Text, Block)
+advisoryDoc :: Block -> Either Text (Text, Block)
 advisoryDoc (BSeq bs) =
   case bs of
-    [] -> Nothing
+    [] -> Left "Does not have toml code block as first element"
     b : bs -> advisoryDoc b >>= \(toml, code) -> pure (toml, BSeq (code : bs))
 advisoryDoc (BRanged _ b) = advisoryDoc b
 advisoryDoc (CodeBlock (T.unpack -> "toml") frontMatter) = pure (frontMatter, mempty)
-advisoryDoc _ = Nothing
+advisoryDoc _ = Left "Does not have toml code block as first element"
 
 data Block
   = Para Inline
