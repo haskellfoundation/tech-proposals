@@ -1,5 +1,7 @@
 # An Advisory Repository for Haskell
 
+By David Thrane Christiansen
+
 This is a Haskell Foundation project proposal.
 
 ## Abstract
@@ -10,7 +12,7 @@ This kind of tooling is nice for developers, and it can also be essential for ac
 
 This proposal does not seek to present a complete solution. Instead, it presents a first step towards advisory automation: the establishment of a repository of advisories. GitHub has expressed interest in building support for such a database into Dependabot, their tool for notifying authors and adjusting bounds automatically, so we can gain real value very quickly, and then defer further development to the future. Future work will be explained in order to demonstrate that this proposal's outcome will be a useful foundation on which to build.
 
-The overall strategy of this proposal is to avoid reinventing the wheel. We should, to the extent possible, do what other language communities do. In particular, I plan to copy the Rust approach.
+The overall strategy of this proposal is to avoid reinventing the wheel. We should, to the extent possible, do what other language communities do. In particular, I plan to mostly copy the Rust approach.
 
 ## Background
 
@@ -26,9 +28,9 @@ Programs written in Haskell are not immune to security problems, notwithstanding
 
 ### Freeze Files and Build Files
 
-A _build file_ describes constraints on the direct dependencies needed to build a project. Typically, a build file will Haskell build tools use the following formats for build files:
+A _build file_ describes constraints on the direct dependencies needed to build a project. Typically, Haskell build tools use the following formats for build files:
  * `.cabal` files are the native format used by `cabal-install`, and part of the configuration of a package that uses `stack`.
- * `stack.yaml` files point the `stack` tool at a Stackage resolver, which contains a collection of packages that are tested and maintained in lockstep. When using Stack, the `.cabal` file often omits specific information about version bounds, because a Stackage resolver contains only one version of each package. The `stack.yaml` file can additionally point at additional dependencies, such as from a Git repository.
+ * `stack.yaml` files point the `stack` tool at a Stackage resolver, which contains a collection of packages that are tested and maintained in lockstep. When using Stack, the `.cabal` file often omits specific information about version bounds, because a Stackage resolver contains only one version of each package. The `stack.yaml` file can also point at additional dependencies, such as from a Git repository.
  * `package.yaml` files are used by `hpack` to generate `.cabal` files, filling out a number of default values by inspecting the code.
  * `cabal.project` files configure the relationship between a collection of packages in a repository, and can do things like specifying alternate sources for dependencies, much like a `stack.yaml` file.
 
@@ -80,7 +82,7 @@ The people involved in executing this proposal, if accepted, are:
 
 ### File Format
 
-The file format for advisories is based on that of RustSec, with changes made only for compatibility with Haskell tooling and concepts. An advisory consists of a Markdown file, the first element of which must be a fenced code block written in the `toml` language. This block contains the advisory's structured metadata.
+The file format for advisories is based on that of RustSec, with changes made for compatibility with Haskell tooling and concepts. An advisory consists of a Markdown file, the first element of which must be a fenced code block written in the `toml` language. This block contains the advisory's structured metadata.
 
 The TOML frontmatter must contain a table called `advisory` and a table called `versions`, and it may contain a table called `affected`. The `advisory` table contains the following fields, all of which are mandatory unless otherwise indicated:
  * `id`, a string, which is a unique identifier. This string should have the form `HSEC-YYYY-NNNN`, where `YYYY` is the year and `NNNN` is a sequential numbering beginning at `0001`.
