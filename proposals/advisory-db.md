@@ -1,6 +1,8 @@
 # An Advisory Repository for Haskell
 
-## Introduction
+This is a Haskell Foundation project proposal.
+
+## Abstract
 
 Many programming language ecosystems today have a repository for security advisories that affect libraries, and tooling to help developers to discover advisories about libraries that they depend on. For instance, JavaScript's `npm` and Rust's `cargo-audit` will both issue warnings when there are known advisories for the current project's dependencies. Similarly, development hosts such as GitHub have tooling that will notify developers when advisories appear for their code, and will sometimes even automatically adjust dependency bounds to avoid versions for which there are advisories.
 
@@ -51,38 +53,31 @@ GitHub has informed us that they need the following to add support for Dependabo
  4. A description of how to retrieve versioning information from build and/or freeze files
 
 
-## Motivation
+## Problem Statement
 
-This project lays the groundwork for a variety of tools to be built in the future that will both relieve open-source developers and maintainers from tedious work and enable certain large organizations to use Haskell.
+Today, some large organizations require certifications (such as ISO 27001) that mandate or strongly encourage automated scanning for security advisories. These organizations will face difficulties adopting Haskell. I have experienced this in a previous workplace, and I have heard from Haskell Foundation sponsors that this would be useful.
 
-Writing Haskell code should be fun. Auditing dependencies for ad-hoc security advisories is not very fun, and it is work that should be automated to the extent possible. At the same time, responsible open-source maintainers do not presently have a clear place to communicate issues that they discover with their code, which can be a source of stress.
+At the same time, responsible open-source maintainers who want to avoid security issues in dependencies, or who want to clearly communicate vulnerabilities in their own projects to users, do not have an clear and easy way to do so.
 
-From the perspective of larger organizations, this project lays the foundation for tooling that can allow Haskell to be used in contexts where it is rejected today. Organizations that require certifications such as ISO 27001 must document their IT security practices, and if they can't provide a process for auditing their code, then certification becomes more difficult. I have experienced this in a previous workplace, and I have heard from Haskell Foundation sponsors that this would be useful.
+Automated scanning for security advisories will help both groups.
+
+## Prior Art and Related Efforts
+
+I am not aware of prior art or related efforts in Haskell. As far as I know, nobody has done something like this here.
+
+In other language communities, similar efforts seem to have met with success. For instance, [RustSec advisory DB](https://github.com/RustSec/advisory-db) is maintained and updated and seems to deliver value, and `npm` offers similar features. Increasingly, users are coming to expect these features from a package system.
 
 
-## Goals
+## Technical Content
 
-The goals of this project are to do the following:
- 1. Adapt the [RustSec advisory DB](https://github.com/RustSec/advisory-db) data format and working processes to Haskell, and establish a canonical advisory database for Hackage.
- 2. Liaise with GitHub to ensure that the database fulfills the needs of Dependabot
- 3. Establish a sustainable and trustworthy governance structure around the advisory database
- 4. Gather as many historical advisories as possible
-
-The project is thus completed when Dependabot is capable of delivering alerts (not necessarily pull requests) to Haskell projects, and there is a functioning organization managing the database.
-
-Goals left for future work are:
- 1. Develop a reverse-import tool to import GitHub's own security advisories into the canonical database using their GraphQL API
- 2. Augment build tools such as `cabal` and `stack` with the ability to audit dependencies and build plans for known advisories
- 3. Augment Hackage and Stackage with information about advisories
-
-## People
+### People
 
 The people involved in executing this proposal, if accepted, are:
  * David Thrane Christiansen
  * Gershom Bazerman
  * Davean Scies
 
-## Concrete Details
+
 ### File Format
 
 The file format for advisories is based on that of RustSec, with changes made only for compatibility with Haskell tooling and concepts. An advisory consists of a Markdown file, the first element of which must be a fenced code block written in the `toml` language. This block contains the advisory's structured metadata.
@@ -137,12 +132,9 @@ The `^>=` operator defines both lower and upper bounds for a dependency accordin
 
 ### Recommendations Regarding Build/Freeze Files
 
-TODO: How do we actually let them look at cabal files? Common stanzas and conditionals make this fairly non-trivial.
+We recommend that consumers who do not use the Cabal API to process build and freeze files treat each build-depends stanza independently. This is necessarily an over-approximation - versions of dependencies that have advisories may be ruled out by each composed set of includes, but these cases should be marginal, and over-approximations are better than under-approximations in this space. Note that newer versions of the Cabal file spec admit forms of dependency specifications that are not allowed in the advisory syntax above, such as explicit enumerations of sets of versions - tools that wish to support them should consult [the documentation](https://cabal.readthedocs.io/en/3.6/cabal-package.html#pkg-field-build-depends).
 
-TODO - Recommendation will be to do the following:
- * First process Cabal files
- * Then do freeze files, which should allow processing Stackage resolver files as well
- * Then read stack.yaml enough to get the resolver
+We additionally recommend that tools prioritize `.cabal` files, followed by freeze files, followed by consulting `stack.yaml` to retrieve the constraints of a Stackage resolver. This recommendation is because virtually all Haskell projects have `.cabal` files (some of which are generated by tools such as `hpack`), and because Stackage sets can be parsed using the same tools as Cabal freeze files.
 
 ### Governance and Administration
 
@@ -150,16 +142,10 @@ The Haskell Foundation will be responsible for appointing the administrators of 
 
 To begin with, the HF executive team will assemble a group of five volunteers, who will be solicited from bodies such as the Core Libraries Committee and the Hackage trustees, asking for a one-year commitment. The HF will evaluate the size and composition of the group on an ongoing basis, and may make adjustments to membership. We will recruit a set of volunteers with knowledge of cryptography, low-level exploits such as buffer overflows, the GHC RTS, network security, and security organization best practices, as well as good communication skills, and will adjust the size of the volunteer group until these areas are covered.
 
-## Resources
+We expect that the work done by this team will occur mostly asynchronously, but we plan to have meetings a few times per year in order to have discussions about how the group is working and how it can be improved.
 
-This proposal requires the following:
- * A sufficiently robust implementation of TOML 1.0 in Haskell. This can be done either by coordinating with volunteers, in which case the primary cost is time, or by hiring a contractor to update an existing library if maintainers are interested. This also has a positive effect on the rest of the Haskell ecosystem, as TOML is widely used.
- * A parser that validates that advisories conform to the format. The Markdown processing side is solved, and developing the TOML side is only a couple hours of work.
- * Accessible format documentation for non-Haskell libraries that will consume it. This will take a couple of hours by the proposal authors.
- * The HF will need to spend time contacting maintainers of various packages on Hackage and asking them to add advisories for old versions of libraries or programs that are known to have issues.
- * Ongoing administration of the database by a group constituted by the HF executive team. Administering this group will likely take a few hours per month from the HF.
 
-## Deliverables
+### Deliverables
 
 The deliverables are:
  1. A Git repository that is prepared to accept advisories
@@ -167,8 +153,56 @@ The deliverables are:
  3. Documentation and example implementation for the file format
  4. Recommendations regarding build and freeze files to be examined for versions
 
-## Risks
+### Risks and Mitigations
 
 There are primarily reputational risks associated with this project. Low-quality or false advisories risk damaging the reputation of package authors or maintainers, as well as that of the project and/or organization.
 
 There are very few technical risks to the project itself, as the technology involved is simple and well-understood.
+
+### Not in Scope
+
+A Cabal or Stack equivalent to `cargo audit` or `npm audit` is not a part of this project, even though we hope to enable it.
+
+## Timeline
+
+There are no _specific_ deadlines. However, the process of getting this proposal out has been slow, so it would be good if we can build the system quickly.
+
+We expect the following tasks to be completed in order:
+ * Writing a parser that validates that advisories conform to the format. A PoC is included with this proposal.
+ * Accessible format documentation for non-Haskell libraries that will consume it. This will take 4-5 hours by the proposal authors.
+ * The HF will need to spend time contacting maintainers of various packages on Hackage and asking them to add advisories for old versions of libraries or programs that are known to have issues.
+ * Ongoing administration of the database by a group constituted by the HF executive team. Administering this group will likely take a few hours per month from the HF.
+
+## Budget
+
+No specific outlay of money is necessary at this time, but executing on the project will require time and attention from the ED.
+
+## Stakeholders
+
+_Who stands to gain or lose from the implementation of this proposal?
+Proposals should identify stakeholders so that they can be contacted for input, and a final decision should not occur without having made a good-faith effort to solicit representative feedback from important stakeholder groups._
+
+In principle, every Haskell developer who uses Hackage is a stakeholder. Authors of libraries and tools on Hackage have an interest in 
+
+## Success
+
+The goals of this project are to do the following:
+ 1. Adapt the [RustSec advisory DB](https://github.com/RustSec/advisory-db) data format and working processes to Haskell, and establish a canonical advisory database for Hackage.
+ 2. Liaise with GitHub to ensure that the database fulfills the needs of Dependabot
+ 3. Establish a sustainable and trustworthy governance structure around the advisory database
+ 4. Gather as many historical advisories as possible
+
+The project is thus completed when Dependabot is capable of delivering alerts (not necessarily pull requests) to Haskell projects, and there is a functioning organization managing the database.
+
+Goals left for future work are:
+ 1. Develop a reverse-import tool to import GitHub's own security advisories into the canonical database using their GraphQL API
+ 2. Augment build tools such as `cabal` and `stack` with the ability to audit dependencies and build plans for known advisories
+ 3. Augment Hackage and Stackage with information about advisories
+
+
+
+
+
+
+
+
