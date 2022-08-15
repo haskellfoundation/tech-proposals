@@ -38,12 +38,14 @@ Applications to join the committee will be decided on by the committee's members
 Inactive members may be removed by the ED after making a good-faith effort to contact and engage them.
 
 The current members of the TWG are:
- * Davean Scies (@davean)
- * Gershom Bazerman (@gbaz)
- * John Ericson (@Ericson2314)
- * Hécate (@Kleidukos)
- * Evie Ciobanu (@eviefp)
- * David Thrane Christiansen (@david-christiansen)
+ * Davean Scies ([@davean](https://github.com/davean))
+ * Gershom Bazerman ([@gbaz](https://github.com/gbaz))
+ * John Ericson ([@Ericson2314](https://github.com/Ericson2314))
+ * Hécate ([@Kleidukos](https://github.com/Kleidukos))
+ * Evie Ciobanu ([@eviefp](https://github.com/eviefp))
+ * David Thrane Christiansen ([@david-christiansen](https://github.com/david-christiansen))
+ * Noon van der Silk ([@silky](https://github.com/silky))
+ * Laurent P. René de Cotret ([@LaurentRDC](https://github.com/LaurentRDC))
 
 ## Decisions
 
