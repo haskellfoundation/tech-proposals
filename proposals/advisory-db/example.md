@@ -18,9 +18,10 @@ url = "https://github.com/username/package/issues/123"
 # Optional: Classification of the advisory with respect to the Common Weakness Enumeration.
 cwe = [820]
 
-# Optional: a Common Vulnerability Scoring System score. More information
+# Mandatory: a Common Vulnerability Scoring System score. More information
 # can be found on the CVSS website, https://www.first.org/cvss/.
-#cvss = "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H"
+# The committee will assist advisory authors in constructing an appropriate CVSS if necessary.
+cvss = "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H"
 
 # Freeform keywords which describe this vulnerability (optional)
 keywords = ["ssl", "mitm"]

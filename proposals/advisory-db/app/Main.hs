@@ -131,7 +131,7 @@ data Advisory = Advisory
     advisoryCWEs :: [CWE],
     advisoryKeywords :: [Keyword],
     advisoryAliases :: [Text],
-    advisoryCVSS :: Maybe Text,
+    advisoryCVSS :: Text,
     advisoryVersions :: VersionRange,
     advisoryArchitectures :: Maybe [Architecture],
     advisoryOS :: Maybe [OS],
@@ -154,7 +154,7 @@ renderAdvisory adv =
             row "CWEs" (T.intercalate ", " . map (T.pack . show . unCWE) . advisoryCWEs),
             row "Keywords" (T.intercalate ", " . map (T.pack . show) . advisoryKeywords),
             row "Aliases" (T.intercalate ", " . advisoryAliases),
-            row "CVSS" (fromMaybe "" . advisoryCVSS),
+            row "CVSS" advisoryCVSS,
             row "Versions" (T.pack . show . advisoryVersions),
             row
               "Architectures"
@@ -200,7 +200,7 @@ parseAdvisory table = runTableParser $ do
   aliases <-
     fromMaybe []
       <$> optional advisory "aliases" (isArrayOf isString)
-  cvss <- optional advisory "cvss" isString
+  cvss <- mandatory advisory "cvss" isString -- TODO validate CVSS format
 
   (os, arch, decls) <-
     optional table "affected" isTable >>= \case
