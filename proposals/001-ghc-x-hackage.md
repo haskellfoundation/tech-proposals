@@ -31,6 +31,13 @@ We could enormously speed up the process of updating the package ecosystem for a
 
 We propose to improve the situation by widespread usage of a Hackage overlay (see Section 2), GHC._X_.hackage, populated with **non-maintainer-contributed patches** for the purpose of unblocking package maintainers in adapting their libraries to new GHC releases.
 
+The proposed mechanism is intended to complement Hackage's existing [non-maintainer upload (NMU)
+policy](https://github.com/haskell-infra/hackage-trustees/blob/master/policy.md#3-source-changes-simple-patches),
+where non-maintainers can propose source changes to packages in some cases.
+Specifically, while Hackage NMUs are intended to be carefully-audited
+long-lived releases, GHC._X_.Hackage patches are more transient with a
+correspondingly lower-overhead process and faster turnaround time.
+
 ## 2. Background
 
 ### 2.1. Additional package repositories and Hackage overlays
