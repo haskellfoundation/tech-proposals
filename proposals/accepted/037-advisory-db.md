@@ -84,7 +84,9 @@ The people involved in executing this proposal, if accepted, are:
 
 The file format for advisories is based on that of RustSec, with changes made for compatibility with Haskell tooling and concepts. An advisory consists of a Markdown file, the first element of which must be a fenced code block written in the `toml` language. This block contains the advisory's structured metadata.
 
-The TOML frontmatter must contain a table called `advisory` and a table called `versions`, and it may contain a table called `affected`. The `advisory` table contains the following fields, all of which are mandatory unless otherwise indicated:
+The TOML frontmatter must contain a table called `advisory` and a table called `versions`, and it may contain a table called `affected`.
+
+The `advisory` table contains the following fields, all of which are mandatory unless otherwise indicated:
  * `id`, a string, which is a unique identifier. This string should have the form `HSEC-YYYY-NNNN`, where `YYYY` is the year and `NNNN` is a sequential numbering beginning at `0001`.
  * `package`, a string, the name of the affected Hackage package
  * `date`, a TOML local date, which is the disclosure date.
@@ -94,10 +96,12 @@ The TOML frontmatter must contain a table called `advisory` and a table called `
  * `keywords`, an optional array of strings, which may be any string that the submitter finds relevant. By convention, they are written in lowercase.
  * `aliases`, an optional array of strings, each of which is another identifier such as a CVE
  * `related`, an optional array of strings, each of which is an identifier for a related advisory (such as for a wrapped C library)
+
 The `affected` table, if present, contains the following fields, all of which are optional:
  * `arch`, an array of strings, each of which is the value of `System.Info.arch` on the affected systems. The advisory only applies to the specified architectures. If this key is absent, then the advisory applies to all architectures.
  * `os`, an array of strings, each of which is the value of `System.Info.os` on the affected systems. The advisory only applies to the specified operating systems. If this key is absent, then the advisory applies to all operating systems.
  * `declarations`, a table that maps fully-qualified names from the package to Cabal v2.0 version ranges. These ranges must all be contained in the affected versions (specified later), and they specify that the given name is the source of the advisory in that sub-range. This allows one advisory to mention a function or datatype that is renamed at some point during development.
+
 The `versions` table contains a single mandatory key, `affected`, whose value is a string that contains a Cabal v2.0 version range.
 
 Cabal v2.0 version ranges are specified using the following grammar:
