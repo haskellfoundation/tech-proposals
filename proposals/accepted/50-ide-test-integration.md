@@ -66,8 +66,7 @@ benefits:
  test trees, and test results.
 2. Generate test trees and test results that can be serialized into JSON from
 Haskell's major testing frameworks, starting with `tasty`.
-3. Integrate test tree output output with HLS (starting with tasty),
-and subsequently VSC, via VSC's [Testing API](https://code.visualstudio.com/api/extension-guides/testing).
+3. Integrate test tree output output with VSC's Haskell extension, via VSC's [Testing API](https://code.visualstudio.com/api/extension-guides/testing).
 4. Stretch goal: support IDEs other than VSC.
 5. Stretch goal: support test results caching, and features such as "Rerun only failed tests".
 
