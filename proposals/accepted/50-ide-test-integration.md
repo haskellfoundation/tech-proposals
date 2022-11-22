@@ -78,9 +78,12 @@ The `hs-test` library will contain the following data declarations:
 ```haskell
 -- | Datatype representing all the tests that exist in a test
 -- suite that could be run.
+--
+-- `SrcLocs` are used to indicate where inline hints should be displayed
+-- in an IDE.
 data TestTree =
-  TestGroup {name :: Text, subTrees :: [TestTree]}
-  | TestCase {name :: Text}
+  TestGroup {name :: Text, subTrees :: [TestTree], location :: SrcLoc}
+  | TestCase {name :: Text, location :: SrcLoc}
 
 data RunTestsRequest =
   RunTestsRequest {path :: NonEmpty Text}
@@ -112,10 +115,14 @@ For testing frameworks that want to support IDE integration,
 they should provide support for the following commands:
 
 ```bash
+./test-suite test-tree --output="FILE_NAME"
+./test-suite run-tests --input="FILE" --output="FILE"
+
+# Sample usages:
 > cabal test test-suite-name \
-      \--test-options='test-tree --output="FILE_NAME"'
+      \--test-options='test-tree --output="output.tmp.json"'
 > cabal test test-suite-name \
-      \--test-options='run-tests --input="FILE" --output="FILE"'
+      \--test-options='run-tests --input="input.tmp.json" --output="output.tmp.json"'
 ```
 
 The `test-tree` command outputs a JSON-serialized `TestTree` to the given
@@ -128,8 +135,71 @@ The `run-tests` command reads a JSON-serialized `RunTestsRequest` from
 
 -------------
 
-For IDEs, they will utilize these commands to find the test tree, execute
-the test tree, and display the results to the user.
+For IDEs, they will utilize these commands to:
+ -  find the test tree
+ -  execute a test run request, and display the results to the user.
+
+One problem that could occur is that having the IDE run `cabal test` to
+reindex the `TestTree` is too slow and incurs too large a latency for
+the user. However, this problem is no worse than the current situation,
+in which the user has to call `cabal test` anyway in order to run the tests.
+
+Furthermore, IDEs often having access to stale artifacts for code that used
+to compile but no longer compiles, therefore, the IDE could run the `test-tree`
+command while still displaying a mostly-correct test tree and inline hints
+in the user's IDE. Once the call to `test-tree` has completed, the new test
+tree can be displayed to the user.
+
+## Alternative Approaches
+
+### A typeclass driven approach with HLS integration
+
+Described in the following [discourse comment](https://discourse.haskell.org/t/hf-coordination-for-test-framework-ide-integration/5221/2?u=santiweight)
+
+In summary, take each function signature and detect whether said function
+is runnable as a test based on whether its type is a member of the
+proposed typeclass `IsTest`. Testing frameworks will each provide their
+own `IsTest` instances for their common testing types.
+
+I have chosen the option in this proposal for the following reasons:
+ 1. Such an approach would run Haskell code in GHCi, which is slower, and
+ would therefore scale poorly for production codebases.
+ 2. Such an approach requires integration with GHC's API, which the author
+ is unfamiliar with and therefore cannot be confident in their ability to
+ maintain the integration library.
+ 3. The author cannot see how to acquire the test tree that is common to
+ IDE test integration, since it requires inspecting the typechecking artifacts
+ of all files in the test suite.
+ 4. Sometimes testing frameworks will provide conflicting `IsTest` instances for the
+ the same type, which is a problem when using multiple testing frameworks in the
+ same codebase.
+
+The typeclass proposal seems incredibly useful however for the typical `Run Program`
+command now provided, or as an additional tool for users. It is certainly a good
+idea for a future project.
+
+### Regex-based test discovery
+
+While regex discovery is a good and quick solution implementation wise, it does
+not scale to many real-world usecases. For example, many codebases will have helpers
+such as:
+
+```haskell
+testDecodeJsonFromFile fileName = testCase fileName $ readJsonFromFile fileName
+```
+
+Since the fileName value is not known until runtime, regex-based approaches miss
+such cases, which is a non-starter for an ecosystem-wide tool.
+
+The proposal put forth by the author will also have to handle this use-case, by
+providing support in testing frameworks for users to define their own combinators
+that declare their location on use site. But this problem is a purely technical
+one with many solutions, such as the following pseudo-code:
+
+```haskell
+testDecodeJsonFromFile :: HasCallStack => TestTree
+testDecodeJsonFromFile = Tasty.customTestCase callstack fileName $ readJsonFromFile fileName
+```
 
 ## Future Work
 
