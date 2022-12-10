@@ -1,6 +1,8 @@
 Standard library reform
 =======================
 
+.. sectnum::
+
 Abstract
 --------
 
