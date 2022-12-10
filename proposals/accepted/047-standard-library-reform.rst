@@ -58,7 +58,9 @@ It also makes it harder to think about compatibility and ease of upgrading with 
 This and other long-shrugged-off paper cuts over the upgrade process result in a big picture where where some of us are numb to breakage, and others are irate about it.
 We should do the little things well so the remaining thornier issues around GHC upgrading (syntax changes, type system changes, etc.) can be approached from a cleaner starting point.
 
-**Solution criteria:**
+Solution criteria
+^^^^^^^^^^^^^^^^^
+
 Users should be able to upgrade to the next GHC without adjusting any library version requirements.
 
 Problem 2: No clear boundary between private/unstable and public/stable interfaces
@@ -71,7 +73,9 @@ On a simpler level, the lack of a firm boundary confuses users, who don't know w
 On a more complex level, I think everyone in the thread was surprised on how hard it was to even discuss these issues.
 Not only is there not a firm boundary, but there wasn't even a collectively-shared mental model on how to discuss the issue or its solutions!
 
-**Solution criteria:**
+Solution criteria
+^^^^^^^^^^^^^^^^^
+
 We should use standard off-the-shelf definitions and techniques to enforce this boundary.
 The standard library should not expose private, implementation-detail modules full-stop.
 The entirely of the standard library's public interface should be considered just that, its public interface.
@@ -112,7 +116,9 @@ This made perfect sense for GHCJS, and perfect sense for just getting things goi
 But it is a poor choice for a mature, first-class backend.
 Haskell has a mantra that "If it compiles, it probably works", and stubbing out functionality with ``error`` and friends is a huge regression from that.
 
-**Solution criteria:**
+Solution criteria
+^^^^^^^^^^^^^^^^^
+
 Projects should be able to depend on libraries that just expose functionality that is known to work on the platform(s) they run on.
 The plural, "platforms" is key.
 Projects that wish to some set of Unix, Windows, Web, and WASI must be able to depend on libraries that only offer the *intersection* of what works on each of those, i.e. what works on all of them.
@@ -129,7 +135,9 @@ However, if the standard library version is tied to GHC version, we have no choi
 Gabriella Gonzalez laid out the case in `Release early and often <https://www.haskellforall.com/2019/05/release-early-and-often.html>` on why coupling changes, especially breaking changes, together is bad, and I will cite that rather than restate the argument.
 For those reasons we shouldn't do that here with the standard library and GHC.
 
-**Solution criteria:**
+Solution criteria
+^^^^^^^^^^^^^^^^^
+
 Changes in the standard library in the compiler should always be staggered.
 It should be possible to upgrade the compiler with only a minor version change or less in the standard library, and possible to upgrade a major version change in the standard library without breaking a compiler.
 
@@ -142,7 +150,9 @@ It is one thing for a standard library to be minimal, and say not offer any stri
 What is worse is that ``base`` does offer ``String``, and futhermore operations on ``String``.
 The problem is thus not so much that it is inconvenient to grab the ``Text``-based functionality from elsewhere, as it is that ``base`` is has a footgun in offering alternatives that should be *avoided*.
 
-**Solution criteria:**
+Solution criteria
+^^^^^^^^^^^^^^^^^
+
 Firstly, do not offer bad alternatives in the standard library that users should not use.
 Secondarily, do offer good alternatives, like ``Text`` and associated functionality, if they are suitable for inclusion.
 
