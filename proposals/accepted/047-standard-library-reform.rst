@@ -2,6 +2,7 @@ Standard library reform
 =======================
 
 .. sectnum::
+.. contents::
 
 Abstract
 --------
@@ -25,8 +26,6 @@ The problems are briefly as follows:
 By reshuffling our interfaces and implementations a like, we should be able to solve all these problems.
 
 .. __`CLC Issue #015`: https://github.com/haskell/core-libraries-committee/issues/105>
-
-.. contents::
 
 Background
 ----------
