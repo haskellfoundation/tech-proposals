@@ -115,16 +115,31 @@ The other two, however are a radical departure:
   The upcoming `WASI Component Model <https://github.com/WebAssembly/component-model>`_ also plans on creating replacements for some "stringly typed" Unix functionality with "richly typed" interfaces.
   Both these things are an *excellent* fit for Haskell.
 
-The existing implementations in GHC, to my knowledge, duck-tape over ``base`` and friends just to get something working.
-That is to say, whenever there is something that doesn't work, the put in ``error`` or remove it with CPP.
+The existing implementations in GHC, duck-tape over ``base`` and friends the best they can to get something working.
+That is to say, we have some CPP::
+
+  $ git grep js_HOST_ARCH libraries/ | wc-l
+  52
+
+  $ git grep wasm32_HOST_ARCH libraries/ | wc -l
+  2
+
 This made perfect sense for GHCJS, and perfect sense for just getting things going more broadly.
 But they are poor long-term choices for a mature, first-class backend.
 
-Haskell has a mantra that "If it compiles, it probably works", and stubbing out exposed functions with ``error`` and friends clearly is a huge regression on that front.
+A first issue is that since this is all based on the host *arch* and not *OS*, we have no distinguishing between the browser and non-browser runtimes.
+One just has to hope that the intended deployment environment as the functionality they wish to use.
 
-CPP is less bad, but still not good enough.
-The issue is that it is very easy to, when developing (say with GHCi or HLS) on one platform, accidentally depend on things that not available on the other platforms ones wishes to support.
+A second issue is that it is very easy to, when developing (say with GHCi or HLS) on one platform, accidentally depend on things that not available on the other platforms ones wishes to support.
 Yes, CI which builds for all of the platforms can and should catch this, but it is always sub-optimal to only catch basic issues then.
+
+The much lower CPP count for Web Assembly reflects that fact that the reference `WASI libc`_ itself tries to emulate POSIX the best it can.
+But this just means the same infelicities are there, just less directly observable.
+For example, it incorporates the techniques of `libpreopen`_ to simulate ambient authority such as opening arbitrary files by absolute path.
+But best-effort techniques like this only if one is lucky; they are a great way for adapting *existing* applications but a *poor* way for writing new greenfield ones.
+
+.. _`WASI libc`: https://github.com/WebAssembly/wasi-libc
+.. _`libpreopen`: https://github.com/musec/libpreopen
 
 Solution criteria
 ^^^^^^^^^^^^^^^^^
@@ -133,6 +148,10 @@ Projects should be able to depend on libraries that just expose functionality th
 The plural, "platforms" is key.
 Projects that wish to some set of Unix, Windows, Web, and WASI must be able to depend on libraries that only offer the *intersection* of what works on each of those, i.e. what works on all of them.
 We will thus need more than one standard library.
+
+Platform-specific functionality should be exposed in ways that make sense in Haskell, not C.
+Traditional libc idioms and "lowest common denominator" practice should be skipped when it does not make sense in a Haskell context.
+It should be possible to use WASM and WASI without any "libc".
 
 **Problem 4**: Breaking changes have to coupled, not staggered, with GHC versions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -203,6 +222,13 @@ Rust's ``cap-std``
 `cap-std <https://github.com/bytecodealliance/cap-std>`_ is a Rust library exploring what ergonomic IO interfaces for WASI system calls in a high level language should look like.
 On one hand, it is great, and we should borrow from it heavily.
 On the other hand, we should surpass in not needing to be something on top of the "regular" standard library which ordinarily exposes more Unixy things than is appropriate.
+
+Rust's ``std`` and WASI
+~~~~~~~~~~~~~~~~~~~~~~~
+
+While the best experience comes from using ``cap-std`` as described above, Rust's ``std`` still makes sure to avoid indirecting through ``wasi-libc`` wherever possible.
+`This PR <https://github.com/rust-lang/rust/pull/63676>`_ made that change, using the ``wasi`` library (Rust bindings to WASI system calls) directly.
+This is what we should emulate in order to provide a top-tier programming environment for greenfield WebAssembly applications in Haskell.
 
 Prior attempts at splitting base
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -527,7 +553,7 @@ but tweak a few flags and the cabal stanza, and its easy to remove those sledgeh
 This is not normative!
 ~~~~~~~~~~~~~~~~~~~~~~
 
-Hopefully the above makes the vision of the proposal author more clear, but it should be equally stressed that this appendix is not normative.
+Hopefully the above appendix makes the vision of the proposal author more clear, but it should be equally stressed that this appendix is not normative.
 Nowhere is the CLC being told exactly what the new standard libraries should look like.
 Nowhere is it also specified how the implementation should be cut up behind the scenes.
 But, if this proposal is to succeed, it seems like reaching a consensus position similar to the above compromise between two extremes is likely to be necessary.
