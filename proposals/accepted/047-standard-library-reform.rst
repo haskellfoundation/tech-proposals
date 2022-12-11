@@ -163,14 +163,28 @@ There has been much discussion of these topics before, but to my knowledge this 
 
 A few misc things:
 
-- Rust's ``core`` vs ``std`` split of the standard library aims to help the portability problem.
-  Only maximally portable concepts can go in ``core``, the rest goes in ``std``.
+Rust's ``core`` vs ``std`
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  However, this doesn't dress the standard library --- language implementation coupling problem as both libraries still live in the compiler repo and are still released in tandem with the compiler.
+Rust also has multiple standard libraries, of which the most notable are ``core`` vs ``std``.
+This split solves the portability problem:
+Only maximally portable concepts, ones that work everywhere Rust does including embedded/freestanding contexts, can go in ``core``.
+The rest must go in ``std``.
 
-- `cap-std <https://github.com/bytecodealliance/cap-std>`__ is a Rust library exploring what ergonomic IO interfaces forWASI system in a high level language should look like.
-  On one hand, it is great, and we should borrow from it heavily.
-  On the other hand, we should surpass in not needing to be something on top of the "regular" standard library which ordinarily exposes more Unixy things than is appropriate.
+However, this doesn't go far enough to address the standard library --- language implementation coupling problem.
+Both libraries still live in the compiler repo and are still released in tandem with the compiler.
+``core`` also contains numerous definitions that, while perfectly portable, have nothing to do with interfacing the compiler internals.
+(Think e.g. the equivalents of things like ``Functor`` and ``Monoid`` for us, perfectly portable across compilation targets, but also implementation-agnostic.)
+
+Rust's ``cap-std``
+~~~~~~~~~~~~~~~~~~
+
+`cap-std <https://github.com/bytecodealliance/cap-std>`__ is a Rust library exploring what ergonomic IO interfaces forWASI system in a high level language should look like.
+On one hand, it is great, and we should borrow from it heavily.
+On the other hand, we should surpass in not needing to be something on top of the "regular" standard library which ordinarily exposes more Unixy things than is appropriate.
+
+Prior attempts at splitting base
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 There have been prior attempts to split ``base`` before, but they attempted to get everything done at once at thus failed.
 This approach here, by contrast, first and foremost seeks to the difficulties and find a sustainable, suitably low risk approach.
