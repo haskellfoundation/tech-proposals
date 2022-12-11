@@ -367,7 +367,9 @@ The actual stumbling point is not disagreements about where we want to end up, b
 
 As such, the most crucial step is considered to be **Step 1B**.
 After that, we know the basic concept for sure works.
-And indeed it is possible to start steps 2a and 2b before there is a complain **Step 1A** plan.
+And indeed it is possible to start steps 2a and 2b before there is a complete **Step 1A** plan.
+
+It may well additionally make sense to preliminarily accept *just* **Step 1B**, and then go back and refine this proposal's Timeline and Budget sections with the information we've learned from **Step 1B**.
 
 Budget
 ------
