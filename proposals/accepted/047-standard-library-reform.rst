@@ -15,7 +15,7 @@ The problems are briefly as follows:
 #. Major version bumps every compiler release is an inexcusable nuisance.
 
 #. No clear boundary between GHC private/unstable library support code and public/stable standard library interfaces.
-   `CLC Issue #015`__.
+   `CLC Issue #015`_.
 
 #. No clear portability guarantees with new supported platforms like the web browser and Web Assembly System Interface (WASI).
 
@@ -67,7 +67,7 @@ Users should be able to upgrade to the next GHC without adjusting any library ve
 **Problem 2**: No clear boundary between private/unstable and public/stable interfaces
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The long discussion thread in `CLC Issue #015`__ demonstrates this exceedingly well.
+The long discussion thread in `CLC Issue #015`_ demonstrates this exceedingly well.
 
 On a simpler level, the lack of a firm boundary confuses users, who don't know which parts of ``base`` they ought to use, and GHC developers, who don't know what parts they are free to change.
 
@@ -85,7 +85,7 @@ Private modules that we do wish to expose to code that *knowingly* is using unst
 The standard library should use regular PVP versioning.
 
 In solving the immediate problem this way, we also solve the meta problem.
-Using off-the-shelf definitions gives us a shared language reinforced by practice in the rest of the Haskell ecosystem.[#ubiquitous-language]_
+Using off-the-shelf definitions gives us a shared language reinforced by practice in the rest of the Haskell ecosystem. [#ubiquitous-language]_
 
 .. [#ubiquitous-language]
   Compare the "Ubiquitous Language" concept from Eric Evan's "Domain-driven design" also cited in the GHC modularity paper.
@@ -94,7 +94,7 @@ Using off-the-shelf definitions gives us a shared language reinforced by practic
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The new compilation backends that come with GHC 9.6 correspond, strict speaking, to new supported CPUs/Arches, like "x86" vs "Aarch64" vs "RISC-V", etc.
-WASM and JS are, with enough squinting, just ways of expressing computation those others: ways which should by and large not leak to the user.[#cpu-leaks]_
+WASM and JS are, with enough squinting, just ways of expressing computation those others: ways which should by and large not leak to the user. [#cpu-leaks]_
 
 .. [#cpu-leaks]
   The choice of CPU/Arch does leak through when wants to do certain special operations, like atomics that depend on the intricacies of memory models, or data-paralleld "SIMD" instrucitons.
@@ -119,7 +119,7 @@ The other two, however are a radical departure:
 - The web browser is nothing at all like Unix.
 
 - WASI, the Web Assembly System Interface, is like a "functional unix" removing ambient authority and forcing side effects to be mediated via file descriptors.
-  The upcoming `WASI Component Model <https://github.com/WebAssembly/component-model>`__ also plans on creating replacements for some "stringly typed" Unix functionality with "richly typed" interfaces.
+  The upcoming `WASI Component Model <https://github.com/WebAssembly/component-model>`_ also plans on creating replacements for some "stringly typed" Unix functionality with "richly typed" interfaces.
   Both these things are an *excellent* fit for Haskell.
 
 The existing implementations in GHC, to my knowledge, duck-tape over ``base`` and friends just to get something working.
@@ -149,7 +149,7 @@ But requirements change, and no one never makes mistakes.
 Issues will arise in the standard library and we will wish to fix them, because whatever the cost is to existing programs (which we can still attempt to mitigate) is outweighed by the benefit to future programs.
 
 However, if the standard library version is tied to GHC version, we have no choice but to do the breaking change coupled with a compiler version.
-Gabriella Gonzalez laid out the case in `Release early and often <https://www.haskellforall.com/2019/05/release-early-and-often.html>`__ on why coupling changes, especially breaking changes, together is bad, and I will cite that rather than restate the argument.
+Gabriella Gonzalez laid out the case in `Release early and often <https://www.haskellforall.com/2019/05/release-early-and-often.html>`_ on why coupling changes, especially breaking changes, together is bad, and I will cite that rather than restate the argument.
 For those reasons we shouldn't do that here with the standard library and GHC.
 
 Solution criteria
@@ -184,8 +184,8 @@ There has been much discussion of these topics before, but to my knowledge this 
 
 A few misc things:
 
-Rust's ``core`` vs ``std`
-~~~~~~~~~~~~~~~~~~~~~~~~~
+Rust's ``core`` vs ``std``
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Rust also has multiple standard libraries, of which the most notable are ``core`` vs ``std``.
 This split solves the portability problem:
@@ -200,7 +200,7 @@ Both libraries still live in the compiler repo and are still released in tandem 
 Rust's ``cap-std``
 ~~~~~~~~~~~~~~~~~~
 
-`cap-std <https://github.com/bytecodealliance/cap-std>`__ is a Rust library exploring what ergonomic IO interfaces for WASI system calls in a high level language should look like.
+`cap-std <https://github.com/bytecodealliance/cap-std>`_ is a Rust library exploring what ergonomic IO interfaces for WASI system calls in a high level language should look like.
 On one hand, it is great, and we should borrow from it heavily.
 On the other hand, we should surpass in not needing to be something on top of the "regular" standard library which ordinarily exposes more Unixy things than is appropriate.
 
@@ -219,7 +219,7 @@ Here is a plan to solve these issues.
 **Step 1A**: Task the CLC with defining new standard libraries
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Based on the conversation in `CLC Issue #015`__, ``base`` is exposing too much stuff, yet trying to limit what is exposed would be a big breaking change.
+Based on the conversation in `CLC Issue #015`_, ``base`` is exposing too much stuff, yet trying to limit what is exposed would be a big breaking change.
 
 The solution is to reach for another layer of indirection.
 The CLC should be tasked with devising new standard library interfaces, which would initially be implemented by reexporting modules from ``base``.
@@ -300,12 +300,12 @@ But it follows from the expanded "rationalize dependencies" goal.
 **Step 1B**: MVP Split ``base`` by making it all reexports
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The first steps of `GHC issue #20647`__ track what needs to be done here.
-The key first step is finishing `GHC PR !7898`__.
+The first steps of `GHC issue #20647`_ track what needs to be done here.
+The key first step is finishing `GHC MR !7898`_.
 This is crude: a ``ghc-base`` that ``base`` merely reexports in full is just as ugly as the original ``base``, but this is the quickest route to de-risking the entire project as describe in item 2 of the previous section.
 
 .. _`GHC issue #20647`: https://gitlab.haskell.org/ghc/ghc/-/issues/20647
-.. _`GHC PR !7898`: https://gitlab.haskell.org/ghc/ghc/-/merge_requests/7898
+.. _`GHC MR !7898`: https://gitlab.haskell.org/ghc/ghc/-/merge_requests/7898
 
 **Step 2A**: Rationalize dependencies
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -332,7 +332,7 @@ The good news is that we can get there very incrementally.
 The initial crude split will validate that shuffling definitions between libraries and modules works at all.
 After that, continuing to shuffle items reduces risk.
 
-The `GHC Wiki page on "Split Base" <https://gitlab.haskell.org/ghc/ghc/-/wikis/split-base>`__, especially Joachim Breitner's `prior attempt <https://github.com/nomeata/packages-base/blob/base-split/README.md>`__ offers good ideas backed by experience on where the natural cleavage points within ``base`` lie.
+The `GHC Wiki page on "Split Base" <https://gitlab.haskell.org/ghc/ghc/-/wikis/split-base>`_, especially Joachim Breitner's `prior attempt <https://github.com/nomeata/packages-base/blob/base-split/README.md>`_ offers good ideas backed by experience on where the natural cleavage points within ``base`` lie.
 
 At the conclusion of this, **Problem 2** and **Problem 4** will be solved in their entirety, which means all problems are solved in their entirety.
 
@@ -353,8 +353,8 @@ Bonus **Step 3A**: Also split ``template-haskell``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ``template-haskell`` also suffers from the same versioning problem as ``base``.
-For issues unrelated to avoiding version churn busywork, in `GHC issue #21738`__ it was already proposed to split up the library.
-`GHC proposal #529`__ likewise proposing adding language features such that the breakage-prone portion of ``template-haskell`` is way less likely to be needed.
+For issues unrelated to avoiding version churn busywork, in `GHC issue #21738`_ it was already proposed to split up the library.
+`GHC proposal #529`_ likewise proposing adding language features such that the breakage-prone portion of ``template-haskell`` is way less likely to be needed.
 If we implement that language feature, then it makes sense to additionally split of ``template-haskell`` for stability's sake, solving the equivalent of **Problem 1** for that library.
 
 .. _`GHC issue #21738`: https://gitlab.haskell.org/ghc/ghc/-/issues/21738
@@ -412,7 +412,7 @@ The HF should reach out to the `Bytecode Alliance <https://bytecodealliance.org/
 **Step 1B** costs
 ~~~~~~~~~~~~~~~~~
 
-Finishing `GHC PR !7898`__ is conservatively estimated to take 1 person-month of work from an experienced GHC dev.
+Finishing `GHC MR !7898`_ is conservatively estimated to take 1 person-month of work from an experienced GHC dev.
 The HF should finance this work if there is no volunteers to ensure it is done as fast as possible, as everything else is far too uncertain until this trial round of splitting and reexports has been completed end to end.
 
 **Step 2A** costs
@@ -441,7 +441,7 @@ This project depends on on them being interested and willing in taking on that w
 GHC developers
 ~~~~~~~~~~~~~~
 
-`GHC PR !7898`__ from **Step 1A** has uncovered some bugs that will need fixing.,
+`GHC MR !7898`_ from **Step 1A** has uncovered some bugs that will need fixing.,
 **Step 2A** will eventually result in churn among which submodules GHC contains, which will be frustrating until that stabilizes.
 **Step 2B**, if it were to be released not just done on a fork as a trial, will result in more release management work and possible fallout of reshuffling the implementation of ``base`` behind the scenes.
 
