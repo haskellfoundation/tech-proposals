@@ -87,18 +87,11 @@ The standard library should use regular PVP versioning.
 In solving the immediate problem this way, we also solve the meta problem.
 Using off-the-shelf definitions gives us a shared language reinforced by practice in the rest of the Haskell ecosystem. [#ubiquitous-language]_
 
-.. [#ubiquitous-language]
-  Compare the "Ubiquitous Language" concept from Eric Evan's "Domain-driven design" also cited in the GHC modularity paper.
-
 **Problem 3**: No clear portability guarantees with new targets
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The new compilation backends that come with GHC 9.6 correspond, strict speaking, to new supported CPUs/Arches, like "x86" vs "Aarch64" vs "RISC-V", etc.
 WASM and JS are, with enough squinting, just ways of expressing computation those others: ways which should by and large not leak to the user. [#cpu-leaks]_
-
-.. [#cpu-leaks]
-  The choice of CPU/Arch does leak through when wants to do certain special operations, like atomics that depend on the intricacies of memory models, or data-paralleld "SIMD" instrucitons.
-  But these concerns are fairly niche and we can mostly not think about them for the purposes of standard library design.
 
 What is more interesting from a library design perspective is over what *software* will the code be run.
 This would be analogous to the "Operating Systems" part of the platform description, like "Linux" vs "Windows" vs "macOS" etc.
@@ -176,6 +169,13 @@ Solution criteria
 
 Firstly, do not offer bad alternatives in the standard library that users should not use.
 Secondarily, do offer good alternatives, like ``Text`` and associated functionality, if they are suitable for inclusion.
+
+.. [#ubiquitous-language]
+  Compare the "Ubiquitous Language" concept from Eric Evan's *Domain-driven design* also cited in the GHC modularity paper.
+
+.. [#cpu-leaks]
+  The choice of CPU/Arch does leak through when wants to do certain special operations, like atomics that depend on the intricacies of memory models, or data-paralleld "SIMD" instrucitons.
+  But these concerns are fairly niche and we can mostly not think about them for the purposes of standard library design.
 
 Prior Art and Related Efforts
 -----------------------------
