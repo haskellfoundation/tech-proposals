@@ -122,10 +122,16 @@ The other two, however are a radical departure:
   The upcoming `WASI Component Model <https://github.com/WebAssembly/component-model>`__ also plans on creating replacements for some "stringly typed" Unix functionality with "richly typed" interfaces.
   Both these things are an *excellent* fit for Haskell.
 
-The existing implementations in GHC, to my knowledge, duck-tape over ``base`` and friends as much as possible just to get something working.
-This made perfect sense for GHCJS, and perfect sense for just getting things going.
-But it is a poor choice for a mature, first-class backend.
-Haskell has a mantra that "If it compiles, it probably works", and stubbing out functionality with ``error`` and friends is a huge regression from that.
+The existing implementations in GHC, to my knowledge, duck-tape over ``base`` and friends just to get something working.
+That is to say, whenever there is something that doesn't work, the put in ``error`` or remove it with CPP.
+This made perfect sense for GHCJS, and perfect sense for just getting things going more broadly.
+But they are poor long-term choices for a mature, first-class backend.
+
+Haskell has a mantra that "If it compiles, it probably works", and stubbing out exposed functions with ``error`` and friends clearly is a huge regression on that front.
+
+CPP is less bad, but still not good enough.
+The issue is that it is very easy to, when developing (say with GHCi or HLS) on one platform, accidentally depend on things that not available on the other platforms ones wishes to support.
+Yes, CI which builds for all of the platforms can and should catch this, but it is always sub-optimal to only catch basic issues then.
 
 Solution criteria
 ^^^^^^^^^^^^^^^^^
@@ -150,16 +156,20 @@ Solution criteria
 ^^^^^^^^^^^^^^^^^
 
 Changes in the standard library in the compiler should always be staggered.
-It should be possible to upgrade the compiler with only a minor version change or less in the standard library, and possible to upgrade a major version change in the standard library without breaking a compiler.
+It should be possible to upgrade the compiler with only a minor version change or less in the standard library.
+It should likewise be possible to upgrade a major version change in the standard library without breaking a compiler.
 
 Problem 5: Popular and uncontroversial machinery like ``Text`` not available from the standard library
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-There has been much grumbling over the years that popular items like ``Text`` which are normally expected to be in standard libraries are not.
+There has been much grumbling over the years that popular items like ``Text`` are not in the standard library.
+Items like these are expected to be languages' standard libraries and elsewhere indeed are found there.
 
-It is one thing for a standard library to be minimal, and say not offer any string type or operations on that.
+Now, it is one thing for a standard library to be minimal, and say not offer any string type or operations on that.
+That would not be so bad.
 What is worse is that ``base`` does offer ``String``, and furthermore operations on ``String``.
-The problem is thus not so much that it is inconvenient to grab the ``Text``-based functionality from elsewhere, as it is that ``base`` is has a foot-gun in offering alternatives that should be *avoided*.
+The problem is thus not so much that it is inconvenient to grab the ``Text``-based functionality from elsewhere, as it is that ``base`` has a foot-gun in offering alternatives that should be *avoided*.
+Standard libraries which *mislead* the user as to what they ought to do are worse than standard libraries which stay mum altogether.
 
 Solution criteria
 ^^^^^^^^^^^^^^^^^
