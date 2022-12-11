@@ -41,8 +41,8 @@ Problem Statement
 
 Each of items from the abstract is described in detail.
 
-Problem 1: Major version bumps every compiler release
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Problem 1**: Major version bumps every compiler release
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Currently, every major release of of GHC is accompanied with a major version of ``base``, and also other libraries like ``template-haskell``.
 This causes numerous issues:
@@ -64,8 +64,8 @@ Solution criteria
 
 Users should be able to upgrade to the next GHC without adjusting any library version requirements.
 
-Problem 2: No clear boundary between private/unstable and public/stable interfaces
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Problem 2**: No clear boundary between private/unstable and public/stable interfaces
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The long discussion thread in `CLC Issue #015`__ demonstrates this exceedingly well.
 
@@ -90,8 +90,8 @@ Using off-the-shelf definitions gives us a shared language reinforced by practic
 .. [#ubiquitous-language]
   Compare the "Ubiquitous Language" concept from Eric Evan's "Domain-driven design" also cited in the GHC modularity paper.
 
-Problem 3: No clear portability guarantees with new targets
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Problem 3**: No clear portability guarantees with new targets
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The new compilation backends that come with GHC 9.6 correspond, strict speaking, to new supported CPUs/Arches, like "x86" vs "Aarch64" vs "RISC-V", etc.
 WASM and JS are, with enough squinting, just ways of expressing computation those others: ways which should by and large not leak to the user.[#cpu-leaks]_
@@ -141,8 +141,8 @@ The plural, "platforms" is key.
 Projects that wish to some set of Unix, Windows, Web, and WASI must be able to depend on libraries that only offer the *intersection* of what works on each of those, i.e. what works on all of them.
 We will thus need more than one standard library.
 
-Problem 4: Breaking changes have to coupled, not staggered, with GHC versions
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Problem 4**: Breaking changes have to coupled, not staggered, with GHC versions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Wishful thinking would have it that we can just *stop* doing breaking changes, forever.
 But requirements change, and no one never makes mistakes.
@@ -159,8 +159,8 @@ Changes in the standard library in the compiler should always be staggered.
 It should be possible to upgrade the compiler with only a minor version change or less in the standard library.
 It should likewise be possible to upgrade a major version change in the standard library without breaking a compiler.
 
-Problem 5: Popular and uncontroversial machinery like ``Text`` not available from the standard library
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Problem 5**: Popular and uncontroversial machinery like ``Text`` not available from the standard library
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 There has been much grumbling over the years that popular items like ``Text`` are not in the standard library.
 Items like these are expected to be languages' standard libraries and elsewhere indeed are found there.
@@ -216,8 +216,8 @@ Technical Content
 
 Here is a plan to solve these issues.
 
-Step 1a: Task the CLC with defining new standard libraries
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Step 1A**: Task the CLC with defining new standard libraries
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Based on the conversation in `CLC Issue #015`__, ``base`` is exposing too much stuff, yet trying to limit what is exposed would be a big breaking change.
 
@@ -232,7 +232,7 @@ The new library interfaces should be carefully designed in and of themselves to 
   This fixes **Problem 1**.
 
 - These libraries should be emphasized in all documentation, and users should be encouraged to used them not ``base`` in new end-application code.
-  ``base``, in contrast would be kept around in mere legacy mode.
+  ``base``, in contrast, would be kept exposed as a mere legacy interface.
   As code migrates over to use the new standard libraries, ``base`` should become less important.
   GHC devs can therefore feel increasingly confident modifying parts of ``base`` which are *not* reexported in these new libraries.
 
@@ -244,7 +244,7 @@ The new library interfaces should be carefully designed in and of themselves to 
 
   For example, Unix and Windows are mostly a superset of WASI, so WASI-compatible file-descriptor-oriented code should work everywhere.
 
-  Exactly how many separate libraries is justified is left to the CLC.
+  Exactly how many separate libraries is justified is left to the CLC to decide.
 
   This fixes **Problem 3**.
 
@@ -256,13 +256,15 @@ The new library interfaces should be carefully designed in and of themselves to 
 New Goal: Rationalize dependencies
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Step 1a addresses most problems, but leaves behind **Problem 2** somewhat, and **Problem 4** completely.
-But moreover than that, Step 1a doesn't exactly make for a maintainable solution.
+**Step 1A** addresses most problems, but leaves behind **Problem 2** somewhat, and **Problem 4** completely.
+But moreover than that, **Step 1A** doesn't exactly make for a maintainable solution.
 As the famous David Wheeler quote states:
 "All problems in computer science can be solved by another level of indirection, *except for the problem of too many layers of indirection*."
 Reexporting a modules from a less stable library (``base``) in more stable libraries is very error-prone.
 
 The generalization of these concerns is *rationalizing* dependencies, or rationalizing the division of labor between libraries.
+Once the purposes of libraries, and the division of labor between then, makes more sense, it will be easier to maintain these libraries.
+It should be in fact easier than it was before to maintain them.
 
 New Goal: Split Base
 ~~~~~~~~~~~~~~~~~~~~
@@ -281,31 +283,32 @@ But it follows from the expanded "rationalize dependencies" goal.
 #. ``base`` is treated specially in a few ways.
    For example:
 
-   - it is the library that GHCi loads by default.
+   - It is the library that GHCi loads by default.
 
    - GHC's compilation is directly aware of it in the form of various "wired-in" identifiers.
 
    - Some modules of it are automatically trusted with Safe Haskell.
 
-   With the new multi-library world, different libraries will inherit these special features, and we cannot be sure what the ramifications are until we try.
+   In the new multi-library world, different libraries will inherit these special features, and we cannot be sure what the ramification will be until we try.
 
    It is best to "practice" this by splitting ``base`` as soon as possible.
-   That will reduce the risk of everything else by exploring for "unknown unknowns" and "unknown unknowns" alike.
+   That will reduce the risk of everything else by both exploring "known unknowns" and scouting ahead for "unknown unknowns".
 
 #. Ultimately, in the name of rationalizing dependencies and the library division of labor, ``base`` will never make sense in anything like its current form.
    We should therefore demote it to being a mere reexporter of other libraries that do make sense.
 
-Step 1b: MVP Split ``base`` by making it all reexports
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Step 1B**: MVP Split ``base`` by making it all reexports
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The first steps of `GHC issue #20647 <https://gitlab.haskell.org/ghc/ghc/-/issues/20647>`__ track what needs to be done here.
+The first steps of `GHC issue #20647`__ track what needs to be done here.
 The key first step is finishing `GHC PR !7898`__.
 This is crude: a ``ghc-base`` that ``base`` merely reexports in full is just as ugly as the original ``base``, but this is the quickest route to de-risking the entire project as describe in item 2 of the previous section.
 
+.. _`GHC issue #20647`: https://gitlab.haskell.org/ghc/ghc/-/issues/20647
 .. _`GHC PR !7898`: https://gitlab.haskell.org/ghc/ghc/-/merge_requests/7898
 
-Step 2a: Rationalize dependencies
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Step 2A**: Rationalize dependencies
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 At this point we have the following:
 
@@ -318,11 +321,11 @@ That would look something like this:
 
 - 1 or more libraries in the GHC repo that are deeply tied to GHC's implementation details.
   These libraries might depend on libraries in the next group.
-- 1 or more libraries outside the GHC that are repo agnostic to GHC's implemenation details.
+- 1 or more libraries outside the GHC that are repo agnostic to GHC's implementation details.
   These libraries might depend on libraries in the previous group.
 - ``base``, lives in the GHC repo, and merely reexports functionality from the first two groups.
-- ``text``, if used by the new stand library, should *not* depend on ``base``.
-- The new standard libres, living outside the GHC repo, merely rexporting functionality from the first two groups and possibly ``text``.
+- ``text``, lives outside the GHC repo, and should *not* depend on ``base``, but instead libraries from the first two groups.
+- The new standard libraries, living outside the GHC repo, merely reexporting functionality from the first two groups and possibly ``text``.
 
 It will take a while to untangle everything to get to this new maintainable end state.
 The good news is that we can get there very incrementally.
@@ -333,8 +336,8 @@ The `GHC Wiki page on "Split Base" <https://gitlab.haskell.org/ghc/ghc/-/wikis/s
 
 At the conclusion of this, **Problem 2** and **Problem 4** will be solved in their entirety, which means all problems are solved in their entirety.
 
-Step 2b: Practice release management (Optional)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Step 2B**: Practice release management (Optional)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 We won't know for sure if **Problem 4** is solved until a GHC release happens.
 But waiting for that could take a while, and is thus a risky behavior because we to know whether our efforts are on the right track or doomed to fail as soon as possible.
@@ -357,35 +360,62 @@ Timeline
 The project is designed to proceed in parallel to minimize risk, in addition to being incremental.
 Steps 1a and 1b are independent, and steps 2a and 2b are likewise independent.
 
-In past discussion, consensus around a plan from step 1a was emphasized as a blocker --- if we didn't know what sort of standard libraries we wanted to end up with, we shouldn't proceed.
+In past discussion, consensus around a plan from **Step 1A** was emphasized as a blocker --- if we didn't know what sort of standard libraries we wanted to end up with, we shouldn't proceed.
 In the author's opinion this is misguided.
 The actual stumbling point is not disagreements about where we want to end up, but maintaining progress on something which is not incredibly hard, but has many steps and ushers in most of the benefit over the long term.
 (For example, many users of GHC are behind the latest version, these reforms only benefit them going forward after they have caught up to the last unaffected release.)
 
-As such, the most crucial step is considered to be step 1b.
+As such, the most crucial step is considered to be **Step 1B**.
 After that, we know the basic concept for sure works.
-And indeed it is possible to start steps 2a and 2b before there is a complain step 1a plan.
+And indeed it is possible to start steps 2a and 2b before there is a complain **Step 1A** plan.
 
 Budget
 ------
 
-Finishing `GHC PR !7898`__ is conservatively estimated to take 1 person-month of work from an experienced GHC's dev.
+**Step 1A** costs
+~~~~~~~~~~~~~~~~~
+
+It is unknown whether the CLC will need HF help to do the large amount of planning work for **Step 1A**.
+
+The HF should reach out to the `Bytecode Alliance <https://bytecodealliance.org/>`, which is the HF equivalent for WASM and WASI, for financial and technical assistance ensuring the relevant new standard libraries can work well with WASI.
+
+**Step 1B** costs
+~~~~~~~~~~~~~~~~~
+
+Finishing `GHC PR !7898`__ is conservatively estimated to take 1 person-month of work from an experienced GHC dev.
 The HF should finance this work if there is no volunteers to ensure it is done as fast as possible, as everything else is far too uncertain until this trial round of splitting and reexports has been completed end to end.
 
-It is unknown whether the CLC will need HF help to do the large amount of planning work for step 1a.
+**Step 2A** costs
+~~~~~~~~~~~~~~~~~
 
-Step 2a should be priced out per incremental item, with the hope that specific steps will entice volunteers which care about the functionality behind reshuffled in that step.
+**Step 2A** should be priced out per incremental item, with the hope that specific steps will entice volunteers which care about the functionality behind reshuffled in that step.
 HF may need to pay a coordination roll but hopefully doesn't need to pay for the work being done directly.
 This should serve as a way to recruit more standard library maintainers going forward, as the fine-grained boundaries between the underlying libraries naturally lend themselves to a division of labor.
+
+**Step 2B** costs
+~~~~~~~~~~~~~~~~~
+
+This steps is optional.
+But since it involves redoing the work already done on GHC master on a prior GHC, we can use our collective experience with backporting to estimate what the ratio of effort to that for the original work would be.
+1/2 time is a rough estimate at a cautious upper bound.
 
 Stakeholders
 ------------
 
-The Core Libraries Committee. Step 1a constitutes a large chunk of new responsibility for the CLC.
+The Core Libraries Committee
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-GHC developers: `GHC PR !7898`__ from step 1a has uncovered some bugs that will need fixing.
-Step 2a will eventually result in churn among which submodules GHC contains, which will be frustrating until that stabilizes.
-Step 2b, if it were to be released not just done on a fork as a trial, will result in more release management work and possible fallout of reshuffling the implementation of ``base`` behind the scenes.
+**Step 1A** constitutes a large chunk of new responsibility for the CLC.
+This project depends on on them being interested and willing in taking on that work.
+
+GHC developers
+~~~~~~~~~~~~~~
+
+`GHC PR !7898`__ from **Step 1A** has uncovered some bugs that will need fixing.,
+**Step 2A** will eventually result in churn among which submodules GHC contains, which will be frustrating until that stabilizes.
+**Step 2B**, if it were to be released not just done on a fork as a trial, will result in more release management work and possible fallout of reshuffling the implementation of ``base`` behind the scenes.
+
+Due to **Problem 4**, the interest and cooperation of the developers of our new backends is especially solicited.
 
 Success
 -------
