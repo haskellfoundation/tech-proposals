@@ -370,3 +370,83 @@ Success
 -------
 
 The project will be considered a success when all the enumerated problems are solved per their "solution criteria" (no moving the goalposts later without anyone noticing), and the standard library implementation is easier to maintain than before.
+
+Appendix: What are standard libraries for?
+------------------------------------------
+
+*If parts of this proposal seems hard to understand or surprising, background information in the form of the author's critical view on the very concept of a standard library me prove illuminating.*
+
+A contradictory dual mandate
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Standard libraries typically have a dual mandate which is hard to reconcile:
+
+#. On one hand, they are supposed to be the *bottommost* library, abstracting over the unstable or non-portable details of the language's implementation.
+
+#. On the other hand, they are supposed to be *feature-rich* and provide a bunch of convenient and widely agreed upon stuff that represents the language community's consensus on what functionality ought to always be available, and how certain common problems should be approached.
+   To use the common phrase for this idea, they exist to make the language "batteries included".
+
+The tension lies between *bottommost* from (1) and *feature-rich* from (2).
+The only way to do both is to become truly massive and just span that gap.
+And this is what most languages do.
+But frequently results in a giant monolith which is hard to maintain and hard to change --- a source of endless frustration.
+And indeed that is the experience of most language's over time: languages die young or live long enough to regret many of the decisions in their standard library.
+
+Let's take a step bit.
+The benefits of (2) are mainly for `"programming in the small" <https://en.wikipedia.org/wiki/Programming_in_the_large_and_programming_in_the_small>` and end applications.
+For libraries, and especially the ecosystem of libraries as a whole, a primary objective is to be resilient in the face of change: in other words to have the lease disruption per breakage and controversy as possible.
+To that end a few simple rules can help:
+
+ - Libraries should do one thing, and do that one things well
+ - Libraries should only depend on what they need.
+
+These rules serve libraries well...until we reach the standard library.
+The standard library of the above sort, trying to do (1) and (2), does *many* things, and not necessarily any of them well.
+Downstream libraries furthermore will inevitably only use a small part of the standard library, and so both rules are provided.
+
+Large libraries bad technically
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+From the perspective of this "little library programming in the large", standard-libraries are an anti-pattern.
+We should follow a consistent practice, and have little modular libraries "all the way down", to the guts of primops, the runtime, or whatever other spooky dragons there be.
+By following the two simple rules completely, the needs of such libraries are served quite while.
+Mistakes can be remedied with the occasional breaking change, the breaking change impacts as few downstream libraries as possible, and it is easy to maintain the old and new versions of libraries (two major version series) in parallel, to allow for graceful migration periods.
+From the perspective of *existing, large-scale* users of Haskell, who consume the existing library ecosystem voraciously, this would be a great improvement.
+
+Large standard libraries good socially
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+But that doesn't mean we should leave "programming in the small" in the lurch!
+This is still important, and quite arguably a weak-spot of Haskell already.
+New users first experience of a language, unless it is on the job, is usually programming in the small, so it is an essential marketing opportunity to get right.
+And this indirectly benefits programming in the large, too.
+For example, companies programming in the large do want a steady influx of new Haskellers that can (eventually) fill out their hiring pool.
+
+Furthermore, standard libraries still serve a *social* function that benefits programming in the small and large alike.
+Little libraries all the way down represents apex of pluralism, of people being able to explore their own vision of what programming in the language ought to look like.
+But there can be too much experimentation, and not enough cross-pollination of ideas.
+The standard library reflects a chance to get together, hash out our differences, and maximize what we all agree on.
+Again, we see indirect benefits of programming in the large.
+For example, companies not only want a hiring pool of Haskellers on paper, but a pool of programmers who have some idea what the norms and idioms used in their codebases are.
+Shared norms and idioms promote a single community rather than family of communities, and make it easier to switch between jobs and projects one works on without feeling like one is starting over completely.
+
+Synthesis
+~~~~~~~~~
+
+So if we want to have little libraries for technical reasons, but large feature-rich standard libraries for social reasons, what do we do?
+Both!
+The original definitions of just about everything be incubated in little libraries, and continue to live in little libraries.
+Standard libraries should have very little of their own definitions, but just focus on reexports, their role is not to *invent*, but to *curate*.
+Plans today in the works like *moving* ``Profunctor`` to ``base`` should instead become having the new standard libraries merely *depend* on the ``profunctors`` library and reexport items.
+
+In the `words of Shriram Krishnamurthi <https://twitter.com/ShriramKMurthi/status/1597942676560965634>`, the slogan should not be "batteries included", but "batteries included — but not inserted".
+When one just starts up GHCi without arguments, or runs ``cabal new``, one will get the nice feature-rich standard library loaded / as a ``build-depend`` by default,
+but tweak a few flags and the cabal stanza, and its easy to remove those sledgehammer deps and just depend on exactly what one needs.
+
+This is not normative!
+~~~~~~~~~~~~~~~~~~~~~~
+
+Hopefully the above makes the vision of the proposal author more clear, but it should be equally stressed that this appendix is not normative.
+Nowhere is the CLC being told exactly what the new standard libraries should look like.
+Nowhere is it also specified how the implementation should be cut up behind the scenes.
+But, if this proposal is to succeed, it seems like reaching a consensus position similar to the above compromise between two extremes is likely to be necessary.
