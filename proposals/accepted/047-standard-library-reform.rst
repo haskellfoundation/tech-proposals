@@ -349,10 +349,38 @@ This step is optional.
 If the work appears to be going well or is quicker/cheaper than expected, maybe it is not worth the effort.
 On the other hand, if we could do a minor release of the old GHC using the split, so the backported work isn't purely for de-risking but actually delivers some benefits to users, that provides more reason to do this.
 
-Step 3: Bonus: Also split ``template-haskell``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Bonus **Step 3A**: Also split ``template-haskell``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-``template-haskell``
+``template-haskell`` also suffers from the same versioning problem as ``base``.
+For issues unrelated to avoiding version churn busywork, in `GHC issue #21738`__ it was already proposed to split up the library.
+`GHC proposal #529`__ likewise proposing adding language features such that the breakage-prone portion of ``template-haskell`` is way less likely to be needed.
+If we implement that language feature, then it makes sense to additionally split of ``template-haskell`` for stability's sake, solving the equivalent of **Problem 1** for that library.
+
+.. _`GHC issue #21738`: https://gitlab.haskell.org/ghc/ghc/-/issues/21738
+.. _`GHC proposal #529`: https://github.com/ghc-proposals/ghc-proposals/pull/529
+
+Bonus **Step 3B**: Rethinking Windows
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Right now, ``base`` relies on MinGW and Window's libc compat layer to approximate traditional Unix functionality.
+The ``unix`` and ``Win32`` layers than expose additional platform-specific functionality.
+
+Quite arguably, this is the wrong way of going about IO.
+
+- It would be nice to make MinGW optional and support Windows more directly/natively.
+  This is what Rust does.
+  LLVM has made doing so (e.g. without relying on proprietary tools exclusively) much easier in recent years.
+  As Ben Gamari and others can attest, the state of Windows support in GNU tools is not good.
+
+- It would be nice to not limit ourselves to a lowest-common-denominator of ``libc``-esque functionality as our starting point.
+  Windows and Linux have added all sorts of more modern functionality in recent years that often is (a) similar, and (b) represents better ways to do existing operations, e.g. avoiding around restrictions on character sets, file path length, etc.
+
+From this perspective we should invert the dependencies:
+``unix`` and ``Win32`` should be below, binding Unix and Windows APIs *as they are*,
+and then *above* that is a compatibility layer creating portable interfaces with the latest best practice *without* the burden of libc tradition.
+
+This sort of reshuffle is a continuation of the project of rationalizing dependencies and a natural extension of **Step 2A**.
 
 Timeline
 --------
