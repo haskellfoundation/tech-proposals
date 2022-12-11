@@ -230,8 +230,8 @@ While the best experience comes from using ``cap-std`` as described above, Rust'
 `This PR <https://github.com/rust-lang/rust/pull/63676>`_ made that change, using the ``wasi`` library (Rust bindings to WASI system calls) directly.
 This is what we should emulate in order to provide a top-tier programming environment for greenfield WebAssembly applications in Haskell.
 
-Prior attempts at splitting base
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Prior attempts at splitting ``base``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 There have been prior attempts to split ``base`` before, but they attempted to get everything done at once, setting a dangerously high bar for success.
 This approach here, by contrast, first and foremost seeks to the difficulties and find a sustainable, suitably low risk approach.
