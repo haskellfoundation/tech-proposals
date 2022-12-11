@@ -12,16 +12,16 @@ The problems and solutions are multifaceted, and so the Haskell Foundation in it
 
 The problems are briefly as follows:
 
-#. Major version bumps every compiler release is an excusable nuisance.
+#. Major version bumps every compiler release is an inexcusable nuisance.
 
 #. No clear boundary between GHC private/unstable library support code and public/stable standard library interfaces.
    `CLC Issue #015`__.
 
-#. No clear portability guarantees with new targets like the web browser and Web Assembly System Interface (WASI).
+#. No clear portability guarantees with new supported platforms like the web browser and Web Assembly System Interface (WASI).
 
-#. Breaking changes (when we do want) have to coupled with GHC versions and not staggered is also painful.
+#. Breaking changes (when we do want them) have to be coupled with GHC versions and rather than staggered, which is painful.
 
-#. Popular and uncontroversial machinery like `Text` is not available from the standard library.
+#. Popular and uncontroversial machinery like ``Text`` is not available from the standard library.
 
 By reshuffling our interfaces and implementations a like, we should be able to solve all these problems.
 
@@ -30,7 +30,8 @@ By reshuffling our interfaces and implementations a like, we should be able to s
 Background
 ----------
 
-The author deems these problems as major and highly visible; if this is true Haskellers of all skill levels should at least have a cursory familiarity with them.
+The author deems these problems major and highly visible;
+if this is true then Haskellers of all skill levels should at least have a cursory familiarity with them.
 
 The details of the solution may require more advance knowledge, but the *use* of the solution should not.
 Indeed, the new standard library interfaces we come up with should be *easier* to use than today's.
@@ -46,17 +47,17 @@ Problem 1: Major version bumps every compiler release
 Currently, every major release of of GHC is accompanied with a major version of ``base``, and also other libraries like ``template-haskell``.
 This causes numerous issues:
 
-First and foremost, it creates a ton of busywork to upgrade to a new version of GHC as library version requirements must be relaxed.
+First and foremost, these major version bumps creates a ton of busywork to upgrade to a new version of GHC as library version requirements must be relaxed.
 
-Secondly it undermines our other processes by creating perverse incentives.
+Secondly they undermines our other processes by creating perverse incentives.
 
 Library authors find it convenient to make too-loose requirements on ``base`` on the assumption that whatever base breakage happens next "probably" won't effect them.
-But fast-and-loose version bounds conversely the version solver cannot be trusted to choose good plans.
-We want version solving to be sound and complete, and the only way for that to be the case is if breaking changes are rare.
+But fast-and-loose version bounds undermine the version solver, which can no longer be trusted to choose good plans in that scenario.
+We want version solving to be sound and complete, and the only way for that to be the case is if breaking changes are infrequent enough that people to not feel the urge to do this.
 
-It also makes it harder to think about compatibility and ease of upgrading with GHC in general.
-This and other long-shrugged-off paper cuts over the upgrade process result in a big picture where where some of us are numb to breakage, and others are irate about it.
-We should do the little things well so the remaining thornier issues around GHC upgrading (syntax changes, type system changes, etc.) can be approached from a cleaner starting point.
+These major version bumps also makes it harder to think about compatibility and ease of upgrading with GHC in general.
+This and other long-shrugged-off paper cuts during the upgrade process result in a big picture where where some of us are numb to breakage, and others are irate about it.
+We should do the little things well so the remaining thornier issues around GHC upgrading (syntax changes, type system changes, etc.) can be approached from a "decluttered" starting point.
 
 Solution criteria
 ^^^^^^^^^^^^^^^^^
@@ -66,12 +67,13 @@ Users should be able to upgrade to the next GHC without adjusting any library ve
 Problem 2: No clear boundary between private/unstable and public/stable interfaces
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The long discussion thread in `CLC Issue #015`__ really demonstrates this purposefully.
+The long discussion thread in `CLC Issue #015`__ demonstrates this exceedingly well.
 
-On a simpler level, the lack of a firm boundary confuses users, who don't know which parts of ``base`` they ought to use, and GHC developers, who don't know what parts of the code they are free to change.
+On a simpler level, the lack of a firm boundary confuses users, who don't know which parts of ``base`` they ought to use, and GHC developers, who don't know what parts they are free to change.
 
-On a more complex level, I think everyone in the thread was surprised on how hard it was to even discuss these issues.
-Not only is there not a firm boundary, but there wasn't even a collectively-shared mental model on how to discuss the issue or its solutions!
+On a more meta level, I think everyone in the thread was surprised on how hard it was to even discuss these issues.
+Not only is there no firm boundary, but there wasn't even a collectively-shared mental model on what exactly the issue is, and how to discuss it or its solutions!
+This is a "tower of Babel" moment where the inability to communicate makes it hard to work together.
 
 Solution criteria
 ^^^^^^^^^^^^^^^^^
@@ -80,17 +82,26 @@ We should use standard off-the-shelf definitions and techniques to enforce this 
 The standard library should not expose private, implementation-detail modules full-stop.
 The entirely of the standard library's public interface should be considered just that, its public interface.
 Private modules that we do wish to expose to code that *knowingly* is using unstable interfaces should be exposed from a separate library/
-The standard library should use regular PVP versioning. 
+The standard library should use regular PVP versioning.
+
+In solving the immediate problem this way, we also solve the meta problem.
+Using off-the-shelf definitions gives us a shared language reinforced by practice in the rest of the Haskell ecosystem.[#ubiquitous-language]
+
+.. [#ubiquitous-language]
+  Compare the "Ubiquitous Language" concept from Eric Evan's "Domain-driven design" also cited in the GHC modularity paper.
 
 Problem 3: No clear portability guarantees with new targets
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The new backends that come with GHC 9.6 are chiefly thought of as new CPUs/Arches.
-WASM and JS are, with enough squinting, just ways of expressing computation that like "x86" vs "Aarch64" vs "RISC-V", etc., should by and large not leak to the user.
-(Exceptions would be when dealing with memory model or special instruction intricacies.)
+The new compilation backends that come with GHC 9.6 correspond, strict speaking, to new supported CPUs/Arches, like "x86" vs "Aarch64" vs "RISC-V", etc.
+WASM and JS are, with enough squinting, just ways of expressing computation those others: ways which should by and large not leak to the user.[#cpu-leaks]
 
-What is more interesting from a library design perspective is where the code will be run.
-This would be analogous to the "OS" part of the platform description, like "Linux" vs "Windows" vs "macOS" etc.
+.. [#cpu-leaks]
+  The choice of CPU/Arch does leak through when wants to do certain special operations, like atomics that depend on the intricacies of memory models, or data-paralleld "SIMD" instrucitons.
+  But these concerns are fairly niche and we can mostly not think about them for the purposes of standard library design.
+
+What is more interesting from a library design perspective is over what *software* will the code be run.
+This would be analogous to the "Operating Systems" part of the platform description, like "Linux" vs "Windows" vs "macOS" etc.
 
 JavaScript can be run in two places:
 
@@ -109,7 +120,7 @@ The other two, however are a radical departure:
 
 - WASI, the Web Assembly System Interface, is like a "functional unix" removing ambient authority and forcing side effects to be mediated via file descriptors.
   The upcoming `WASI Component Model <https://github.com/WebAssembly/component-model>`__ also plans on creating replacements for some "stringly typed" Unix functionality with "richly typed" interfaces.
-  Both these things are an *excellent* for Haskell.
+  Both these things are an *excellent* fit for Haskell.
 
 The existing implementations in GHC, to my knowledge, duck-tape over ``base`` and friends as much as possible just to get something working.
 This made perfect sense for GHCJS, and perfect sense for just getting things going.
@@ -179,7 +190,7 @@ Both libraries still live in the compiler repo and are still released in tandem 
 Rust's ``cap-std``
 ~~~~~~~~~~~~~~~~~~
 
-`cap-std <https://github.com/bytecodealliance/cap-std>`__ is a Rust library exploring what ergonomic IO interfaces forWASI system in a high level language should look like.
+`cap-std <https://github.com/bytecodealliance/cap-std>`__ is a Rust library exploring what ergonomic IO interfaces for WASI system calls in a high level language should look like.
 On one hand, it is great, and we should borrow from it heavily.
 On the other hand, we should surpass in not needing to be something on top of the "regular" standard library which ordinarily exposes more Unixy things than is appropriate.
 
@@ -220,7 +231,7 @@ The new library interfaces should be carefully designed in and of themselves to 
 - The new standard library should not be a single library but multiple.
   IO-free interfaces that are portable everywhere should be one library.
   Interfaces involving IO should be split into libraries where they run.
-  
+
   For example, Unix and Windows are mostly a superset of WASI, so WASI-compatible file-descriptor-oriented code should work everywhere.
 
   Exactly how many separate libraries is justified is left to the CLC.
@@ -281,7 +292,7 @@ The first steps of `GHC issue #20647 <https://gitlab.haskell.org/ghc/ghc/-/issue
 The key first step is finishing `GHC PR !7898`__.
 This is crude: a ``ghc-base`` that ``base`` merely reexports in full is just as ugly as the original ``base``, but this is the quickest route to de-risking the entire project as describe in item 2 of the previous section.
 
-.. _GHC PR !7898: https://gitlab.haskell.org/ghc/ghc/-/merge_requests/7898
+.. _`GHC PR !7898`: https://gitlab.haskell.org/ghc/ghc/-/merge_requests/7898
 
 Step 2a: Rationalize dependencies
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
