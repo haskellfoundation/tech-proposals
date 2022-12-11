@@ -85,7 +85,7 @@ Private modules that we do wish to expose to code that *knowingly* is using unst
 The standard library should use regular PVP versioning.
 
 In solving the immediate problem this way, we also solve the meta problem.
-Using off-the-shelf definitions gives us a shared language reinforced by practice in the rest of the Haskell ecosystem.[#ubiquitous-language]
+Using off-the-shelf definitions gives us a shared language reinforced by practice in the rest of the Haskell ecosystem.[#ubiquitous-language]_
 
 .. [#ubiquitous-language]
   Compare the "Ubiquitous Language" concept from Eric Evan's "Domain-driven design" also cited in the GHC modularity paper.
@@ -94,7 +94,7 @@ Problem 3: No clear portability guarantees with new targets
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The new compilation backends that come with GHC 9.6 correspond, strict speaking, to new supported CPUs/Arches, like "x86" vs "Aarch64" vs "RISC-V", etc.
-WASM and JS are, with enough squinting, just ways of expressing computation those others: ways which should by and large not leak to the user.[#cpu-leaks]
+WASM and JS are, with enough squinting, just ways of expressing computation those others: ways which should by and large not leak to the user.[#cpu-leaks]_
 
 .. [#cpu-leaks]
   The choice of CPU/Arch does leak through when wants to do certain special operations, like atomics that depend on the intricacies of memory models, or data-paralleld "SIMD" instrucitons.
@@ -207,7 +207,7 @@ On the other hand, we should surpass in not needing to be something on top of th
 Prior attempts at splitting base
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-There have been prior attempts to split ``base`` before, but they attempted to get everything done at once at thus failed.
+There have been prior attempts to split ``base`` before, but they attempted to get everything done at once, setting a dangerously high bar for success.
 This approach here, by contrast, first and foremost seeks to the difficulties and find a sustainable, suitably low risk approach.
 It is much more concerned with how we safely approach these issues than what the exact outcome looks like.
 
@@ -227,11 +227,11 @@ The CLC should be tasked with devising new standard library interfaces, which wo
 The new library interfaces should be carefully designed in and of themselves to tackle many, but not all, of the issues above:
 
 - They should be designed *not* to break every release.
-  Even though the underlying ``base`` from which modules are exported would continue to  have its regular problematic major version bumps, the portion reexport should have very infrequent breaking changes.
+  Even though the underlying ``base`` from which modules are reexported would continue to have its regular problematic major version bumps, the portion reexported should have very infrequent breaking changes.
 
   This fixes **Problem 1**.
 
-- These libraries should be emphasized in all documentation and users should be encouraged to used them not ``base`` in new end-application code.
+- These libraries should be emphasized in all documentation, and users should be encouraged to used them not ``base`` in new end-application code.
   ``base``, in contrast would be kept around in mere legacy mode.
   As code migrates over to use the new standard libraries, ``base`` should become less important.
   GHC devs can therefore feel increasingly confident modifying parts of ``base`` which are *not* reexported in these new libraries.
