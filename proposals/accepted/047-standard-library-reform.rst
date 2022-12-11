@@ -25,7 +25,7 @@ The problems are briefly as follows:
 
 By reshuffling our interfaces and implementations a like, we should be able to solve all these problems.
 
-.. __`CLC Issue #015`: https://github.com/haskell/core-libraries-committee/issues/105>
+.. _`CLC Issue #015`: https://github.com/haskell/core-libraries-committee/issues/105
 
 Background
 ----------
@@ -46,7 +46,7 @@ Problem 1: Major version bumps every compiler release
 Currently, every major release of of GHC is accompanied with a major version of ``base``, and also other libraries like ``template-haskell``.
 This causes numerous issues:
 
-First and foremost, it crates a ton of busywork to upgrade to a new version of GHC as library version requirements must be relaxed.
+First and foremost, it creates a ton of busywork to upgrade to a new version of GHC as library version requirements must be relaxed.
 
 Secondly it undermines our other processes by creating perverse incentives.
 
@@ -132,7 +132,7 @@ But requirements change, and no one never makes mistakes.
 Issues will arise in the standard library and we will wish to fix them, because whatever the cost is to existing programs (which we can still attempt to mitigate) is outweighed by the benefit to future programs.
 
 However, if the standard library version is tied to GHC version, we have no choice but to do the breaking change coupled with a compiler version.
-Gabriella Gonzalez laid out the case in `Release early and often <https://www.haskellforall.com/2019/05/release-early-and-often.html>` on why coupling changes, especially breaking changes, together is bad, and I will cite that rather than restate the argument.
+Gabriella Gonzalez laid out the case in `Release early and often <https://www.haskellforall.com/2019/05/release-early-and-often.html>`__ on why coupling changes, especially breaking changes, together is bad, and I will cite that rather than restate the argument.
 For those reasons we shouldn't do that here with the standard library and GHC.
 
 Solution criteria
@@ -147,8 +147,8 @@ Problem 5: Popular and uncontroversial machinery like ``Text`` not available fro
 There has been much grumbling over the years that popular items like ``Text`` which are normally expected to be in standard libraries are not.
 
 It is one thing for a standard library to be minimal, and say not offer any string type or operations on that.
-What is worse is that ``base`` does offer ``String``, and futhermore operations on ``String``.
-The problem is thus not so much that it is inconvenient to grab the ``Text``-based functionality from elsewhere, as it is that ``base`` is has a footgun in offering alternatives that should be *avoided*.
+What is worse is that ``base`` does offer ``String``, and furthermore operations on ``String``.
+The problem is thus not so much that it is inconvenient to grab the ``Text``-based functionality from elsewhere, as it is that ``base`` is has a foot-gun in offering alternatives that should be *avoided*.
 
 Solution criteria
 ^^^^^^^^^^^^^^^^^
@@ -166,44 +166,193 @@ A few misc things:
 - Rust's ``core`` vs ``std`` split of the standard library aims to help the portability problem.
   Only maximally portable concepts can go in ``core``, the rest goes in ``std``.
 
-  However, this doesn't dress the standard library --- language implementation coupling problem as both libraries still live in the compielr repo and are still released in tandem with the compiler.
+  However, this doesn't dress the standard library --- language implementation coupling problem as both libraries still live in the compiler repo and are still released in tandem with the compiler.
 
-- `cap-std <https://github.com/bytecodealliance/cap-std>` is a Rust library exploring what ergnomic IO interfaces forWASI system in a high level language should look like.
+- `cap-std <https://github.com/bytecodealliance/cap-std>`__ is a Rust library exploring what ergonomic IO interfaces forWASI system in a high level language should look like.
   On one hand, it is great, and we should borrow from it heavily.
   On the other hand, we should surpass in not needing to be something on top of the "regular" standard library which ordinarily exposes more Unixy things than is appropriate.
+
+There have been prior attempts to split ``base`` before, but they attempted to get everything done at once at thus failed.
+This approach here, by contrast, first and foremost seeks to the difficulties and find a sustainable, suitably low risk approach.
+It is much more concerned with how we safely approach these issues than what the exact outcome looks like.
 
 Technical Content
 -----------------
 
 Here is a plan to solve these issues.
 
-Step 1: Task the CLC with defining new interfaces
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Step 1a: Task the CLC with defining new standard libraries
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+Based on the conversation in `CLC Issue #015`__, ``base`` is exposing too much stuff, yet trying to limit what is exposed would be a big breaking change.
 
-_This section should describe the work that is being proposed to the community for comment, including both technical aspects (choices of system architecture, integration with existing tools and workflows) and community governance (how the developed project will be administered, maintained, and otherwise cared for in the future).
-It should also describe the benefits, drawbacks, and risks that are associated with these decisions.
-It can be a good idea to describe alternative approaches here as well, and why the proposer prefers the current approach._
+The solution is to reach for another layer of indirection.
+The CLC should be tasked with devising new standard library interfaces, which would initially be implemented by reexporting modules from ``base``.
+
+The new library interfaces should be carefully designed in and of themselves to tackle many, but not all, of the issues above:
+
+- They should be designed *not* to break every release.
+  Even though the underlying ``base`` from which modules are exported would continue to  have its regular problematic major version bumps, the portion reexport should have very infrequent breaking changes.
+
+  This fixes **Problem 1**.
+
+- These libraries should be emphasized in all documentation and users should be encouraged to used them not ``base`` in new end-application code.
+  ``base``, in contrast would be kept around in mere legacy mode.
+  As code migrates over to use the new standard libraries, ``base`` should become less important.
+  GHC devs can therefore feel increasingly confident modifying parts of ``base`` which are *not* reexported in these new libraries.
+
+  This partially fixes **Problem 2**.
+
+- The new standard library should not be a single library but multiple.
+  IO-free interfaces that are portable everywhere should be one library.
+  Interfaces involving IO should be split into libraries where they run.
+  
+  For example, Unix and Windows are mostly a superset of WASI, so WASI-compatible file-descriptor-oriented code should work everywhere.
+
+  Exactly how many separate libraries is justified is left to the CLC.
+
+  This fixes **Problem 3**.
+
+- Because these are new libraries "on top" of ``base``, they can also reexport items from libraries, like ``text``.
+  The CLC should consider such reexports.
+
+  This fixes **Problem 5**.
+
+New Goal: Rationalize dependencies
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Step 1a addresses most problems, but leaves behind **Problem 2** somewhat, and **Problem 4** completely.
+But moreover than that, Step 1a doesn't exactly make for a maintainable solution.
+As the famous David Wheeler quote states:
+"All problems in computer science can be solved by another level of indirection, *except for the problem of too many layers of indirection*."
+Reexporting a modules from a less stable library (``base``) in more stable libraries is very error-prone.
+
+The generalization of these concerns is *rationalizing* dependencies, or rationalizing the division of labor between libraries.
+
+New Goal: Split Base
+~~~~~~~~~~~~~~~~~~~~
+
+We should still split ``base``.
+This might sound surprising --- wasn't the point of making new libraries that we didn't need to worry about ``base`` so much?
+But it follows from the expanded "rationalize dependencies" goal.
+
+#. It will take a while for code to be migrated off ``base``, and until that process is complete ``base`` cannot serve as a "holding pen" for GHC's private implementation details.
+   Thus, until that process is complete, we would not have a solution to **Problem 2**.
+   Rather than waiting for ``base`` to stop being used, we can split it, and then GHC devs have (at least one) *proper* place for their unstable stuff, making a far more robust **Problem 2** solution while the migration away from ``base`` is still underway.
+
+#. Solving **Problem 4** requires that some of the code in ``base`` to day *not* be coupled with GHC and some of the code in ``base`` conversely *must* be coupled with GHC.
+   Thus solving **Problem 4** requires splitting ``base`` eventually anyways.
+
+#. ``base`` is treated specially in a few ways.
+   For example:
+
+   - it is the library that GHCi loads by default.
+
+   - GHC's compilation is directly aware of it in the form of various "wired-in" identifiers.
+
+   - Some modules of it are automatically trusted with Safe Haskell.
+
+   With the new multi-library world, different libraries will inherit these special features, and we cannot be sure what the ramifications are until we try.
+
+   It is best to "practice" this by splitting ``base`` as soon as possible.
+   That will reduce the risk of everything else by exploring for "unknown unknowns" and "unknown unknowns" alike.
+
+#. Ultimately, in the name of rationalizing dependencies and the library division of labor, ``base`` will never make sense in anything like its current form.
+   We should therefore demote it to being a mere reexporter of other libraries that do make sense.
+
+Step 1b: MVP Split ``base`` by making it all reexports
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The first steps of `GHC issue #20647 <https://gitlab.haskell.org/ghc/ghc/-/issues/20647>`__ track what needs to be done here.
+The key first step is finishing `GHC PR !7898`__.
+This is crude: a ``ghc-base`` that ``base`` merely reexports in full is just as ugly as the original ``base``, but this is the quickest route to de-risking the entire project as describe in item 2 of the previous section.
+
+.. _GHC PR !7898: https://gitlab.haskell.org/ghc/ghc/-/merge_requests/7898
+
+Step 2a: Rationalize dependencies
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+At this point we have the following:
+
+- ``ghc-base``
+- ``base`` which reexports ``ghc-base``
+- A number of new libraries which reexport parts of ``base`` and possibly other libraries like ``text``.
+
+The goal is to shuffle code around so that we have something which makes more sense.
+That would look something like this:
+
+- 1 or more libraries in the GHC repo that are deeply tied to GHC's implementation details.
+  These libraries might depend on libraries in the next group.
+- 1 or more libraries outside the GHC that are repo agnostic to GHC's implemenation details.
+  These libraries might depend on libraries in the previous group.
+- ``base``, lives in the GHC repo, and merely reexports functionality from the first two groups.
+- ``text``, if used by the new stand library, should *not* depend on ``base``.
+- The new standard libres, living outside the GHC repo, merely rexporting functionality from the first two groups and possibly ``text``.
+
+It will take a while to untangle everything to get to this new maintainable end state.
+The good news is that we can get there very incrementally.
+The initial crude split will validate that shuffling definitions between libraries and modules works at all.
+After that, continuing to shuffle items reduces risk.
+
+The `GHC Wiki page on "Split Base" <https://gitlab.haskell.org/ghc/ghc/-/wikis/split-base>`__, especially Joachim Breitner's `prior attempt <https://github.com/nomeata/packages-base/blob/base-split/README.md>`__ offers good ideas backed by experience on where the natural cleavage points within ``base`` lie.
+
+At the conclusion of this, **Problem 2** and **Problem 4** will be solved in their entirety, which means all problems are solved in their entirety.
+
+Step 2b: Practice release management (Optional)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+We won't know for sure if **Problem 4** is solved until a GHC release happens.
+But waiting for that could take a while, and is thus a risky behavior because we to know whether our efforts are on the right track or doomed to fail as soon as possible.
+
+Therefore, as soon as we have *some* splitting and reexporting in progress, it is good to test out our work against a *past* GHC release.
+In particular, we can perform the same splits on that that release, and see if the GHC-agnostic portions are swappable to allow for staggered breaking changes as intended.
+
+This step is optional.
+If the work appears to be going well or is quicker/cheaper than expected, maybe it is not worth the effort.
+On the other hand, if we could do a minor release of the old GHC using the split, so the backported work isn't purely for de-risking but actually delivers some benefits to users, that provides more reason to do this.
+
+Step 3: Bonus: Also split ``template-haskell``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+``template-haskell``
 
 Timeline
 --------
 
-_Are there any deadlines that the HF needs to be aware of?_
+The project is designed to proceed in parallel to minimize risk, in addition to being incremental.
+Steps 1a and 1b are independent, and steps 2a and 2b are likewise independent.
+
+In past discussion, consensus around a plan from step 1a was emphasized as a blocker --- if we didn't know what sort of standard libraries we wanted to end up with, we shouldn't proceed.
+In the author's opinion this is misguided.
+The actual stumbling point is not disagreements about where we want to end up, but maintaining progress on something which is not incredibly hard, but has many steps and ushers in most of the benefit over the long term.
+(For example, many users of GHC are behind the latest version, these reforms only benefit them going forward after they have caught up to the last unaffected release.)
+
+As such, the most crucial step is considered to be step 1b.
+After that, we know the basic concept for sure works.
+And indeed it is possible to start steps 2a and 2b before there is a complain step 1a plan.
 
 Budget
 ------
 
-_How much money is needed to accomplish the goal?
-How will it be used?_
+Finishing `GHC PR !7898`__ is conservatively estimated to take 1 person-month of work from an experienced GHC's dev.
+The HF should finance this work if there is no volunteers to ensure it is done as fast as possible, as everything else is far too uncertain until this trial round of splitting and reexports has been completed end to end.
+
+It is unknown whether the CLC will need HF help to do the large amount of planning work for step 1a.
+
+Step 2a should be priced out per incremental item, with the hope that specific steps will entice volunteers which care about the functionality behind reshuffled in that step.
+HF may need to pay a coordination roll but hopefully doesn't need to pay for the work being done directly.
+This should serve as a way to recruit more standard library maintainers going forward, as the fine-grained boundaries between the underlying libraries naturally lend themselves to a division of labor.
 
 Stakeholders
 ------------
 
-_Who stands to gain or lose from the implementation of this proposal?
-Proposals should identify stakeholders so that they can be contacted for input, and a final decision should not occur without having made a good-faith effort to solicit representative feedback from important stakeholder groups._
+The Core Libraries Committee. Step 1a constitutes a large chunk of new responsibility for the CLC.
+
+GHC developers: `GHC PR !7898`__ from step 1a has uncovered some bugs that will need fixing.
+Step 2a will eventually result in churn among which submodules GHC contains, which will be frustrating until that stabilizes.
+Step 2b, if it were to be released not just done on a fork as a trial, will result in more release management work and possible fallout of reshuffling the implementation of ``base`` behind the scenes.
 
 Success
 -------
 
-_Under what conditions will the project be considered a success?_
-
+The project will be considered a success when all the enumerated problems are solved per their "solution criteria" (no moving the goalposts later without anyone noticing), and the standard library implementation is easier to maintain than before.
