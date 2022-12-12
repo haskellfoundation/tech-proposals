@@ -19,11 +19,11 @@ The problems are briefly as follows:
 
 #. No clear portability guarantees with new supported platforms like the web browser and Web Assembly System Interface (WASI).
 
-#. Breaking changes (when we do want them) have to be coupled with GHC versions and rather than staggered, which is painful.
+#. Breaking changes (when we do want them) have to be coupled with GHC versions rather than staggered, which is painful.
 
 #. Popular and uncontroversial machinery like ``Text`` is not available from the standard library.
 
-By reshuffling our interfaces and implementations a like, we should be able to solve all these problems.
+By reshuffling our interfaces and implementations alike, we should be able to solve all these problems.
 
 .. _`CLC Issue #015`: https://github.com/haskell/core-libraries-committee/issues/105
 
@@ -33,7 +33,7 @@ Background
 The author deems these problems major and highly visible;
 if this is true then Haskellers of all skill levels should at least have a cursory familiarity with them.
 
-The details of the solution may require more advance knowledge, but the *use* of the solution should not.
+The details of the solution may require more advanced knowledge, but the *use* of the solution should not.
 Indeed, the new standard library interfaces we come up with should be *easier* to use than today's.
 
 Problem Statement
@@ -49,13 +49,13 @@ This causes numerous issues:
 
 First and foremost, these major version bumps creates a ton of busywork to upgrade to a new version of GHC as library version requirements must be relaxed.
 
-Secondly they undermines our other processes by creating perverse incentives.
+Secondly they undermine our other processes by creating perverse incentives.
 
 Library authors find it convenient to make too-loose requirements on ``base`` on the assumption that whatever base breakage happens next "probably" won't effect them.
 But fast-and-loose version bounds undermine the version solver, which can no longer be trusted to choose good plans in that scenario.
-We want version solving to be sound and complete, and the only way for that to be the case is if breaking changes are infrequent enough that people to not feel the urge to do this.
+We want version solving to be sound and complete, and the only way for that to be the case is if breaking changes are infrequent enough that people do not feel the urge to do this.
 
-These major version bumps also makes it harder to think about compatibility and ease of upgrading with GHC in general.
+These major version bumps also make it harder to think about compatibility and ease of upgrading with GHC in general.
 This and other long-shrugged-off paper cuts during the upgrade process result in a big picture where where some of us are numb to breakage, and others are irate about it.
 We should do the little things well so the remaining thornier issues around GHC upgrading (syntax changes, type system changes, etc.) can be approached from a "decluttered" starting point.
 
@@ -81,7 +81,7 @@ Solution criteria
 We should use standard off-the-shelf definitions and techniques to enforce this boundary.
 The standard library should not expose private, implementation-detail modules full-stop.
 The entirely of the standard library's public interface should be considered just that, its public interface.
-Private modules that we do wish to expose to code that *knowingly* is using unstable interfaces should be exposed from a separate library/
+Private modules that we do wish to expose to code that *knowingly* is using unstable interfaces should be exposed from a separate library.
 The standard library should use regular PVP versioning.
 
 In solving the immediate problem this way, we also solve the meta problem.
@@ -175,7 +175,7 @@ It should likewise be possible to upgrade a major version change in the standard
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 There has been much grumbling over the years that popular items like ``Text`` are not in the standard library.
-Items like these are expected to be languages' standard libraries and elsewhere indeed are found there.
+Items like these are expected to be in languages' standard libraries and elsewhere indeed are found there.
 
 Now, it is one thing for a standard library to be minimal, and say not offer any string type or operations on that.
 That would not be so bad.
@@ -439,13 +439,13 @@ The HF should reach out to the `Bytecode Alliance <https://bytecodealliance.org/
 ~~~~~~~~~~~~~~~~~
 
 Finishing `GHC MR !7898`_ is conservatively estimated to take 1 person-month of work from an experienced GHC dev.
-The HF should finance this work if there is no volunteers to ensure it is done as fast as possible, as everything else is far too uncertain until this trial round of splitting and reexports has been completed end to end.
+The HF should finance this work if there are no volunteers to ensure it is done as fast as possible, as everything else is far too uncertain until this trial round of splitting and reexports has been completed end to end.
 
 **Step 2A** costs
 ~~~~~~~~~~~~~~~~~
 
 **Step 2A** should be priced out per incremental item, with the hope that specific steps will entice volunteers which care about the functionality behind reshuffled in that step.
-HF may need to pay a coordination roll but hopefully doesn't need to pay for the work being done directly.
+HF may need to play a coordination role but hopefully doesn't need to pay for the work being done directly.
 This should serve as a way to recruit more standard library maintainers going forward, as the fine-grained boundaries between the underlying libraries naturally lend themselves to a division of labor.
 
 **Step 2B** costs
