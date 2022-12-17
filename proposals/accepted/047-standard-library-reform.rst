@@ -146,7 +146,7 @@ Solution criteria
 
 Projects should be able to depend on libraries that just expose functionality that is known to work on the platform(s) they run on.
 The plural, "platforms" is key.
-Projects that wish to support some set of Unix, Windows, Web, and WASI must be able to depend on libraries that only offer the *intersection* of what works on each of those, i.e. what works on all of them.
+Projects that wish to support some subset of Unix, Windows, Web, and WASI must be able to depend on libraries that only offer the *intersection* of what works on each of those, i.e. what works on all of them.
 We will thus need more than one standard library.
 
 Platform-specific functionality should be exposed in ways that make sense in Haskell, not C.
