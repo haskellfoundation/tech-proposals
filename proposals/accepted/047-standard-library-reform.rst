@@ -389,7 +389,7 @@ If we implement that language feature, then it makes sense to additionally split
 Bonus **Step 3B**: Rethinking Windows
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Right now, ``base`` relies on MinGW and Windows `libc` compat layer to approximate traditional Unix functionality.
+Right now, ``base`` relies on MinGW's and Windows's `libc` compat layer to approximate traditional Unix functionality.
 The ``unix`` and ``Win32`` layers than expose additional platform-specific functionality.
 
 Quite arguably, this is the wrong way of going about IO.
