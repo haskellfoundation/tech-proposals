@@ -80,7 +80,7 @@ Solution criteria
 
 We should use standard off-the-shelf definitions and techniques to enforce this boundary.
 The standard library should not expose private, implementation-detail modules full-stop.
-The entirely of the standard library's public interface should be considered just that, its public interface.
+The entirety of the standard library's public interface should be considered just that, its public interface.
 Private modules that we do wish to expose to code that *knowingly* is using unstable interfaces should be exposed from a separate library.
 The standard library should use regular PVP versioning.
 
@@ -90,8 +90,8 @@ Using off-the-shelf definitions gives us a shared language reinforced by practic
 **Problem 3**: No clear portability guarantees with new targets
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The new compilation backends that come with GHC 9.6 correspond, strict speaking, to new supported CPUs/Arches, like "x86" vs "Aarch64" vs "RISC-V", etc.
-WASM and JS are, with enough squinting, just ways of expressing computation those others: ways which should by and large not leak to the user. [#cpu-leaks]_
+The new compilation backends that come with GHC 9.6 correspond, strictly speaking, to new supported CPUs/Arches, like "x86" vs "Aarch64" vs "RISC-V", etc.
+WASM and JS are, with enough squinting, just other ways of expressing computation: ways which should by and large not leak to the user. [#cpu-leaks]_
 
 What is more interesting from a library design perspective is over what *software* will the code be run.
 This would be analogous to the "Operating Systems" part of the platform description, like "Linux" vs "Windows" vs "macOS" etc.
@@ -115,7 +115,7 @@ The other two, however are a radical departure:
   The upcoming `WASI Component Model <https://github.com/WebAssembly/component-model>`_ also plans on creating replacements for some "stringly typed" Unix functionality with "richly typed" interfaces.
   Both these things are an *excellent* fit for Haskell.
 
-The existing implementations in GHC, duck-tape over ``base`` and friends the best they can to get something working.
+The existing implementations in GHC duck-tape over ``base`` and friends the best they can to get something working.
 That is to say, we have some CPP::
 
   $ git grep js_HOST_ARCH libraries/ | wc-l
@@ -146,7 +146,7 @@ Solution criteria
 
 Projects should be able to depend on libraries that just expose functionality that is known to work on the platform(s) they run on.
 The plural, "platforms" is key.
-Projects that wish to some set of Unix, Windows, Web, and WASI must be able to depend on libraries that only offer the *intersection* of what works on each of those, i.e. what works on all of them.
+Projects that wish to support some subset of Unix, Windows, Web, and WASI must be able to depend on libraries that only offer the *intersection* of what works on each of those, i.e. what works on all of them.
 We will thus need more than one standard library.
 
 Platform-specific functionality should be exposed in ways that make sense in Haskell, not C.
@@ -157,7 +157,7 @@ It should be possible to use WASM and WASI without any "libc".
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Wishful thinking would have it that we can just *stop* doing breaking changes, forever.
-But requirements change, and no one never makes mistakes.
+But requirements change, and mistakes are made.
 Issues will arise in the standard library and we will wish to fix them, because whatever the cost is to existing programs (which we can still attempt to mitigate) is outweighed by the benefit to future programs.
 
 However, if the standard library version is tied to GHC version, we have no choice but to do the breaking change coupled with a compiler version.
@@ -201,7 +201,7 @@ Prior Art and Related Efforts
 
 There has been much discussion of these topics before, but to my knowledge this is the first time they have been consolidated together.
 
-A few misc things:
+A few miscellaneous things:
 
 Rust's ``core`` vs ``std``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -221,7 +221,7 @@ Rust's ``cap-std``
 
 `cap-std <https://github.com/bytecodealliance/cap-std>`_ is a Rust library exploring what ergonomic IO interfaces for WASI system calls in a high level language should look like.
 On one hand, it is great, and we should borrow from it heavily.
-On the other hand, we should surpass in not needing to be something on top of the "regular" standard library which ordinarily exposes more Unixy things than is appropriate.
+On the other hand, we should surpass it in not needing to be something on top of the "regular" standard library which ordinarily exposes more Unixy things than is appropriate.
 
 Rust's ``std`` and WASI
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -233,8 +233,8 @@ This is what we should emulate in order to provide a top-tier programming enviro
 Prior attempts at splitting ``base``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-There have been prior attempts to split ``base`` before, but they attempted to get everything done at once, setting a dangerously high bar for success.
-This approach here, by contrast, first and foremost seeks to the difficulties and find a sustainable, suitably low risk approach.
+There have been attempts to split ``base`` before, but they attempted to get everything done at once, setting a dangerously high bar for success.
+This approach here, by contrast, first and foremost seeks to avoid those difficulties and find a sustainable, suitably low-risk approach.
 It is much more concerned with how we safely approach these issues than what the exact outcome looks like.
 
 Technical Content
@@ -257,7 +257,7 @@ The new library interfaces should be carefully designed in and of themselves to 
 
   This fixes **Problem 1**.
 
-- These libraries should be emphasized in all documentation, and users should be encouraged to used them not ``base`` in new end-application code.
+- These libraries should be emphasized in all documentation, and users should be encouraged to use them and not ``base`` in new end-application code.
   ``base``, in contrast, would be kept exposed as a mere legacy interface.
   As code migrates over to use the new standard libraries, ``base`` should become less important.
   GHC devs can therefore feel increasingly confident modifying parts of ``base`` which are *not* reexported in these new libraries.
@@ -283,13 +283,13 @@ New Goal: Rationalize dependencies
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Step 1A** addresses most problems, but leaves behind **Problem 2** somewhat, and **Problem 4** completely.
-But moreover than that, **Step 1A** doesn't exactly make for a maintainable solution.
+But moreover, **Step 1A** doesn't exactly make for a maintainable solution.
 As the famous David Wheeler quote states:
 "All problems in computer science can be solved by another level of indirection, *except for the problem of too many layers of indirection*."
-Reexporting a modules from a less stable library (``base``) in more stable libraries is very error-prone.
+Reexporting modules from a less stable library (``base``) in more stable libraries is very error-prone.
 
 The generalization of these concerns is *rationalizing* dependencies, or rationalizing the division of labor between libraries.
-Once the purposes of libraries, and the division of labor between then, makes more sense, it will be easier to maintain these libraries.
+Once the purposes of libraries and the division of labor between them make more sense, it will be easier to maintain these libraries.
 It should be in fact easier than it was before to maintain them.
 
 New Goal: Split Base
@@ -328,7 +328,7 @@ But it follows from the expanded "rationalize dependencies" goal.
 
 The first steps of `GHC issue #20647`_ track what needs to be done here.
 The key first step is finishing `GHC MR !7898`_.
-This is crude: a ``ghc-base`` that ``base`` merely reexports in full is just as ugly as the original ``base``, but this is the quickest route to de-risking the entire project as describe in item 2 of the previous section.
+This is crude: a ``ghc-base`` that ``base`` merely reexports in full is just as ugly as the original ``base``, but this is the quickest route to de-risking the entire project as described in item 2 of the previous section.
 
 .. _`GHC issue #20647`: https://gitlab.haskell.org/ghc/ghc/-/issues/20647
 .. _`GHC MR !7898`: https://gitlab.haskell.org/ghc/ghc/-/merge_requests/7898
@@ -369,7 +369,7 @@ We won't know for sure if **Problem 4** is solved until a GHC release happens.
 But waiting for that could take a while, and is thus a risky behavior because we to know whether our efforts are on the right track or doomed to fail as soon as possible.
 
 Therefore, as soon as we have *some* splitting and reexporting in progress, it is good to test out our work against a *past* GHC release.
-In particular, we can perform the same splits on that that release, and see if the GHC-agnostic portions are swappable to allow for staggered breaking changes as intended.
+In particular, we can perform the same splits on that release, and see if the GHC-agnostic portions are swappable to allow for staggered breaking changes as intended.
 
 This step is optional.
 If the work appears to be going well or is quicker/cheaper than expected, maybe it is not worth the effort.
@@ -389,7 +389,7 @@ If we implement that language feature, then it makes sense to additionally split
 Bonus **Step 3B**: Rethinking Windows
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Right now, ``base`` relies on MinGW and Window's libc compat layer to approximate traditional Unix functionality.
+Right now, ``base`` relies on MinGW's and Windows's `libc` compat layer to approximate traditional Unix functionality.
 The ``unix`` and ``Win32`` layers than expose additional platform-specific functionality.
 
 Quite arguably, this is the wrong way of going about IO.
