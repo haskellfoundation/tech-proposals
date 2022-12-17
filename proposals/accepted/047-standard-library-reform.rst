@@ -234,7 +234,7 @@ Prior attempts at splitting ``base``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 There have been attempts to split ``base`` before, but they attempted to get everything done at once, setting a dangerously high bar for success.
-This approach here, by contrast, first and foremost seeks to avoid the difficulties and find a sustainable, suitably low-risk approach.
+This approach here, by contrast, first and foremost seeks to avoid those difficulties and find a sustainable, suitably low-risk approach.
 It is much more concerned with how we safely approach these issues than what the exact outcome looks like.
 
 Technical Content
