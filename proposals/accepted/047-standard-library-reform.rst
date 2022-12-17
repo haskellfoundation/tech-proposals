@@ -91,7 +91,7 @@ Using off-the-shelf definitions gives us a shared language reinforced by practic
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The new compilation backends that come with GHC 9.6 correspond, strictly speaking, to new supported CPUs/Arches, like "x86" vs "Aarch64" vs "RISC-V", etc.
-WASM and JS are, with enough squinting, just ways of expressing computation of those others: ways which should by and large not leak to the user. [#cpu-leaks]_
+WASM and JS are, with enough squinting, just other ways of expressing computation: ways which should by and large not leak to the user. [#cpu-leaks]_
 
 What is more interesting from a library design perspective is over what *software* will the code be run.
 This would be analogous to the "Operating Systems" part of the platform description, like "Linux" vs "Windows" vs "macOS" etc.
