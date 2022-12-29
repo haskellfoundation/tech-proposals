@@ -233,8 +233,12 @@ This is what we should emulate in order to provide a top-tier programming enviro
 Prior attempts at splitting ``base``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-There have been attempts to split ``base`` before, but they attempted to get everything done at once, setting a dangerously high bar for success.
-This approach here, by contrast, first and foremost seeks to avoid those difficulties and find a sustainable, suitably low-risk approach.
+For years, there has been much interest in splitting `base`.
+The `GHC Wiki page on "Split Base" <https://gitlab.haskell.org/ghc/ghc/-/wikis/split-base>`_ offers good context for this.
+Especially notable is Joachim Breitner's `prior attempt <https://github.com/nomeata/packages-base/blob/base-split/README.md>`_, which offers good ideas backed by experience on where the natural cleavage points within ``base`` lie.
+
+A problem with prior attempts is that they attempted to get everything done at once, setting a dangerously high bar for success.
+This approach in this proposal, by contrast, first and foremost seeks to avoid those difficulties and find a sustainable, suitably low-risk approach.
 It is much more concerned with how we safely approach these issues than what the exact outcome looks like.
 
 Technical Content
@@ -357,8 +361,6 @@ It will take a while to untangle everything to get to this new maintainable end 
 The good news is that we can get there very incrementally.
 The initial crude split will validate that shuffling definitions between libraries and modules works at all.
 After that, continuing to shuffle items incrementally reduces risk.
-
-The `GHC Wiki page on "Split Base" <https://gitlab.haskell.org/ghc/ghc/-/wikis/split-base>`_, especially Joachim Breitner's `prior attempt <https://github.com/nomeata/packages-base/blob/base-split/README.md>`_ offers good ideas backed by experience on where the natural cleavage points within ``base`` lie.
 
 At the conclusion of this, **Problem 2** and **Problem 4** will be solved in their entirety, which means all problems are solved in their entirety.
 
