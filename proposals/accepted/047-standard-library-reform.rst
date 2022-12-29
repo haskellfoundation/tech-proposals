@@ -15,7 +15,7 @@ The problems are briefly as follows:
 #. Major version bumps every compiler release is a nuisance.
 
 #. No clear boundary between GHC private/unstable library support code and public/stable standard library interfaces.
-   `CLC Issue #015`_.
+   `CLC Issue #105`_.
 
 #. No clear portability guarantees with new supported platforms like the web browser and Web Assembly System Interface (WASI).
 
@@ -25,7 +25,7 @@ The problems are briefly as follows:
 
 By reshuffling our interfaces and implementations alike, we should be able to solve all these problems.
 
-.. _`CLC Issue #015`: https://github.com/haskell/core-libraries-committee/issues/105
+.. _`CLC Issue #105`: https://github.com/haskell/core-libraries-committee/issues/105
 
 Background
 ----------
@@ -67,7 +67,7 @@ Users should usually be able to upgrade to the next GHC version without adjustin
 **Problem 2**: No clear boundary between private/unstable and public/stable interfaces in the standard library
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The long discussion thread in `CLC Issue #015`_ demonstrates this exceedingly well.
+The long discussion thread in `CLC Issue #105`_ demonstrates this exceedingly well.
 
 On a simpler level, the lack of a firm boundary confuses users, who don't know which parts of ``base`` they ought to use, and GHC developers, who don't know what parts they are free to change.
 
@@ -245,7 +245,7 @@ Here is a plan to solve these issues.
 **Step 1A**: Task the CLC with defining new standard libraries
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Based on the conversation in `CLC Issue #015`_, ``base`` is exposing too much stuff, yet trying to limit what is exposed would be a big breaking change.
+Based on the conversation in `CLC Issue #105`_, ``base`` is exposing too much stuff, yet trying to limit what is exposed would be a big breaking change.
 
 The solution is to reach for another layer of indirection.
 The CLC should be tasked with devising new standard library interfaces, which would initially be implemented by reexporting modules from ``base``.
