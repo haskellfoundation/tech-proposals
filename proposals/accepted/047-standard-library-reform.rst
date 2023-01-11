@@ -241,156 +241,195 @@ A problem with prior attempts is that they attempted to get everything done at o
 This approach in this proposal, by contrast, first and foremost seeks to avoid those difficulties and find a sustainable, suitably low-risk approach.
 It is much more concerned with how we safely approach these issues than what the exact outcome looks like.
 
-Technical Content
------------------
+Solution Statement
+------------------
 
-Here is a plan to solve these issues.
+This is where we want to end up.
+The proposal will break down these goals into an incremental roadmap to be actionable, but it is good to understand the destination before trying to understand the journey that gets us there.
 
-**Step 1A**: Task the CLC with defining new standard libraries
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#. Interfaces: We should have new standard library interfaces with clearly stated purpose, stability, and portability.
+
+#. Implementation: Both ``base`` and the new standard library interfaces alike should be maximally decoupled from GHC.
 
 Based on the conversation in `CLC Issue #105`_, ``base`` is exposing too much stuff, yet trying to limit what is exposed would be a big breaking change.
+The solution is to make new standard libraries which don't need to worry about compatibility with ``base``.
+The underlying *definitions* should be the same, e.g. we don't want two ``Functor`` classes, but we are free limit what we export to clarify the purpose --- what is in scope and out of scope --- for these new libraries.
 
-The solution is to reach for another layer of indirection.
-The CLC should be tasked with devising new standard library interfaces, which would initially be implemented by reexporting modules from ``base``.
-
-The new library interfaces should be carefully designed in and of themselves to tackle many, but not all, of the issues above:
-
-- They should be designed *not* to break every release.
-  Even though the underlying ``base`` from which modules are reexported would continue to have its regular problematic major version bumps, the portion reexported should have very infrequent breaking changes.
+- They should be designed *not* to break every GHC release.
+  Breaking changes will still occur, but they should be less frequent.
 
   This fixes **Problem 1**.
 
-- These libraries should be emphasized in all documentation, and users should be encouraged to use them and not ``base`` in new end-application code.
+- These libraries should be emphasized in all documentation, and users should be encouraged to use them and not ``base`` in new code.
   ``base``, in contrast, would be kept exposed as a mere legacy interface.
   As code migrates over to use the new standard libraries, ``base`` should become less important.
   GHC devs can therefore feel increasingly confident modifying parts of ``base`` which are *not* reexported in these new libraries.
 
-  This partially fixes **Problem 2**.
+  This fixes **Problem 2**.
 
-- The new standard library should not be a single library but multiple.
+- The new standard library should not be a single library but multiple libraries.
   IO-free interfaces that are portable everywhere should be one library.
   Interfaces involving IO should be split into libraries where they run.
 
-  For example, Unix and Windows are mostly a superset of WASI, so WASI-compatible file-descriptor-oriented code should work everywhere.
+  For example:
 
-  Exactly how many separate libraries is justified is left to the CLC to decide.
+  - "Internal" ``IO`` which is just safe mutation with in the program rather than communication with the outside world, is also very portable.
+    Item's like ``IORef``, ``MVar``, ``STVar``, mutable arrays, and STM can be defined in a library that works everywhere.
 
-  This fixes **Problem 3**.
+  - Unix and Windows are mostly a superset of WASI, so WASI-compatible file-descriptor-oriented code should work everywhere.
 
-- Because these are new libraries "on top" of ``base``, they can also reexport items from libraries, like ``text``.
-  The CLC should consider such reexports.
+  Less portable standard libraries can publicly (in their interface) depend on more portable ones.
+  For example, ``IO`` defined in the "internal IO" library is then given external IO capabilities in the WASI library.
+
+  This all fixes **Problem 3**.
+
+- The new libraries should not artificially limit themselves to items defined in ``base`` today, they can also reexport items from libraries, like ``text``.
 
   This fixes **Problem 5**.
 
-New Goal: Rationalize dependencies
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+It's fine to imagine what nicer interfaces look like, but just as important is how the implementation is structured, even though this wont be so directly visible to users.
+The goal here must be this 
 
-**Step 1A** addresses most problems, but leaves behind **Problem 2** somewhat, and **Problem 4** completely.
-But moreover, **Step 1A** doesn't exactly make for a maintainable solution.
-As the famous David Wheeler quote states:
-"All problems in computer science can be solved by another level of indirection, *except for the problem of too many layers of indirection*."
-Reexporting modules from a less stable library (``base``) in more stable libraries is very error-prone.
+- Maximally decouple definitions from GHC, and furthermore to do this for the new libraries and ``base`` alike.
 
-The generalization of these concerns is *rationalizing* dependencies, or rationalizing the division of labor between libraries.
-Once the purposes of libraries and the division of labor between them make more sense, it will be easier to maintain these libraries.
-It should be in fact easier than it was before to maintain them.
+  This fixes **Problem 4**.
 
-New Goal: Split Base
+Additional rationale for implementation splitting
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Suppose instead that we just reached for another layer of indirection, and made the new libraries depend on ``base``, reexporting certain items.
+This is quite easy, and all the problems addressed above are still fixed.
+However, **Problem 4** was not mentioned above, and indeed it is *not* fixed.
+Let's investigate why.
+
+``base``, in this alternative plan, still contains everything it does today, and still has its regular problematic major version bumps.
+But a version bump for ``base`` doesn't mean *everything* inside it had a breaking change, just *something* did.
+In the happy path, that something is an internal implementation detail that none of the new standard libraries can reexport, so they can keep their major the version the same even as they reexport items from a newer major version of ``base``.
+It is a bit difficult and error-prone to ensure only non-reexported items changed with today's tooling, but we can manually audit, and this works.
+
+However, in the sad path, the something that changed is reexported, and now we have a problem.
+We can bump the major version in the new library and bump the major version of the dependency on ``base``, satisfying the PVP, but now we are making a breaking change in lockstep with ``base`` which is released in lockstep with GHC.
+**Problem 4** is still here rearing its ugly head --- users still need to go through the painful and higher risk process of upgrading everything at once.
+
+So long as everything is defined in ``base``, there isn't a good solution to this.
+We can put multiple versions of ``base`` in the GHC repo, allowing a staggered problem, but this results in quadratic overhead.
+Given a N-release policy, where each major version of the new standard libraries must work with at least the previous N GHCs to allow staggered upgrades, we'll have to put up to N copies of ``base`` in with GHC to support all N N-long intervals that contain that GHC version.
+Diagrammed for 3 this is::
+
+  GHC  A, B, C, D, E, ...
+  Base
+  1    +--+--X
+  2       +--X--X
+  3          X--X--X
+  4             X--X--...
+  5                X--...
+
+See how GHCs C, D, and E end up needing to support 3 ``base`` versions each.
+This means we end up with quadratic N^2 versions of ``base`` being supported at a time, assuming base and GHC each support N major versions at a time.
+This is a non-starter: too much code to maintain on an ongoing basis given our limited resources.
+
+However, suppose instead we have broken up the implementation.
+GHC-specific code lives with GHC in the same repo, but GHC-agnostic code lives in separate repos.
+If we need to make a change to that GHC-agnostic code (for example, adding a superclass constaint to ``Bifunctor``, `CLC Issue #91`_), we just do it.
+Because that code is, by definition, GHC agnostic, it is trivial to support multiple GHC versions, expanding dependency version bounds on GHC-specific libraries as need be.
+Either the GHC-agonistic code is itself one of these standard libraries, or it is reexported in them;
+either way, it is thus easy to release two version of the standard library, one exporting the old version of the standard library and one exporting the new version, and each supporting overlapping ranges of GHC versions.
+
+With the above, we still have to CI N^2 build plans in the worst case, but we no longer have N^2 copies of the code.
+The division of the labor between the GHC-agnostic and GHC-specific libraries should be comprehensible, and thus this shouldn't feel like arbitrary configuration combinatorial explosion, each of which could go *wrong*, but easy to undersand and well-typed composition, all of which should go *right* by construction.
+
+The bottom line is the work of humans in the loop should, by and large, *not* be N^2, and only the far-cheaper machines, double checking our work with CI, should be shouldering the N^2 burden.
+This takes something which was too costly to be feasible and makes it affordable.
+In fact it should be *less* work than today because by "liberating" GHC-agnosic code from the GHC repo, we are reducing the surface are of supporting multiple GHC versions.
+
+.. _`CLC Issue #91`: https://github.com/haskell/core-libraries-committee/issues/105
+
+Alternative Preludes
 ~~~~~~~~~~~~~~~~~~~~
 
-We should still split ``base``.
-This might sound surprising --- wasn't the point of making new libraries that we didn't need to worry about ``base`` so much?
-But it follows from the expanded "rationalize dependencies" goal.
+Technical Roadmap
+-----------------
 
-#. It will take a while for code to be migrated off ``base``, and until that process is complete ``base`` cannot serve as a "holding pen" for GHC's private implementation details.
-   Thus, until that process is complete, we would not have a solution to **Problem 2**.
-   Rather than waiting for ``base`` to stop being used, we can split it, and then GHC devs have (at least one) *proper* place for their unstable stuff, making a far more robust **Problem 2** solution while the migration away from ``base`` is still underway.
+The end goal is layed out above (with some details such as exactly which libraries we want).
+But that doesn't tell us how to get there.
 
-#. Solving **Problem 4** requires that some of the code in ``base`` to day *not* be coupled with GHC and some of the code in ``base`` conversely *must* be coupled with GHC.
-   Thus solving **Problem 4** requires splitting ``base`` eventually anyways.
+Below is a roadmap to reach our end goal with an emphasis on reducing risk.
+The goal is that the foundation should provide an extra boost at key moments, but between them the work should be broken down into very small bite-size chunks that are easier for volunteers to tackle.
 
-#. ``base`` is treated specially in a few ways.
-   For example:
+See below in budget: *only the first step is normative* in the sense of asking for resources.
+The rest are just to illustrate a possible larger context and how the problems of the motivation will be addressed.
 
-   - It is the library that GHCi loads by default.
+**Step 1**: Shim ``base`` with new ``ghc-base``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-   - GHC's compilation is directly aware of it in the form of various "wired-in" identifiers.
+Everything in ``base`` will be moved to a new library ``ghc-base``, and ``base`` will just reexport its contents.
 
-   - Some modules of it are automatically trusted with Safe Haskell.
+Before we get into deciding what definitions ought to live where, and moving them there, we need to make sure that it's possible to move around definitions at all.
+Today, ``base`` is treated specially in a few ways.
+For example:
 
-   In the new multi-library world, different libraries will inherit these special features, and we cannot be sure what the ramification will be until we try.
+- It is the library that GHCi loads by default.
 
-   It is best to "practice" this by splitting ``base`` as soon as possible.
-   That will reduce the risk of everything else by both exploring "known unknowns" and scouting ahead for "unknown unknowns".
+- GHC's compilation is directly aware of it in the form of various "wired-in" identifiers.
 
-#. Ultimately, in the name of rationalizing dependencies and the library division of labor, ``base`` will never make sense in anything like its current form.
-   We should therefore demote it to being a mere reexporter of other libraries that do make sense.
+- Some modules of it are automatically trusted with Safe Haskell.
 
-**Step 1B**: MVP Split ``base`` by making it all reexports
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In the new multi-library world, different libraries will inherit these special features, and we cannot be sure what the ramification will be until we try.
+
+It is best to "practice" this by shimming ``base`` like this as soon as possible.
+That will reduce the risk of everything else by both exploring "known unknowns" and scouting ahead for "unknown unknowns".
 
 The first steps of `GHC issue #20647`_ track what needs to be done here.
 The key first step is finishing `GHC MR !7898`_.
-This is crude: a ``ghc-base`` that ``base`` merely reexports in full is just as ugly as the original ``base``, but this is the quickest route to de-risking the entire project as described in item 2 of the previous section.
+This is crude: a ``ghc-base`` that ``base`` merely reexports in full is just as ugly as the original ``base``, but this is the quickest route to de-risking the entire project as described.
 
 .. _`GHC issue #20647`: https://gitlab.haskell.org/ghc/ghc/-/issues/20647
 .. _`GHC MR !7898`: https://gitlab.haskell.org/ghc/ghc/-/merge_requests/7898
 
-**Step 2A**: Rationalize dependencies
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Step 2**: Split out pure GHC-agnostic libraries from ``ghc-base``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-At this point we have the following:
+Start splitting out code from GHC base with the goal of creating the innermost IO-free standard library/ies.
+Definitions like ``Functor`` require little to no magical builtins (other than the function type), and so are good candidates for pulling out of ``ghc-base``.
+Such code should not rely on GHC-specific definitions likely to change between compiler versions.
+Conversely, because the code has stable assumptions, it should be able to live in external repos included in GHC as submodules.
 
-- ``ghc-base``
-- ``base`` which reexports all of ``ghc-base``
-- A number of new libraries which reexport parts of ``base`` and possibly other libraries like ``text``.
+``base`` will reexport these libraries as need be.
 
-The goal is to shuffle code around so that we have something which makes more sense.
-That would look something like this:
+At the same time, miscellaneous definitions near the "top" of ``base`` that depend on many things but are little-used can also be moved out.
+``Eq1`` and friends since https://github.com/haskell/core-libraries-committee/issues/10 are not relied upon by anything else, and so can easily be moved out of ``ghc-base``.
+``base`` can reexport these items, but we might consider deprecating that reexport once this is possible (`GHC proposals issue #489 <https://github.com/ghc-proposals/ghc-proposals/discussions/489>` / `GHC Issue #22489 <https://gitlab.haskell.org/ghc/ghc/-/issues/22489>`).
+Ultimately ``base`` itself would be deprecated, but pealing out bits of random functionality earlier can help remove definitions from the CLC critical path and chip away at **Problem 1** and **Problem 4**.
 
-- 1 or more libraries in the GHC repo that are deeply tied to GHC's implementation details.
-  These libraries might depend on libraries in the next group.
-- 1 or more libraries outside the GHC repo that are agnostic to GHC's implementation details.
-  These libraries might depend on libraries in the previous group.
-- ``base``, lives in the GHC repo, and merely reexports functionality from the first two groups.
-- ``text``, lives outside the GHC repo, and should *not* depend on ``base``, but instead libraries from the first two groups.
-- The new standard libraries, living outside the GHC repo, merely reexporting functionality from the first two groups and possibly ``text``.
+There is a basic trade-off here that separating out items that are deeper in the dependency graph is more valuable, but separating out those that are shallower is more valuable.
 
-It will take a while to untangle everything to get to this new maintainable end state.
-The good news is that we can get there very incrementally.
-The initial crude split will validate that shuffling definitions between libraries and modules works at all.
-After that, continuing to shuffle items incrementally reduces risk.
+At the end of this process, there should be one or more libraries that the CLC can consider blessing as a standard library for pure programming.
+If we do need few fine-grained libraries to "zig-zag" between GHC-specific and GHC-agnostic definitions, this might be a reexport of a few such libraries to simplify things.
 
-At the conclusion of this, **Problem 2** and **Problem 4** will be solved in their entirety, which means all problems are solved in their entirety.
+This makes progress on all problems but **Problem 5**.
 
-**Step 2B**: Practice release management (Optional)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Step 3**: Split out libraries for "internal" IO
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-We won't know for sure if **Problem 4** is solved until a GHC release happens.
-But waiting for that could take a while, and is thus a risky behavior because we to know whether our efforts are on the right track or doomed to fail as soon as possible.
+Split out libraries from ``ghc-base`` dealing with "internal IO" --- effects that are contained within the program rather than dealing with the outside world.
+This would definitions like ``IO`` and ``ST``, ``MVar`` and ``IORef``, ``ForeignPtr``, etc.
 
-Therefore, as soon as we have *some* splitting and reexporting in progress, it is good to test out our work against a *past* GHC release.
-In particular, we can perform the same splits on that release, and see if the GHC-agnostic portions are swappable to allow for staggered breaking changes as intended.
+Arrays and thus text also come up here.
+We should consider reworking the definitions of important libraries like ``array``, ``vector``, ``bytestring``, ``text``, so they can depend just on these libraries and those from the previous step --- intentionally leaving out external IO.
+This chips away at **Problem 5**, finally, and allows us to reduce the primacy of ``String``.
 
-This step is optional.
-If the work appears to be going well or is quicker/cheaper than expected, maybe it is not worth the effort.
-On the other hand, if we could do a minor release of the old GHC using the split, so the backported work isn't purely for de-risking but actually delivers some benefits to users, that provides more reason to do this.
+Again, the CLC has an opportunity to look at the split out libraries to curate new standard libraries.
 
-Bonus **Step 3A**: Also split ``template-haskell``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Step 4**: Split out libraries for "external" IO
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-``template-haskell`` also suffers from the same versioning problem as ``base``.
-For issues unrelated to avoiding version churn busywork, in `GHC issue #21738`_ it was already proposed to split up the library.
-`GHC proposal #529`_ likewise proposing adding language features such that the breakage-prone portion of ``template-haskell`` is way less likely to be needed.
-If we implement that language feature, then it makes sense to additionally split of ``template-haskell`` for stability's sake, solving the equivalent of **Problem 1** for that library.
+Split out libraries from ``ghc-base`` dealing with "external IO" --- interacting with the outside world.
 
-.. _`GHC issue #21738`: https://gitlab.haskell.org/ghc/ghc/-/issues/21738
-.. _`GHC proposal #529`: https://github.com/ghc-proposals/ghc-proposals/pull/529
+Even within this step, we can think about layering.
+As discussed before, Windows and Unix and largely a super set of what WASI offers.
 
-Bonus **Step 3B**: Rethinking Windows
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
+On the other hand, platform-agnostic *abstractions* (as opposed to binding low-level interfaces which are themselves portable) should be done at the highest layer.
+Windows versus Unix is a good illustration of this:
 Right now, ``base`` relies on MinGW's and Windows's `libc` compat layer to approximate traditional Unix functionality.
 The ``unix`` and ``Win32`` layers than expose additional platform-specific functionality.
 
@@ -403,59 +442,69 @@ Quite arguably, this is the wrong way of going about IO.
 
 - It would be nice to not limit ourselves to a lowest-common-denominator of ``libc``-esque functionality as our starting point.
   Windows and Linux have added all sorts of more modern functionality in recent years that often is (a) similar, and (b) represents better ways to do existing operations, e.g. avoiding around restrictions on character sets, file path length, etc.
+  But libc, even in MSVCRT form, is hard to change due to various legacy concerns, and so cannot always take advantage of all of these.
 
 From this perspective we should invert the dependencies:
 ``unix`` and ``Win32`` should be below, binding Unix and Windows APIs *as they are*,
 and then *above* that is a compatibility layer creating portable interfaces with the latest best practice *without* the burden of libc tradition.
 
-This sort of reshuffle is a continuation of the project of rationalizing dependencies and a natural extension of **Step 2A**.
+``base`` would need to reexport that high level compatibility layer to keep its existing interface, putting it above not below ``unix`` and ``Win32``, unlike today.
+
+One important thing we should do is make the legacy ``String``-based IO methods depend on more performant and preferable array-based ones.
+(There are some technical issues where ``String`` can represent invalid unicode that ``Text`` cannot, so I reframe from calling out ``Text`` in particular here.)
+This deduplicates work --- no more maintaining very similar code in two different places --- while allowing us to gradually phase out the ``String``-based versions.
+This is good for **Problem 5**.
+
+For the WASI parts of this work, the HF should reach out to the `Bytecode Alliance <https://bytecodealliance.org/>`, which is the HF equivalent for WASM and WASI, for financial and technical assistance ensuring the relevant new standard libraries can work well with WASI.
+
+**Step 5**: Also split ``template-haskell``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+``template-haskell`` also suffers from the same versioning problem as ``base``.
+For issues unrelated to avoiding version churn busywork, in `GHC issue #21738`_ it was already proposed to split up the library.
+We should also use low-tech tricks like providing more field names and pattern synonyms to allow writing code that is robust to mild data structure changes.
+(The ability to `disallow positional access on data constructors <https://github.com/ghc-proposals/ghc-proposals/discussions/513>` is a medium-effort way to make this more robust.)
+
+Eventually, for the most robust solution, we should tackle `GHC proposal #529`_, which proposing adding language features such that the breakage-prone AST data structures of ``template-haskell`` are way less likely to be used explicitly at all.
+If we implement that language feature, then it makes sense to additionally split out ``template-haskell`` for stability's sake, solving the equivalent of **Problem 1** for that library.
+
+.. _`GHC issue #21738`: https://gitlab.haskell.org/ghc/ghc/-/issues/21738
+.. _`GHC proposal #529`: https://github.com/ghc-proposals/ghc-proposals/pull/529
+
+Roadmap conclusion
+~~~~~~~~~~~~~~~~~~
+
+At this point, ``ghc-base`` should no longer exist, having been entirely split into other libraries.
+``base`` should remain all reexports, but of those libraries instead of ``ghc-base``, except for possibly some GHC-agnostic material we wish to deprecate with ``base``.
+(Such material can go back to living inside ``base``.)
+
+All such libraries should be rigorously designed to either be GHC-version-specific or GHC-version-agnostic, with few or no definitions of the other sort stuck in the "wrong" library.
+Libraries of the former sort should live within the GHC repo, while libraries of the latter sort should live outside of GHC pinned as submodules.
+Multiple GHC versions should be able to share the latter libraries at the same version, validating that the interfaces they depend on are indeed GHC-version agnostic.
+
+Multiple libraries of each type are needed because dependency chains "zig-zag" back and forth between the two categories.
+For example, the definition of ``Int`` is GHC-specific, the ``Num`` class itself should be GHC-agnostic, and much code using ``+`` is again GHC-specific.
+
+Individual libraries, possibly including reexports from other such libraries, besides ``base``, will be blessed by the CLC as standard libraries the community should use instead of ``base``.
 
 Timeline
 --------
 
-The project is designed to proceed in parallel to minimize risk, in addition to being incremental.
-Steps 1a and 1b are independent, and steps 2a and 2b are likewise independent.
+Only **Step 1**, the preliminary exploration step, is being formally proposed at this time.
+The rest is just there to illustrate how we could build upon it up towards the full solution addressing all problems.
 
-In past discussion, consensus around a plan from **Step 1A** was emphasized as a blocker --- if we didn't know what sort of standard libraries we wanted to end up with, we shouldn't proceed.
-In the author's opinion this is misguided.
-The actual stumbling point is not disagreements about where we want to end up, but maintaining progress on something which is not incredibly hard, but has many steps and ushers in most of the benefit over the long term.
-(For example, many users of GHC are behind the latest version, these reforms only benefit them going forward after they have caught up to the last unaffected release.)
+Once that is completely, not only will we have a better idea of what challenges remain, we (assuming success) should have a bunch of incremental and parallel work that is better suited for volunteer or otherwise small-scale efforts.
 
-As such, the most crucial step is considered to be **Step 1B**.
-After that, we know the basic concept for sure works.
-And indeed it is possible to start steps 2a and 2b before there is a complete **Step 1A** plan.
-
-It may well additionally make sense to preliminarily accept *just* **Step 1B**, and then go back and refine this proposal's Timeline and Budget sections with the information we've learned from **Step 1B**.
+Based on how that proceeds, follow-up tech proposals could be submitted in the future.
 
 Budget
 ------
 
-**Step 1A** costs
-~~~~~~~~~~~~~~~~~
-
-It is unknown whether the CLC will need HF help to do the large amount of planning work for **Step 1A**.
-
-The HF should reach out to the `Bytecode Alliance <https://bytecodealliance.org/>`, which is the HF equivalent for WASM and WASI, for financial and technical assistance ensuring the relevant new standard libraries can work well with WASI.
-
-**Step 1B** costs
+**Step 1** costs
 ~~~~~~~~~~~~~~~~~
 
 Finishing `GHC MR !7898`_ is conservatively estimated to take 1 person-month of work from an experienced GHC dev.
 The HF should finance this work if there are no volunteers to ensure it is done as fast as possible, as everything else is far too uncertain until this trial round of splitting and reexports has been completed end to end.
-
-**Step 2A** costs
-~~~~~~~~~~~~~~~~~
-
-**Step 2A** should be priced out per incremental item, with the hope that specific steps will entice volunteers which care about the functionality behind reshuffled in that step.
-HF may need to play a coordination role but hopefully doesn't need to pay for the work being done directly.
-This should serve as a way to recruit more standard library maintainers going forward, as the fine-grained boundaries between the underlying libraries naturally lend themselves to a division of labor.
-
-**Step 2B** costs
-~~~~~~~~~~~~~~~~~
-
-This steps is optional.
-But since it involves redoing the work already done on GHC master on a prior GHC, we can use our collective experience with backporting to estimate what the ratio of effort to that for the original work would be.
-1/2 time is a rough estimate at a cautious upper bound.
 
 Stakeholders
 ------------
@@ -463,15 +512,14 @@ Stakeholders
 The Core Libraries Committee
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-**Step 1A** constitutes a large chunk of new responsibility for the CLC.
-This project depends on on them being interested and willing in taking on that work.
+The latter steps give the CLC new material from which to curate the new standard libraries.
+We can do the work without being blocked on the CLC, but ultimately we will need their blessing for any new libraries to reach the "cultural" primacy of ``base``.
 
 GHC developers
 ~~~~~~~~~~~~~~
 
-`GHC MR !7898`_ from **Step 1A** has uncovered some bugs that will need fixing.,
-**Step 2A** will eventually result in churn among which submodules GHC contains, which will be frustrating until that stabilizes.
-**Step 2B**, if it were to be released not just done on a fork as a trial, will result in more release management work and possible fallout of reshuffling the implementation of ``base`` behind the scenes.
+`GHC MR !7898`_ from **Step 1** has uncovered some bugs that will need fixing.
+The later steps will eventually result in churn among which submodules GHC contains, which will be frustrating until that stabilizes.
 
 Due to **Problem 4**, the interest and cooperation of the developers of our new backends is especially solicited.
 
