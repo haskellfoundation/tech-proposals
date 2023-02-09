@@ -259,107 +259,6 @@ This is crude: a ``ghc-base`` that ``base`` merely reexports in full is just as 
 .. _`GHC issue #20647`: https://gitlab.haskell.org/ghc/ghc/-/issues/20647
 .. _`GHC MR !7898`: https://gitlab.haskell.org/ghc/ghc/-/merge_requests/7898
 
-**Step 2**: Split out pure GHC-agnostic libraries from ``ghc-base``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Start splitting out code from GHC base with the goal of creating the innermost IO-free standard library/ies.
-Definitions like ``Functor`` require little to no magical builtins (other than the function type), and so are good candidates for pulling out of ``ghc-base``.
-Such code should not rely on GHC-specific definitions likely to change between compiler versions.
-Conversely, because the code has stable assumptions, it should be able to live in external repos included in GHC as submodules.
-
-``base`` will reexport these libraries as need be.
-
-At the same time, miscellaneous definitions near the "top" of ``base`` that depend on many things but are little-used can also be moved out.
-``Eq1`` and friends since https://github.com/haskell/core-libraries-committee/issues/10 are not relied upon by anything else, and so can easily be moved out of ``ghc-base``.
-``base`` can reexport these items, but we might consider deprecating that reexport once this is possible (`GHC proposals issue #489 <https://github.com/ghc-proposals/ghc-proposals/discussions/489>` / `GHC Issue #22489 <https://gitlab.haskell.org/ghc/ghc/-/issues/22489>`).
-Ultimately ``base`` itself would be deprecated, but pealing out bits of random functionality earlier can help remove definitions from the CLC critical path and chip away at **Problem 2** and **Problem 4**.
-
-There is a basic trade-off here that separating out items that are deeper in the dependency graph is more valuable, but separating out those that are shallower is more valuable.
-
-At the end of this process, there should be one or more libraries that the CLC can consider blessing as a standard library for pure programming.
-If we do need few fine-grained libraries to "zig-zag" between GHC-specific and GHC-agnostic definitions, this might be a reexport of a few such libraries to simplify things.
-
-This makes progress on all problems but **Problem 5**.
-
-**Step 3**: Split out libraries for "internal" IO
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Split out libraries from ``ghc-base`` dealing with "internal IO" --- effects that are contained within the program rather than dealing with the outside world.
-This would definitions like ``IO`` and ``ST``, ``MVar`` and ``IORef``, ``ForeignPtr``, etc.
-
-Arrays and thus text also come up here.
-We should consider reworking the definitions of important libraries like ``array``, ``vector``, ``bytestring``, ``text``, so they can depend just on these libraries and those from the previous step --- intentionally leaving out external IO.
-This chips away at **Problem 5**, finally, and allows us to reduce the primacy of ``String``.
-
-Again, the CLC has an opportunity to look at the split out libraries to curate new standard libraries.
-
-**Step 4**: Split out libraries for "external" IO
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Split out libraries from ``ghc-base`` dealing with "external IO" --- interacting with the outside world.
-
-Even within this step, we can think about layering.
-As discussed before, Windows and Unix and largely a super set of what WASI offers.
-
-On the other hand, platform-agnostic *abstractions* (as opposed to binding low-level interfaces which are themselves portable) should be done at the highest layer.
-Windows versus Unix is a good illustration of this:
-Right now, ``base`` relies on MinGW's and Windows's `libc` compat layer to approximate traditional Unix functionality.
-The ``unix`` and ``Win32`` layers than expose additional platform-specific functionality.
-
-Quite arguably, this is the wrong way of going about IO.
-
-- It would be nice to make MinGW optional and support Windows more directly/natively.
-  This is what Rust does.
-  LLVM has made doing so (e.g. without relying on proprietary tools exclusively) much easier in recent years.
-  As Ben Gamari and others can attest, the state of Windows support in GNU tools is not good.
-
-- It would be nice to not limit ourselves to a lowest-common-denominator of ``libc``-esque functionality as our starting point.
-  Windows and Linux have added all sorts of more modern functionality in recent years that often is (a) similar, and (b) represents better ways to do existing operations, e.g. avoiding around restrictions on character sets, file path length, etc.
-  But libc, even in MSVCRT form, is hard to change due to various legacy concerns, and so cannot always take advantage of all of these.
-
-From this perspective we should invert the dependencies:
-``unix`` and ``Win32`` should be below, binding Unix and Windows APIs *as they are*,
-and then *above* that is a compatibility layer creating portable interfaces with the latest best practice *without* the burden of libc tradition.
-
-``base`` would need to reexport that high level compatibility layer to keep its existing interface, putting it above not below ``unix`` and ``Win32``, unlike today.
-
-One important thing we should do is make the legacy ``String``-based IO methods depend on more performant and preferable array-based ones.
-(There are some technical issues where ``String`` can represent invalid unicode that ``Text`` cannot, so I reframe from calling out ``Text`` in particular here.)
-This deduplicates work --- no more maintaining very similar code in two different places --- while allowing us to gradually phase out the ``String``-based versions.
-This is good for **Problem 5**.
-
-For the WASI parts of this work, the HF should reach out to the `Bytecode Alliance <https://bytecodealliance.org/>`, which is the HF equivalent for WASM and WASI, for financial and technical assistance ensuring the relevant new standard libraries can work well with WASI.
-
-**Step 5**: Also split ``template-haskell``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-``template-haskell`` also suffers from the same versioning problem as ``base``.
-For issues unrelated to avoiding version churn busywork, in `GHC issue #21738`_ it was already proposed to split up the library.
-We should also use low-tech tricks like providing more field names and pattern synonyms to allow writing code that is robust to mild data structure changes.
-(The ability to `disallow positional access on data constructors <https://github.com/ghc-proposals/ghc-proposals/discussions/513>` is a medium-effort way to make this more robust.)
-
-Eventually, for the most robust solution, we should tackle `GHC proposal #529`_, which proposing adding language features such that the breakage-prone AST data structures of ``template-haskell`` are way less likely to be used explicitly at all.
-If we implement that language feature, then it makes sense to additionally split out ``template-haskell`` for stability's sake, solving the equivalent of **Problem 2** for that library.
-
-.. _`GHC issue #21738`: https://gitlab.haskell.org/ghc/ghc/-/issues/21738
-.. _`GHC proposal #529`: https://github.com/ghc-proposals/ghc-proposals/pull/529
-
-Roadmap conclusion
-~~~~~~~~~~~~~~~~~~
-
-At this point, ``ghc-base`` should no longer exist, having been entirely split into other libraries.
-``base`` should remain all reexports, but of those libraries instead of ``ghc-base``, except for possibly some GHC-agnostic material we wish to deprecate with ``base``.
-(Such material can go back to living inside ``base``.)
-
-All such libraries should be rigorously designed to either be GHC-version-specific or GHC-version-agnostic, with few or no definitions of the other sort stuck in the "wrong" library.
-Libraries of the former sort should live within the GHC repo, while libraries of the latter sort should live outside of GHC pinned as submodules.
-Multiple GHC versions should be able to share the latter libraries at the same version, validating that the interfaces they depend on are indeed GHC-version agnostic.
-
-Multiple libraries of each type are needed because dependency chains "zig-zag" back and forth between the two categories.
-For example, the definition of ``Int`` is GHC-specific, the ``Num`` class itself should be GHC-agnostic, and much code using ``+`` is again GHC-specific.
-
-Individual libraries, possibly including reexports from other such libraries, besides ``base``, will be blessed by the CLC as standard libraries the community should use instead of ``base``.
-
 Timeline
 --------
 
@@ -618,3 +517,107 @@ Secondarily, do offer good alternatives, like ``Text`` and associated functional
 .. [#cpu-leaks]
   The choice of CPU/Arch does leak through when wants to do certain special operations, like atomics that depend on the intricacies of memory models, or data-paralleld "SIMD" instrucitons.
   But these concerns are fairly niche and we can mostly not think about them for the purposes of standard library design.
+
+Technical Roadmap
+-----------------
+
+**Step 2**: Split out pure GHC-agnostic libraries from ``ghc-base``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Start splitting out code from GHC base with the goal of creating the innermost IO-free standard library/ies.
+Definitions like ``Functor`` require little to no magical builtins (other than the function type), and so are good candidates for pulling out of ``ghc-base``.
+Such code should not rely on GHC-specific definitions likely to change between compiler versions.
+Conversely, because the code has stable assumptions, it should be able to live in external repos included in GHC as submodules.
+
+``base`` will reexport these libraries as need be.
+
+At the same time, miscellaneous definitions near the "top" of ``base`` that depend on many things but are little-used can also be moved out.
+``Eq1`` and friends since https://github.com/haskell/core-libraries-committee/issues/10 are not relied upon by anything else, and so can easily be moved out of ``ghc-base``.
+``base`` can reexport these items, but we might consider deprecating that reexport once this is possible (`GHC proposals issue #489 <https://github.com/ghc-proposals/ghc-proposals/discussions/489>` / `GHC Issue #22489 <https://gitlab.haskell.org/ghc/ghc/-/issues/22489>`).
+Ultimately ``base`` itself would be deprecated, but pealing out bits of random functionality earlier can help remove definitions from the CLC critical path and chip away at **Problem 2** and **Problem 4**.
+
+There is a basic trade-off here that separating out items that are deeper in the dependency graph is more valuable, but separating out those that are shallower is more valuable.
+
+At the end of this process, there should be one or more libraries that the CLC can consider blessing as a standard library for pure programming.
+If we do need few fine-grained libraries to "zig-zag" between GHC-specific and GHC-agnostic definitions, this might be a reexport of a few such libraries to simplify things.
+
+This makes progress on all problems but **Problem 5**.
+
+**Step 3**: Split out libraries for "internal" IO
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Split out libraries from ``ghc-base`` dealing with "internal IO" --- effects that are contained within the program rather than dealing with the outside world.
+This would definitions like ``IO`` and ``ST``, ``MVar`` and ``IORef``, ``ForeignPtr``, etc.
+
+Arrays and thus text also come up here.
+We should consider reworking the definitions of important libraries like ``array``, ``vector``, ``bytestring``, ``text``, so they can depend just on these libraries and those from the previous step --- intentionally leaving out external IO.
+This chips away at **Problem 5**, finally, and allows us to reduce the primacy of ``String``.
+
+Again, the CLC has an opportunity to look at the split out libraries to curate new standard libraries.
+
+**Step 4**: Split out libraries for "external" IO
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Split out libraries from ``ghc-base`` dealing with "external IO" --- interacting with the outside world.
+
+Even within this step, we can think about layering.
+As discussed before, Windows and Unix and largely a super set of what WASI offers.
+
+On the other hand, platform-agnostic *abstractions* (as opposed to binding low-level interfaces which are themselves portable) should be done at the highest layer.
+Windows versus Unix is a good illustration of this:
+Right now, ``base`` relies on MinGW's and Windows's `libc` compat layer to approximate traditional Unix functionality.
+The ``unix`` and ``Win32`` layers than expose additional platform-specific functionality.
+
+Quite arguably, this is the wrong way of going about IO.
+
+- It would be nice to make MinGW optional and support Windows more directly/natively.
+  This is what Rust does.
+  LLVM has made doing so (e.g. without relying on proprietary tools exclusively) much easier in recent years.
+  As Ben Gamari and others can attest, the state of Windows support in GNU tools is not good.
+
+- It would be nice to not limit ourselves to a lowest-common-denominator of ``libc``-esque functionality as our starting point.
+  Windows and Linux have added all sorts of more modern functionality in recent years that often is (a) similar, and (b) represents better ways to do existing operations, e.g. avoiding around restrictions on character sets, file path length, etc.
+  But libc, even in MSVCRT form, is hard to change due to various legacy concerns, and so cannot always take advantage of all of these.
+
+From this perspective we should invert the dependencies:
+``unix`` and ``Win32`` should be below, binding Unix and Windows APIs *as they are*,
+and then *above* that is a compatibility layer creating portable interfaces with the latest best practice *without* the burden of libc tradition.
+
+``base`` would need to reexport that high level compatibility layer to keep its existing interface, putting it above not below ``unix`` and ``Win32``, unlike today.
+
+One important thing we should do is make the legacy ``String``-based IO methods depend on more performant and preferable array-based ones.
+(There are some technical issues where ``String`` can represent invalid unicode that ``Text`` cannot, so I reframe from calling out ``Text`` in particular here.)
+This deduplicates work --- no more maintaining very similar code in two different places --- while allowing us to gradually phase out the ``String``-based versions.
+This is good for **Problem 5**.
+
+For the WASI parts of this work, the HF should reach out to the `Bytecode Alliance <https://bytecodealliance.org/>`, which is the HF equivalent for WASM and WASI, for financial and technical assistance ensuring the relevant new standard libraries can work well with WASI.
+
+**Step 5**: Also split ``template-haskell``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+``template-haskell`` also suffers from the same versioning problem as ``base``.
+For issues unrelated to avoiding version churn busywork, in `GHC issue #21738`_ it was already proposed to split up the library.
+We should also use low-tech tricks like providing more field names and pattern synonyms to allow writing code that is robust to mild data structure changes.
+(The ability to `disallow positional access on data constructors <https://github.com/ghc-proposals/ghc-proposals/discussions/513>` is a medium-effort way to make this more robust.)
+
+Eventually, for the most robust solution, we should tackle `GHC proposal #529`_, which proposing adding language features such that the breakage-prone AST data structures of ``template-haskell`` are way less likely to be used explicitly at all.
+If we implement that language feature, then it makes sense to additionally split out ``template-haskell`` for stability's sake, solving the equivalent of **Problem 2** for that library.
+
+.. _`GHC issue #21738`: https://gitlab.haskell.org/ghc/ghc/-/issues/21738
+.. _`GHC proposal #529`: https://github.com/ghc-proposals/ghc-proposals/pull/529
+
+Roadmap conclusion
+~~~~~~~~~~~~~~~~~~
+
+At this point, ``ghc-base`` should no longer exist, having been entirely split into other libraries.
+``base`` should remain all reexports, but of those libraries instead of ``ghc-base``, except for possibly some GHC-agnostic material we wish to deprecate with ``base``.
+(Such material can go back to living inside ``base``.)
+
+All such libraries should be rigorously designed to either be GHC-version-specific or GHC-version-agnostic, with few or no definitions of the other sort stuck in the "wrong" library.
+Libraries of the former sort should live within the GHC repo, while libraries of the latter sort should live outside of GHC pinned as submodules.
+Multiple GHC versions should be able to share the latter libraries at the same version, validating that the interfaces they depend on are indeed GHC-version agnostic.
+
+Multiple libraries of each type are needed because dependency chains "zig-zag" back and forth between the two categories.
+For example, the definition of ``Int`` is GHC-specific, the ``Num`` class itself should be GHC-agnostic, and much code using ``+`` is again GHC-specific.
+
+Individual libraries, possibly including reexports from other such libraries, besides ``base``, will be blessed by the CLC as standard libraries the community should use instead of ``base``.
