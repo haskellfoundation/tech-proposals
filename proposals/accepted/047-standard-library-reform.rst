@@ -72,37 +72,6 @@ Using off-the-shelf definitions gives us a shared language reinforced by practic
 Prior Art and Related Efforts
 -----------------------------
 
-There has been much discussion of these topics before, but to my knowledge this is the first time they have been consolidated together.
-
-A few miscellaneous things:
-
-Rust's ``core`` vs ``std``
-~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Rust also has multiple standard libraries, of which the most notable are ``core`` vs ``std``.
-This split solves the portability problem:
-Only maximally portable concepts, ones that work everywhere Rust does including embedded/freestanding contexts, can go in ``core``.
-The rest must go in ``std``.
-
-However, this doesn't go far enough to address the standard library --- language implementation coupling problem.
-Both libraries still live in the compiler repo and are still released in tandem with the compiler.
-``core`` also contains numerous definitions that, while perfectly portable, have nothing to do with interfacing the compiler internals.
-(Think e.g. the equivalents of things like ``Functor`` and ``Monoid`` for us, perfectly portable across compilation targets, but also implementation-agnostic.)
-
-Rust's ``cap-std``
-~~~~~~~~~~~~~~~~~~
-
-`cap-std <https://github.com/bytecodealliance/cap-std>`_ is a Rust library exploring what ergonomic IO interfaces for WASI system calls in a high level language should look like.
-On one hand, it is great, and we should borrow from it heavily.
-On the other hand, we should surpass it in not needing to be something on top of the "regular" standard library which ordinarily exposes more Unixy things than is appropriate.
-
-Rust's ``std`` and WASI
-~~~~~~~~~~~~~~~~~~~~~~~
-
-While the best experience comes from using ``cap-std`` as described above, Rust's ``std`` still makes sure to avoid indirecting through ``wasi-libc`` wherever possible.
-`This PR <https://github.com/rust-lang/rust/pull/63676>`_ made that change, using the ``wasi`` library (Rust bindings to WASI system calls) directly.
-This is what we should emulate in order to provide a top-tier programming environment for greenfield WebAssembly applications in Haskell.
-
 Prior attempts at splitting ``base``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -437,6 +406,40 @@ Secondarily, do offer good alternatives, like ``Text`` and associated functional
 .. [#cpu-leaks]
   The choice of CPU/Arch does leak through when wants to do certain special operations, like atomics that depend on the intricacies of memory models, or data-paralleld "SIMD" instrucitons.
   But these concerns are fairly niche and we can mostly not think about them for the purposes of standard library design.
+
+Prior Art and Related Efforts
+-----------------------------
+
+There has been much discussion of these topics before, but to my knowledge this is the first time they have been consolidated together.
+
+A few miscellaneous things:
+
+Rust's ``core`` vs ``std``
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Rust also has multiple standard libraries, of which the most notable are ``core`` vs ``std``.
+This split solves the portability problem:
+Only maximally portable concepts, ones that work everywhere Rust does including embedded/freestanding contexts, can go in ``core``.
+The rest must go in ``std``.
+
+However, this doesn't go far enough to address the standard library --- language implementation coupling problem.
+Both libraries still live in the compiler repo and are still released in tandem with the compiler.
+``core`` also contains numerous definitions that, while perfectly portable, have nothing to do with interfacing the compiler internals.
+(Think e.g. the equivalents of things like ``Functor`` and ``Monoid`` for us, perfectly portable across compilation targets, but also implementation-agnostic.)
+
+Rust's ``cap-std``
+~~~~~~~~~~~~~~~~~~
+
+`cap-std <https://github.com/bytecodealliance/cap-std>`_ is a Rust library exploring what ergonomic IO interfaces for WASI system calls in a high level language should look like.
+On one hand, it is great, and we should borrow from it heavily.
+On the other hand, we should surpass it in not needing to be something on top of the "regular" standard library which ordinarily exposes more Unixy things than is appropriate.
+
+Rust's ``std`` and WASI
+~~~~~~~~~~~~~~~~~~~~~~~
+
+While the best experience comes from using ``cap-std`` as described above, Rust's ``std`` still makes sure to avoid indirecting through ``wasi-libc`` wherever possible.
+`This PR <https://github.com/rust-lang/rust/pull/63676>`_ made that change, using the ``wasi`` library (Rust bindings to WASI system calls) directly.
+This is what we should emulate in order to provide a top-tier programming environment for greenfield WebAssembly applications in Haskell.
 
 Technical Roadmap
 -----------------
