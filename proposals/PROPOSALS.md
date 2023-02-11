@@ -133,3 +133,19 @@ After five revisions, the committee may only recommend acceptance or rejection.
 Committee recommendations are decided by a simple majority vote.
 The reasons for the recommendation should be written and added as a comment to the discussion thread.
 The minority may, if they desire, write up their reasons for recommending otherwise, and decision makers may take this into account.
+
+### Archiving
+
+If there has been no substantial activity on a proposal for three months, any member of the committee may archive the proposal by closing the associated pull request with a comment to that effect.
+Here, "substantial" activity is activity that the committee member believes may lead to a revision to the proposal or a vote by the committee.
+Archived proposals may be reopened by reopening the pull request if someone wants to make progress on them again, and reopening a proposal counts as substantial activity.
+
+### Errata
+
+Accepted proposals should be considered to be final documents, not subject to further updates.
+During implementation, there will naturally be differences between the described project and what actually happens.
+For projects that use Haskell Foundation resources, the implemented project should be in the spirit and budget of the original proposal; evaluating this is the job of the HF executive team.
+There is no obligation to modify the original proposal to account for new knowledge gained during implementation.
+
+Proposals that contain cosmetic issues, such as Markdown mistakes, may be updated without further discussion.
+Proposals that contain genuine mistakes may have an errata page added at the discretion of the HF executive team, who may refer the matter to the committee.
