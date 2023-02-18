@@ -137,17 +137,8 @@ This proposal doesn't prevent that, and ``ghc-base`` (or whatever ``ghc-*`` libr
 Technical Roadmap
 -----------------
 
-The end goal is laid out above (with some details such as exactly which libraries we want).
-But that doesn't tell us how to get there.
-
-Below is a roadmap to reach our end goal with an emphasis on reducing risk.
-The goal is that the foundation should provide an extra boost at key moments, but between them the work should be broken down into very small bite-size chunks that are easier for volunteers to tackle.
-
-See below in budget: *only the first step is normative* in the sense of asking for resources.
-The rest are just to illustrate a possible larger context and how the problems of the motivation will be addressed.
-
-**Step 1**: Shim ``base`` with new ``ghc-base``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Shim ``base`` with new ``ghc-base``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Everything in ``base`` will be moved to a new library ``ghc-base``, and ``base`` will just reexport its contents.
 
@@ -172,6 +163,34 @@ This is crude: a ``ghc-base`` that ``base`` merely reexports in full is just as 
 
 .. _`GHC issue #20647`: https://gitlab.haskell.org/ghc/ghc/-/issues/20647
 .. _`GHC MR !7898`: https://gitlab.haskell.org/ghc/ghc/-/merge_requests/7898
+
+Validate the split
+~~~~~~~~~~~~~~~~~~
+
+Having made the a crude split base, we want do *something* to validate that this has put us on track to solving our division of labor issues.
+This could take a few forms:
+
+Deprecate or even remove the reexport of a highly-GHC-specific internal definition
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Items in the ``GHC.*`` namespace, for example, were originally placed there because they were outside the modules specified in the Haskell Report, and specific to GHC.
+Many of them, like ``GHC.Generics``, are both wide use and may not even be exposing implementation details.
+Some of them, however, are very tied to implementation details are used far less directly.
+
+It is that latter sort that a ``ghc-base`` vs ``base`` split eventually seeks to relocated permanently out of ``base``.
+
+Based on the results of an impact analysis, we could remove them out of ``base`` right away, or deprecate the reexport to indicate such removal in the future is planned.
+
+Move back out of ``ghc-base`` highly portable definitions
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The flip side of relegating implementation specific code to the lower library is that implementation agnostic code should be able to live in the higher library, and someday even be built against multiple GHCs / ``ghc-base `` versions.
+
+For example, since `CLC Issue #10`_, ``Data.Functor.Classes`` is only used in 3 other ``Data.Functor.*`` modules to define instances which are themselves unused by the rest of base.
+The instances could instead be moved to ``Data.Functor.Classes`` itself, at which point nothing else would depend on that module, and it also depends on nothing implementation-specific (in principle).
+Finally, that module could be moved back to ``base`` from ``ghc-base``
+
+.. _`CLC Issue #10`: https://github.com/haskell/core-libraries-committee/issues/10
 
 Timeline
 --------
