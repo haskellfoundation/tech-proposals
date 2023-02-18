@@ -82,10 +82,9 @@ Shared norms and idioms promote a single community rather than family of communi
 Problem Statement
 -----------------
 
-Each of items from the abstract is described in detail.
+..
 
-**Problem 1**: No clear boundary between private/unstable and public/stable interfaces in the standard library
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  No clear boundary between private/unstable and public/stable interfaces in the standard library.
 
 The long discussion thread in `CLC Issue #105`_ demonstrates this exceedingly well.
 
@@ -96,7 +95,7 @@ Not only is there no firm boundary, but there wasn't even a collectively-shared 
 This is a "tower of Babel" moment where the inability to communicate makes it hard to work together.
 
 Solution criteria
-^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~
 
 We should use standard off-the-shelf definitions and techniques to enforce this boundary.
 The standard library should not expose private, implementation-detail modules.
