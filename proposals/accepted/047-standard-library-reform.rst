@@ -222,10 +222,8 @@ We can do the work without being blocked on the CLC, but ultimately we will need
 GHC developers
 ~~~~~~~~~~~~~~
 
-`GHC MR !7898`_ from **Step 1** has uncovered some bugs that will need fixing.
+`GHC MR !7898`_ has uncovered some bugs that will need fixing.
 The later steps will eventually result in churn among which submodules GHC contains, which will be frustrating until that stabilizes.
-
-Due to **Problem 4**, the interest and cooperation of the developers of our new backends is especially solicited.
 
 Success
 -------
