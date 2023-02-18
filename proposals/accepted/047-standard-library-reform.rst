@@ -192,24 +192,23 @@ Finally, that module could be moved back to ``base`` from ``ghc-base``
 
 .. _`CLC Issue #10`: https://github.com/haskell/core-libraries-committee/issues/10
 
-Timeline
---------
+Timeline and Budget
+-------------------
 
-Only **Step 1**, the preliminary exploration step, is being formally proposed at this time.
-The rest is just there to illustrate how we could build upon it up towards the full solution addressing all problems.
-
-Once that is completely, not only will we have a better idea of what challenges remain, we (assuming success) should have a bunch of incremental and parallel work that is better suited for volunteer or otherwise small-scale efforts.
-
-Based on how that proceeds, follow-up tech proposals could be submitted in the future.
-
-Budget
-------
-
-**Step 1** costs
-~~~~~~~~~~~~~~~~~
+Shim ``base`` with new ``ghc-base``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Finishing `GHC MR !7898`_ is conservatively estimated to take 1 person-month of work from an experienced GHC dev.
 The HF should finance this work if there are no volunteers to ensure it is done as fast as possible, as everything else is far too uncertain until this trial round of splitting and reexports has been completed end to end.
+
+*This section could be fleshed out with more concrete roles and responsibilities, or that can be figured out post-acceptance.*
+
+Validate the split
+~~~~~~~~~~~~~~~~~~
+
+This item does not need example Haskell Foundation funding.
+Both examples are ultimately social exercises for GHC devs and CLC members in getting familiar with a budding new division of labor and responsibility.
+The actual technical effort needed to shuffle a reexport or move some instances is miniscule, not more than one day's work.
 
 Stakeholders
 ------------
