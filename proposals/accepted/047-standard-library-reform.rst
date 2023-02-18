@@ -42,7 +42,7 @@ But frequently results in a giant monolith which is hard to maintain and hard to
 And indeed that is the experience of most language's over time: languages die young or live long enough to regret many of the decisions in their standard library.
 
 Let's take a step bit.
-The benefits of (2) are mainly for "`programming in the small <https://en.wikipedia.org/wiki/Programming_in_the_large_and_programming_in_the_small>`" and end applications.
+The benefits of (2) are mainly for `"programming in the small" <https://en.wikipedia.org/wiki/Programming_in_the_large_and_programming_in_the_small>`_ and end applications.
 For libraries, and especially the ecosystem of libraries as a whole, a primary objective is to be resilient in the face of change: in other words to have the lease disruption per breakage and controversy as possible.
 To that end a few simple rules can help:
 
@@ -105,7 +105,7 @@ Private modules that we do wish to expose to code that *knowingly* is using unst
 The standard library should use regular PVP versioning.
 
 In solving the immediate problem this way, we also solve the meta problem.
-Using off-the-shelf definitions gives us a shared language reinforced by practice in the rest of the Haskell ecosystem. [#ubiquitous-language]_
+Using off-the-shelf definitions gives us a shared language reinforced by practice in the rest of the Haskell ecosystem.
 
 Prior Art and Related Efforts
 -----------------------------
