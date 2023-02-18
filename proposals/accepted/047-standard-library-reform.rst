@@ -12,8 +12,11 @@ The problems and solutions are multifaceted, and so the Haskell Foundation in it
 
 THere are many such issues, but the one have chosen to focus on first in this proposal is:
 
-> No clear boundary between GHC private/unstable library support code and public/stable standard library interfaces.
-  `CLC Issue #105`_.
+..
+
+  No clear boundary between GHC private/unstable library support code and public/stable standard library interfaces.
+
+(This is also `CLC Issue #105`_.)
 
 By reshuffling our interfaces and implementations alike, we should be able to solve this problem.
 
@@ -135,7 +138,7 @@ This proposal doesn't prevent that, and ``ghc-base`` (or whatever ``ghc-*`` libr
 Technical Roadmap
 -----------------
 
-The end goal is layed out above (with some details such as exactly which libraries we want).
+The end goal is laid out above (with some details such as exactly which libraries we want).
 But that doesn't tell us how to get there.
 
 Below is a roadmap to reach our end goal with an emphasis on reducing risk.
