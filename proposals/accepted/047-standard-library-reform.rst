@@ -10,36 +10,17 @@ Abstract
 Issues with the standard library are holding back the Haskell ecosystem.
 The problems and solutions are multifaceted, and so the Haskell Foundation in its "umbrella organization" capacity is uniquely suited to coordinate the fixing of them.
 
-The problems are briefly as follows:
+THere are many such issues, but the one have chosen to focus on first in this proposal is:
 
-#. No clear boundary between GHC private/unstable library support code and public/stable standard library interfaces.
-   `CLC Issue #105`_.
+> No clear boundary between GHC private/unstable library support code and public/stable standard library interfaces.
+  `CLC Issue #105`_.
 
-#. Major version bumps every compiler release is a nuisance.
-
-#. No clear portability guarantees with new supported platforms like the web browser and Web Assembly System Interface (WASI).
-
-#. Breaking changes (when we do want them) have to be coupled with GHC versions rather than staggered, which is painful.
-
-#. Popular and uncontroversial machinery like ``Text`` is not available from the standard library.
-
-By reshuffling our interfaces and implementations alike, we should be able to solve all these problems.
-
-Committing to a complete plan to address all of these in one go is not feasible, so just formally proposed is a first step of splitting the `base` library.
-This addresses the first problem.
-
-The rest of this document included for context, but left as future work.
+By reshuffling our interfaces and implementations alike, we should be able to solve this problem.
 
 .. _`CLC Issue #105`: https://github.com/haskell/core-libraries-committee/issues/105
 
 Background
 ----------
-
-The author deems these problems major and highly visible;
-if this is true then Haskellers of all skill levels should at least have a cursory familiarity with them.
-
-The details of the solution may require more advanced knowledge, but the *use* of the solution should not.
-Indeed, the new standard library interfaces we come up with should be *easier* to use than today's.
 
 A contradictory dual mandate
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -322,6 +303,18 @@ Success
 -------
 
 The project will be considered a success when all the enumerated problems are solved per their "solution criteria" (no moving the goalposts later without anyone noticing), and the standard library implementation is easier to maintain than before.
+
+Future work
+-----------
+
+It may seem that this first problem and solution are rather far-removed from actual users needs.
+This proposal was originally just one part of a far larger proposal that did "build up" from this work fixing a problem behind the scenes to a more visible "end-problem".
+However, committing to a complete plan to address all of these in one go is not feasible, so the rest was moved to (currently draft)
+`Proposal 49 <https://github.com/haskellfoundation/tech-proposals/pull/49>`
+
+Still, for readers interested in understanding everything in context, it may be helpful to read both proposals.
+Of course, as a separate proposal acceptance of this one does not imply acceptance of the next.
+But understanding what we *may* like to do next may still put this one in better context.
 
 Appendix: What are standard libraries for?
 ==========================================
