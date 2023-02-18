@@ -46,8 +46,8 @@ The benefits of (2) are mainly for `"programming in the small" <https://en.wikip
 For libraries, and especially the ecosystem of libraries as a whole, a primary objective is to be resilient in the face of change: in other words to have the lease disruption per breakage and controversy as possible.
 To that end a few simple rules can help:
 
- - Libraries should do one thing, and do that one things well
- - Libraries should only depend on what they need.
+- Libraries should do one thing, and do that one things well
+- Libraries should only depend on what they need.
 
 These rules serve libraries well...until we reach the standard library.
 The standard library of the above sort, trying to do (1) and (2), does *many* things, and not necessarily any of them well.
