@@ -253,29 +253,3 @@ However, committing to a complete plan to address all of these in one go is not 
 Still, for readers interested in understanding everything in context, it may be helpful to read both proposals.
 Of course, as a separate proposal acceptance of this one does not imply acceptance of the next.
 But understanding what we *may* like to do next may still put this one in better context.
-
-Appendix: What are standard libraries for?
-==========================================
-
-*If parts of this proposal seems hard to understand or surprising, background information in the form of the author's critical view on the very concept of a standard library me prove illuminating.*
-
-Synthesis
----------
-
-So if we want to have little libraries for technical reasons, but large feature-rich standard libraries for social reasons, what do we do?
-Both!
-The original definitions of just about everything be incubated in little libraries, and continue to live in little libraries.
-Standard libraries should have very little of their own definitions, but just focus on reexports, their role is not to *invent*, but to *curate*.
-Plans today in the works like *moving* ``Profunctor`` to ``base`` should instead become having the new standard libraries merely *depend* on the ``profunctors`` library and reexport items.
-
-In the `words of Shriram Krishnamurthi <https://twitter.com/ShriramKMurthi/status/1597942676560965634>`_, the slogan should not be "batteries included", but "batteries included — but not inserted".
-When one just starts up GHCi without arguments, or runs ``cabal new``, one will get the nice feature-rich standard library loaded / as a ``build-depend`` by default,
-but tweak a few flags and the cabal stanza, and its easy to remove those sledgehammer deps and just depend on exactly what one needs.
-
-This is not normative!
-----------------------
-
-Hopefully the above appendix makes the vision of the proposal author more clear, but it should be equally stressed that this appendix is not normative.
-Nowhere is the CLC being told exactly what the new standard libraries should look like.
-Nowhere is it also specified how the implementation should be cut up behind the scenes.
-But, if this proposal is to succeed, it seems like reaching a consensus position similar to the above compromise between two extremes is likely to be necessary.
