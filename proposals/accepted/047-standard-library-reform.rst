@@ -228,7 +228,19 @@ The later steps will eventually result in churn among which submodules GHC conta
 Success
 -------
 
-The project will be considered a success when all the enumerated problems are solved per their "solution criteria" (no moving the goalposts later without anyone noticing), and the standard library implementation is easier to maintain than before.
+The project will be ultimately considered a success when the problem is solved per their "solution criteria" (no moving the goalposts later without anyone noticing).
+That means, for example, that everything that doesn't belong in ``base``'s public interface by virtue of being too implementation-specific or unstable is deprecated or removed altogether.
+
+The actually proposed technical roadmap doesn't take us this far, however. The triaging and moving of most items is left as an exercise for the CLC and GHC devs to perform incrementally and cheaply, without direct HF involvement.
+
+Because of this, we need a narrower definition of success which is just for the parts of the work HF is directly overseeing (and possibly funding):
+
+ - There is a new library called ``ghc-base``
+ - ``base`` depends on ``ghc-base``
+ - ``base`` only contains definitions which are portable across GHC versions / ignorant of GHC internal interfaces.
+   Others items exported by ``base`` must be reexports, presumably from ``ghc-base``.
+ - ``base`` contains at least on portable definition (it doesn't reexport everything).
+ - ``base`` has at least one interface deprecated or removed from before, intended to intend be accessed only from ``ghc-base``.
 
 Future work
 -----------
