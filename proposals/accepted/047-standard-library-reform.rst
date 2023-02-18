@@ -121,6 +121,17 @@ It is much more concerned with how we safely approach these issues than what the
 Alternative Preludes
 ~~~~~~~~~~~~~~~~~~~~
 
+Splitting base may feel superficially like various alternative prelude / alternative standard library projects.
+Indeed, on a technical level, adding a new layer on top, and then shuffling definitions around, vs shuffling and then splitting, are two routes to the same destination.
+
+However, on a social level, they are very different.
+We have an unclear division of labor between GHC developers and the CLC which was want to resolve right away --- this proposal immediately addresses that, but a layering on top approach would mean setting up a new library with presumably new governance, and only later seeing ``base`` "decay" into a GHC-specific legacy library.
+
+Similarly, by splitting first, and keeping (at least for now) ``base`` as the name of the library users are intended to so, we ensure that existing programs (and their maintainers) benefit from the clearer governance and division of labor right away.
+
+It may turn out that making new standard libraries and relegating ``base`` to a user-facing but legacy status is still a good idea.
+This proposal doesn't prevent that, and ``ghc-base`` (or whatever ``ghc-*`` libraries it itself may split into) are still good building blocks for ``base`` and any brave new standard libraries alike.
+
 Technical Roadmap
 -----------------
 
