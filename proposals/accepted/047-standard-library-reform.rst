@@ -1,5 +1,5 @@
-Standard library reform
-=======================
+Standard library reform: Split base
+===================================
 
 .. sectnum::
 .. contents::
