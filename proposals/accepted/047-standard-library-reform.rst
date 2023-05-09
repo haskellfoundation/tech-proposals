@@ -134,6 +134,63 @@ Similarly, by splitting first, and keeping (at least for now) ``base`` as the na
 It may turn out that making new standard libraries and relegating ``base`` to a user-facing but legacy status is still a good idea.
 This proposal doesn't prevent that, and ``ghc-base`` (or whatever ``ghc-*`` libraries it itself may split into) are still good building blocks for ``base`` and any brave new standard libraries alike.
 
+Relationship to `CLC Issue #146`_
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Today, part of the reason for the close coupling between `base` and GHC that necessitates a one-to-one major version correspondence is that various bits of GHC internals are part of `base`.
+Exposing these internals is important, as they allow programs to be written that otherwise could not be, but the tight coupling introduces fragility around updates.
+
+`CLC issue 146`_ is a proposal to begin a process that indicates which parts of base are GHC internals, and which parts are version-agnostic standard library.
+That proposal suggests a documentation field to capture this.
+
+Figuring formally which module is a GHC internal and which isn't is good, but merely documenting it is sub-par:
+
+- It puts the onus on users to actually read those docs.
+  If everything compiles fine, why would they bother to check?
+
+- It doesn't help with the versioning issues, unless we make a PVP exception (e.g. *not* counting changes in internals modules).
+  We would be solving one problem only to create a host of others.
+
+This proposal is an alternative means to the solving these same problems.
+The process of untangling the GHC internals in base from the standard library of Haskell will need to happen to get the full value of this proposal;
+this proposal sets the stage for it to happen incrementally and without needing special exemptions from or changes to the PVP.
+
+.. _`CLC Issue #146`: https://github.com/haskell/core-libraries-committee/issues/146
+
+Why not just use `base-compat`?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+`base-compat` is a long-lived library that makes it possible for a library or application to support a wider range of GHC versions without needing to write their own CPP.
+Essentially, it centralizes the work of many of the compatibility shims into one place.
+
+Today, `base-compat` is widely used, but it is not universally used.
+One alternative way to achieve the proposal's goals could be to either promote the use of `base-compat` in fresh projects, or to widely publicize it to users who do not use it.
+
+The problem with `base-compat` is that it is still ugly to use:
+
+How do we even teach when to use `base` vs `base-compat`?
+Does one preemptively use `base-compat` assuming it will be needed in the future?
+Dependencies are supposed to be a specification of what is *needed*, not guess-work to cobble together a way of providing those needs.
+Finding the solution is supposed to be the solver's (or equivalent, like Stackage's) responsibility.
+
+Basically we can think of this proposal as putting us on an agenda of making `base-compat` "first class".
+`base-compat` it proof many `base` things are compile agnostic, but by calling the thing people use `base`, and likewise avoiding `*.Compat` modules, we avoid a degree of freedom downstream users don't actually need.
+
+Why should there be GHC-specific things in base at all?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+One question that came up is why GHC-specific details can't be in the `ghc` package.
+The answer is that `ghc` is just the compiler itself;
+It is a regular Haskell program that, in principle, could be compiled by other Haskell implementations.
+
+The GHC-specific parse of `base` are completely different: they are not part of the compiler, but dealing with the output of compilation: Code compiled by GHC needs support in the form of the runtime system (RTS) and other bits of "glue".
+
+Code that wants to be highly aware of the exact RTS and other support code it is built with of course needs to know those details.
+However, even "portable" code that doesn't care still needs to use standardized interfaces that, if we chase their transitive dependencies deep enough, will ultimately depend on these unstable implementation-specific details.
+
+Whether or not this glue code is in `base`, it needs to be *somewhere*, and part of every regular Haskell program built with `ghc`.
+`ghc` is not suitable to link with every program.
+
 Technical Roadmap
 -----------------
 
