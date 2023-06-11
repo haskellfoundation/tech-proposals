@@ -60,9 +60,9 @@ Here are some points that everyone agrees about:
 
    - Semantic changes to documentation (the charter says *"Documentation changes normally fall under GHC developers purview, except significant ones (e.g., adding or changing type class laws)."*)
 
-Beyond that, it has no interest in the implementation details (e.g. alpha renaming, moving things between modules, comments).
+   Beyond that, it has no interest in the implementation details (e.g. alpha renaming, moving things between modules, comments).
 
-1. In curating the ``base`` API, it is immaterial where code lives.
+5. In curating the ``base`` API, it is immaterial where code lives.
    For example, if a change to ``ghc-prim`` changes the ``base`` API (as defined above) the GHC developers must consult the CLC.
    The fact that the change isn't physically part of the ``base`` package is immaterial.
    (Incidentally, ``base`` and ``ghc-prim`` are both part of the same GitHub repository, which also includes GHC's source code.)
@@ -77,7 +77,7 @@ We propose to divide ``base`` into three packages:
   Generally, new functions and types introduced in GHC Proposals would start their life here.
   Example: new type families and type constructors for tuples, `GHC Proposal #475 <https://github.com/ghc-proposals/ghc-proposals/pull/475>`__.
 
-Another example: future APIs to access RTS statistics, which are fairly stable and user-exposed, but which are (by design) coupled closely to GHC's runtime and hence may change.
+  Another example: future APIs to access RTS statistics, which are fairly stable and user-exposed, but which are (by design) coupled closely to GHC's runtime and hence may change.
 
 - ``base``: as now, whose API is curated by CLC.
   Depends on ``ghc-internals``, and hence on ``ghc-bignum`` and ``ghc-prim``.
@@ -116,33 +116,27 @@ Some observations about this structure:
 
   - ...what else?
 
-- In contrast, clients are *not*\ discouraged from depending on ``ghc-experimental``; although again its name should convey the idea that it might change at short notice.
+- In contrast, clients are *not* discouraged from depending on ``ghc-experimental``; although again its name should convey the idea that it might change at short notice.
 
-``ghc-experimental`` allows the GHC Steering Committee to make initially-experimental language changes, which often involve new types and functions, without committing to permanently supporting the precise API.
-It often takes a little while for these designs to settle down.
+  ``ghc-experimental`` allows the GHC Steering Committee to make initially-experimental language changes, which often involve new types and functions, without committing to permanently supporting the precise API, since it often takes a little while for these designs to settle down.
 
-The existence of ``ghc-experimental`` should substantially ameliorate the difficulty that many GHC Proposals have a library-function component, but it is unlikely to be a *stable*\ API (having just been invented) and is therefore in conflict with the CLC's goals.
+  The existence of ``ghc-experimental`` should substantially ameliorate the difficulty that many GHC Proposals have a library-function component, but it is unlikely to be a *stable* API (having just been invented) and is therefore in conflict with the CLC's goals.
 
-As they become stable, the CLC may want to consider adopting the new types and functions from ``ghc-experimental`` into base.
-(But CLC would not expect to curate the API of ``ghc-experimental``.)
+  As they become stable, the CLC may want to consider adopting the new types and functions from ``ghc-experimental`` into ``base``. (But CLC would not expect to curate the API of ``ghc-experimental``.)
 
 - Perhaps ``ghc-experimental`` should be in the purview of the GHC Proposals process.
   GHC devs should not just make up random APIs and pop them into ``ghc-experimental``; a scrutiny process would be valuable.
 
-- Under this proposal, there is initially no change (whatsoever) to the API exposed by base, or its performance characteristics.
+- Under this proposal, there is initially no change (whatsoever) to the API exposed by ``base``, or its performance characteristics.
   The impact on clients should therefore be zero.
-  Over time, the GHC developers may make CLC proposals to remove types and functions that are currently in the ``base`` API, but are in truth part of GHC's implementation, and were originally exposed by historical accident.
-  But these are *future*\ proposals.
+  
+  Over time, the GHC developers may make CLC proposals to remove types and functions that are currently in the ``base`` API, but are in truth part of GHC's implementation, and were originally exposed by historical accident. But these are *future*\ proposals.
 
-To make the transition suggested in these future proposals easier to manage.
-We have in progress a "deprecated exports" mechanism that will ease such transitions.
-For a transitional period, ``base`` can continue to export the function, but with a deprecation warning saying:
+  To make the transition suggested in these future proposals easier to manage, we have in progress a "deprecated exports" mechanism that will ease such transitions. For a transitional period, ``base`` can continue to export the function, but with a deprecation warning saying something like:
 
-  This is going to disappear from base.
-  You probably don't want to use it at all.
-  But if you absolutely must, get it from ``ghc-internals``
-
-or something like that.
+    This is going to disappear from base.
+    You probably don't want to use it at all.
+    But if you absolutely must, get it from ``ghc-internals``.
 
 - To expose a new function from ``ghc-internals`` requires that any functions on which it depends are also in ``ghc-internals`` (not base).
   So we may need to move code from ``base`` to ``ghc-internals``, leaving a shim behind in base.
@@ -161,13 +155,13 @@ or something like that.
 
   - allowing the GHC Steering Committee to add new functions and types in ``ghc-experimental``.
 
-- One might wonder why GHC has three "internal" packages: ``ghc-internals``, ghc-bignum, and ``ghc-prim``? Could they not be a single package? Answer: technically yes, but it helps to keep dependencies and responsibilities clear.
+- One might wonder why GHC has three "internal" packages: ``ghc-internals``, ``ghc-bignum``, and ``ghc-prim``? Could they not be a single package? Answer: technically yes, but it helps to keep dependencies and responsibilities clear.
   And it's purely an internal GHC matter; if the team wants to structure GHC's internals with three packages, or ten, that's up to them.
 
 Continuous integration
 ======================
 
-A major difficulty is **knowing when the API of ``base`` (as defined in Section 2) has changed.**\ A change requires CLC approval; but how do we know what commits (to base, to ``ghc-internals``, to ``ghc-prim``) make such a change?
+A major difficulty is **knowing when the API of ``base`` (as defined in Section 2) has changed.** A change requires CLC approval; but how do we know what commits (to ``base``, to ``ghc-internals``, to ``ghc-prim``) make such a change?
 
 In the past we have relied on best efforts; but with a bunch of volunteers, mistakes will be made.
 And mistakes can lead to a loss of trust.
@@ -183,29 +177,29 @@ We therefore propose the following, as part of CI:
 
 3. Run the test suite of those packages that have a testsuite that
 
-   (a) is usable (e.g. that doesn't take too long to run)
+   (a) is usable (e.g. that doesn't take too long to run),
 
-   (b) does not have dependencies that are outside (1),
+   (b) does not have dependencies that are outside the set mentioned in point (1), and
 
-   (c) passes before the change to GHC/base.
+   (c) passes before the change to GHC/``base``.
 
-This checks semantics as well as types.
+   This checks semantics as well as types.
 
-1. Running the performance test suite of some carefully chosen packages.
+4. Running the performance test suite of some carefully chosen packages.
    This checks for performance regressions. Similar to (3), except that perf suites are less common and often more expensive to run.
 
-2. Develop a new suite of performance tests, specifically for base.
+5. Develop a new suite of performance tests, specifically for base.
    This is quite open-ended; it is not clear what would be desirable, or how much it would cost.
 
-3. Some modules in ``ghc-internals`` will very directly affect exports of ``base`` (e.g via shim).
-   These modules could be identified, via the existing ``CODEOWNERS`` mechanism, to ping CLC on any commit to those modules.
-   This list could be selective, or include all of ``ghc-internals``, at CLC's preference.
+Some modules in ``ghc-internals`` will very directly affect exports of ``base`` (e.g via shim).
+These modules could be identified, via the existing ``CODEOWNERS`` mechanism, to ping CLC on any commit to those modules.
+This list could be selective, or include all of ``ghc-internals``, at CLC's preference.
 
 Some of these are cheap to do; others are less so.
 Fortunately the HF seems willing to help.
 
 *But whatever we do here will be a step forward* from our current, unsatisfactory situation.
-Moreover, they will help with CI for changes to GHC itself! (It is rather *more*\ likely that a commit to GHC's simplifier will cause a perf regression in some package, than a commit to ``ghc-internals``.)
+Moreover, they will help with CI for changes to GHC itself! (It is rather *more* likely that a commit to GHC's simplifier will cause a perf regression in some package, than a commit to ``ghc-internals``.)
 
 Discussion
 ==========
@@ -213,8 +207,8 @@ Discussion
 GHC Proposals process
 ---------------------
 
-Some GHC proposals (a minority) directly affect the existing API of base, and are not simply additions that can be exposed in ``ghc-experimental``.
-It is unproductive for the GHC Steering Committee to have a long discussion, accept the proposals, and only *then*\ involve the CLC.
+Some GHC proposals (a minority) directly affect the existing API of ``base``, and are not simply additions that can be exposed in ``ghc-experimental``.
+It is unproductive for the GHC Steering Committee to have a long discussion, accept the proposals, and only *then* involve the CLC.
 
 We propose that:
 
@@ -233,7 +227,7 @@ Abstraction leakage
 We may foresee a couple of ways in which changes in ``ghc-internals`` could become client visible:
 
 - Occasionally, an error message may mention a fully qualified name for an out-of-scope identifier.
-  For example (GHC test mod153)::
+  For example (GHC test ``mod153``)::
 
     Ambiguous occurrence ‘id’
                It could refer to either ‘Prelude.id’,
@@ -241,18 +235,18 @@ We may foresee a couple of ways in which changes in ``ghc-internals`` could beco
                             (and originally defined in ‘GHC.Base’)
                          or ‘M.id’, defined at mod153.hs:2:21
 
-The "originally defined in" mentions a module; and if that module is in a package that is not imported, GHC will package-qualify the module name.
-And seeing ``ghc-internals:GHC.Base`` is perhaps less nice.
-This is not a new problem: we already package-qualify modules in ``ghc-prim``.
-One solution is to remove the "originally defined in.." parenthesis for types and functions that would require such package qualification.
+  The "originally defined in" mentions a module; and if that module is in a package that is not imported, GHC will package-qualify the module name.
+  And seeing ``ghc-internals:GHC.Base`` is perhaps less nice.
+  This is not a new problem: we already package-qualify modules in ``ghc-prim``.
+  One solution is to remove the "originally defined in.." parenthesis for types and functions that would require such package qualification.
 
 - Another form of leakage could be: a new class in ``ghc-internals``, *not exposed in base*, that is given instances for existing data types.
-  There is a risk that those instances might confusingly be visible to clients of base.
-  If so, at least the CLC should be consulted.
+  There is a risk that those instances might confusingly be visible to clients of ``base``.
+  If so, the CLC should at least be consulted.
 
 These issues concern error messages and documentation, neither of which are in the direct scope of CLC.
 They are not new because we already have ``ghc-prim``.
-They may not be show-stoppers, but we should be thoughtful about mitigating them
+They may not be show-stoppers, but we should be thoughtful about mitigating them.
 
 Versions and backports
 ----------------------
@@ -260,16 +254,11 @@ Versions and backports
 We agree that the version number of ``ghc-internals`` may have a major bump between minor releases of GHC.
 (Why? Because to fix the bug we change something in ``ghc-internals``.)
 
-This makes an exception to a general rule: generally, a minor release of GHC (say 9.6.4) which only fixes bugs, never makes a major version bump to base, or indeed any boot package.
+This makes an exception to a general rule: generally, a minor release of GHC (say 9.6.4) which only fixes bugs, never makes a major version bump to ``base``, or indeed any boot package.
 
 We should discuss this (rather important) exception with the Stackage curators.
 
-But this same issue could in principle affect ``base`` too.
-
-- A minor release of GHC (say 9.6.4) which only fixes bugs, never makes a major version bump to base.
-  (Nor indeed any boot package.)
-- But very occasionally a **bug-fix** might involve a change to the user-visible API.
-  Example: `role annotations on SNat <https://github.com/haskell/core-libraries-committee/issues/170>`__.
+But this same issue could in principle affect ``base`` too. Very occasionally a **bug-fix** might involve a change to the user-visible API. Example: `role annotations on SNat <https://github.com/haskell/core-libraries-committee/issues/170>`__ (although there is a debate as to whether this specific change constitutes a "breaking change" under the PVP).
 
 Under these circumstances we (together) will have to decide whether to
 
@@ -286,9 +275,9 @@ Suppose the author of a new library ``l`` defines a new class ``C``.
 Good practice is for them to define an instance of ``C`` for all types in boot packages (packages needed to build GHC and Cabal).
 
 Should ``ghc-experimental`` be considered a boot package in this sense?
-After all, type S in ``ghc-experimental`` may change, which would break L.
+After all, type ``S`` in ``ghc-experimental`` may change, which would break ``l``.
 Agreed answer: no.
-That is, we do not make it best-practice for library authors to give C instances for types exported only by ``ghc-experimental``.
+That is, we do not make it best-practice for library authors to give ``C`` instances for types exported only by ``ghc-experimental``.
 (They can, of course, but it's fine not to.)
 
 Other teams to consult
@@ -307,7 +296,7 @@ There are other stakeholders in this space who we should consult, in addition to
 
 **Hackage team**
 
-- Support for hiding ``ghc-internals``
+- Can/should we support hiding ``ghc-internals`` on Hackage?
 
 **Security team** / **Stability working group**
 
