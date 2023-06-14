@@ -129,7 +129,7 @@ Some observations about this structure:
 
 - Under this proposal, there is initially no change (whatsoever) to the API exposed by ``base``, or its performance characteristics.
   The impact on clients should therefore be zero.
-  
+
   Over time, the GHC developers may make CLC proposals to remove types and functions that are currently in the ``base`` API, but are in truth part of GHC's implementation, and were originally exposed by historical accident. But these are *future*\ proposals.
 
   To make the transition suggested in these future proposals easier to manage, we have in progress a "deprecated exports" mechanism that will ease such transitions. For a transitional period, ``base`` can continue to export the function, but with a deprecation warning saying something like:
@@ -144,10 +144,10 @@ Some observations about this structure:
   But that's fine: *it is just an implementation matter*: provided the modules, exports, and API of ``base`` are maintained, it is immaterial to clients (and hence to CLC) exactly *how* they are maintained.
 
 - This proposal is fully compatible with, and actively supports, the `CLC charter <https://github.com/haskell/core-libraries-committee#base-package>`__:
-  
-    "The primary responsibility of CLC is to manage API changes of ``base`` package.
+
+    The primary responsibility of CLC is to manage API changes of ``base`` package.
     The ownership of ``base`` belongs to GHC developers, and they can maintain it freely without CLC involvement as long as changes are invisible to clients.
-    Documentation changes normally fall under GHC developers purview, except significant ones (e.g., adding or changing type class laws)."
+    Documentation changes normally fall under GHC developers purview, except significant ones (e.g., adding or changing type class laws).
 
 - It also supports GHC innovation, by
 
@@ -161,7 +161,7 @@ Some observations about this structure:
 Continuous integration
 ======================
 
-A major difficulty is **knowing when the API of ``base`` (as defined in Section 2) has changed.** A change requires CLC approval; but how do we know what commits (to ``base``, to ``ghc-internals``, to ``ghc-prim``) make such a change?
+A major difficulty is **knowing when the API of 'base' (as defined in Section 2) has changed.** A change requires CLC approval; but how do we know what commits (to ``base``, to ``ghc-internals``, to ``ghc-prim``) make such a change?
 
 In the past we have relied on best efforts; but with a bunch of volunteers, mistakes will be made.
 And mistakes can lead to a loss of trust.
