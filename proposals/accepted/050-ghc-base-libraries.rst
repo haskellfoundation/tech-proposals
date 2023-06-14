@@ -22,8 +22,8 @@ Goals
 
 This proposal seeks to reconcile two goals, both of which are complex and multi-faceted.
 
-1. **CLC seeks full control over the stability of the API of ``base`` (details below).**
-   This is the Core Library Committee's primary mandate.
+1. **The Core Libraries Committee seeks to exercise its control over decisions affecting 'base' (API, performance, semantics), including its dependencies.**
+   Managing API changes of ``base`` is the CLC's primary mandate.
    If ``base`` changes gratuitously, everyone suffers.
 
 2. **The GHC team wants the freedom to innovate, and to move rapidly to fix bugs and improve performance**.
