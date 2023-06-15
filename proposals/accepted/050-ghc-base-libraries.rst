@@ -122,7 +122,8 @@ Some observations about this structure:
 
   The existence of ``ghc-experimental`` should substantially ameliorate the difficulty that many GHC Proposals have a library-function component, but it is unlikely to be a *stable* API (having just been invented) and is therefore in conflict with the CLC's goals.
 
-  As they become stable, the CLC may want to consider adopting the new types and functions from ``ghc-experimental`` into ``base``. (But CLC would not expect to curate the API of ``ghc-experimental``.)
+  As they become stable, the CLC may want to consider adopting the new types and functions from ``ghc-experimental`` into ``base``.
+  (But CLC would not expect to curate the API of ``ghc-experimental``.)
 
 - Perhaps ``ghc-experimental`` should be in the purview of the GHC Proposals process.
   GHC devs should not just make up random APIs and pop them into ``ghc-experimental``; a scrutiny process would be valuable.
@@ -130,9 +131,11 @@ Some observations about this structure:
 - Under this proposal, there is initially no change (whatsoever) to the API exposed by ``base``, or its performance characteristics.
   The impact on clients should therefore be zero.
 
-  Over time, the GHC developers may make CLC proposals to remove types and functions that are currently in the ``base`` API, but are in truth part of GHC's implementation, and were originally exposed by historical accident. But these are *future*\ proposals.
+  Over time, the GHC developers may make CLC proposals to remove types and functions that are currently in the ``base`` API, but are in truth part of GHC's implementation, and were originally exposed by historical accident.
+  But these are *future*\ proposals.
 
-  To make the transition suggested in these future proposals easier to manage, we have in progress a "deprecated exports" mechanism that will ease such transitions. For a transitional period, ``base`` can continue to export the function, but with a deprecation warning saying something like:
+  To make the transition suggested in these future proposals easier to manage, we have in progress a "deprecated exports" mechanism that will ease such transitions.
+  For a transitional period, ``base`` can continue to export the function, but with a deprecation warning saying something like:
 
     This is going to disappear from base.
     You probably don't want to use it at all.
@@ -186,7 +189,8 @@ We therefore propose the following, as part of CI:
    This checks semantics as well as types.
 
 4. Running the performance test suite of some carefully chosen packages.
-   This checks for performance regressions. Similar to (3), except that perf suites are less common and often more expensive to run.
+   This checks for performance regressions.
+   Similar to (3), except that perf suites are less common and often more expensive to run.
 
 5. Develop a new suite of performance tests, specifically for base.
    This is quite open-ended; it is not clear what would be desirable, or how much it would cost.
@@ -258,7 +262,9 @@ This makes an exception to a general rule: generally, a minor release of GHC (sa
 
 We should discuss this (rather important) exception with the Stackage curators.
 
-But this same issue could in principle affect ``base`` too. Very occasionally a **bug-fix** might involve a change to the user-visible API. Example: `role annotations on SNat <https://github.com/haskell/core-libraries-committee/issues/170>`__ (although there is a debate as to whether this specific change constitutes a "breaking change" under the PVP).
+But this same issue could in principle affect ``base`` too.
+Very occasionally a **bug-fix** might involve a change to the user-visible API.
+Example: `role annotations on SNat <https://github.com/haskell/core-libraries-committee/issues/170>`__ (although there is a debate as to whether this specific change constitutes a "breaking change" under the PVP).
 
 Under these circumstances we (together) will have to decide whether to
 
