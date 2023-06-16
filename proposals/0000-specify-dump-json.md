@@ -2,7 +2,7 @@
 
 ## Abstract
 
-GHC is currently undergoing development GHC is currently undergoing a long scale project to [move to a more structured error representation](https://gitlab.haskell.org/ghc/ghc/-/issues/18516). 
+GHC is currently undergoing a long term project to [move to a more structured error representation](https://gitlab.haskell.org/ghc/ghc/-/issues/18516). 
 In harmony with this motion, there is a [desire for a JSON dump of GHC's diagnostic messages](https://gitlab.haskell.org/ghc/ghc/-/issues/19278).
 Such an implementation would facilitate easier consumption for downstream consumers of GHC's diagnostic messages (e.g. IDE developers). 
 To best enforce a standardized JSON output, a [JSON schema](https://json-schema.org/) can be used.
@@ -66,7 +66,7 @@ The extra `d` in `-ddump-json` indicates that this is a developer flag, but our 
 
 The aim is to create a JSON interface for GHC diagnostics, standardized by a JSON schema. Then, the `-ddump-flag` flag will be replaced by the first-class `-dump-flag` flag, and subsequently, whatever implementation changes are necessary to make the new flag conform to the new specification will be performed.
 
-The past attempt to not succeed simply due to lack of effort and resources devoted to it, as well as a lack of structured error representations. Now that structured errors are pervasive within GHC, such a JSON dump is both feasible and practical.
+The past attempt did not succeed simply due to lack of effort and resources devoted to it, as well as a lack of structured error representations. Now that structured errors are pervasive within GHC, such a JSON dump is both feasible and practical.
 
 ## Technical Content
 
@@ -134,7 +134,7 @@ One of the major benefits of utilizing a JSON schema is that the expected JSON p
 
 In addition to adding a `-dump-json` flag, it may also prove useful to provide a `-dump-json-schema` flag which simply produces the relevant JSON schema for that particular version of GHC. This I leave open for discussion. Provided that the schema is in an easy to find location, it may be overkill.
 
-The schmema evolution process is currently undetermined, though I imagine that due to the infrequency with which the schema will need to be changed, it can be handled on a case-by-base basis. Though keeping a running list of all relevant stakeholders that may need to be informed could be a good idea. 
+The schema evolution process is currently undetermined, though I imagine that due to the infrequency with which the schema will need to be changed, it can be handled on a case-by-base basis. Though keeping a running list of all relevant stakeholders that may need to be informed could be a good idea. 
 
 ## Stakeholders
 
