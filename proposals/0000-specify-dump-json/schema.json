@@ -1,0 +1,115 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Dump JSON",
+  "description": "JSON dump of the GHC compiler diagnostics output",
+  "type": "object",
+  "properties": {
+    "version": {
+      "description": "The current JSON schema version of the JSON dump",
+      "type": "string"
+    },
+    "diagnostics": {
+      "description": "The list of diagnostics produced by GHC",
+      "type": "array",
+      "items": {
+        "properties": {
+          "span": {
+            "$ref": "#/$defs/span"
+          },
+          "severity": {
+            "description": "The diagnostic severity",
+            "type": "string",
+            "enum": [
+              "Warning",
+              "Error"
+            ]
+          },
+          "code": {
+            "description": "The diagnostic code (if it exists)",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "hints": {
+            "description": "The hints suggested by GHC",
+            "type": "array"
+          },
+          "message": {
+            "description": "The string output of the diagnostic message by GHC",
+            "type": "string"
+          },
+          "warnReason": {
+            "description": "The flag, if it exists, which caused the warning",
+            "type": "object",
+            "properties": {
+              "reason": {
+                "description": "The reason why a diagnostic was emitted in the first place (e.g., flag, category)",
+                "type": "string",
+                "enum": [
+                  "WarningWithoutFlag",
+                  "WarningWithFlag",
+                  "WarningWithCategory",
+                  "ErrorWithoutFlag"
+                ]
+              },
+              "flagOrCategory": {
+                "desciption": "The flag or category which caused the warning",
+                "type": "string",
+              }
+            },
+            "required": [
+              "reason"
+            ]
+          }
+        },
+        "required": [
+          "span",
+          "severity",
+          "message"
+        ]
+      }
+    }
+  },
+  "required": [
+    "version",
+    "diagnostics"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "span": {
+      "description": "The location of the diganostic",
+      "type": "object",
+      "properties": {
+        "file": {
+          "description": "The file in which the diagnostic occurs",
+          "type": "string"
+        },
+        "startLine": {
+          "description": "The start line of the diagnostic",
+          "type": "integer"
+        },
+        "startCol": {
+          "description": "The start column of the diagnostics",
+          "type": "integer"
+        },
+        "endLine": {
+          "description": "The end line of the diagnostics",
+          "type": "integer"
+        },
+        "endCol": {
+          "description": "The end column of the diagnostic",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "file",
+        "startLine",
+        "startCol",
+        "endLine",
+        "endCol"
+      ],
+      "additionalProperties": false
+    }
+  }
+}
