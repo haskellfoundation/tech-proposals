@@ -119,10 +119,7 @@ For demonstrative purposes, here is an example valid instance of the schema.
       },
       "severity": "Error",
       "code": 27958,
-      "message": "    • Couldn't match type ‘b0’ with ‘(Bool, b0)’ \n Expected: b0 -> Maybe (Bool, b0) \nActual: b0 -> Maybe b0 \n• In the first argument of ‘unfoldr’, namely ‘Just’ \nIn the expression: unfoldr Just \nIn an equation for ‘f’: f = unfoldr Just",
-      "warnReason": {
-        "reason": "ErrorWithoutFlag"
-      }
+      "message": "    • Couldn't match type ‘b0’ with ‘(Bool, b0)’ \n Expected: b0 -> Maybe (Bool, b0) \nActual: b0 -> Maybe b0 \n• In the first argument of ‘unfoldr’, namely ‘Just’ \nIn the expression: unfoldr Just \nIn an equation for ‘f’: f = unfoldr Just"
     }
   ]
 }

@@ -38,36 +38,14 @@
           "message": {
             "description": "The string output of the diagnostic message by GHC",
             "type": "string"
-          },
-          "warnReason": {
-            "description": "The flag, if it exists, which caused the warning",
-            "type": "object",
-            "properties": {
-              "reason": {
-                "description": "The reason why a diagnostic was emitted in the first place (e.g., flag, category)",
-                "type": "string",
-                "enum": [
-                  "WarningWithoutFlag",
-                  "WarningWithFlag",
-                  "WarningWithCategory",
-                  "ErrorWithoutFlag"
-                ]
-              },
-              "flagOrCategory": {
-                "desciption": "The flag or category which caused the warning",
-                "type": "string",
-              }
-            },
-            "required": [
-              "reason"
-            ]
           }
         },
         "required": [
           "span",
           "severity",
           "message"
-        ]
+        ],
+        "additionalProperties": false
       }
     }
   },
@@ -78,7 +56,7 @@
   "additionalProperties": false,
   "$defs": {
     "span": {
-      "description": "The location of the diganostic",
+      "description": "The location of the diagnostic",
       "type": "object",
       "properties": {
         "file": {
