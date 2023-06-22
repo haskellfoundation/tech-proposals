@@ -8,6 +8,10 @@
       "description": "The current JSON schema version of the JSON dump",
       "type": "string"
     },
+    "ghcVersion": {
+      "description": "The GHC version",
+      "type": "string"
+    },
     "diagnostics": {
       "description": "The list of diagnostics produced by GHC",
       "type": "array",
@@ -32,8 +36,11 @@
             ]
           },
           "hints": {
-            "description": "The hints suggested by GHC",
-            "type": "array"
+              "description": "The hints suggested by GHC in a JSON-ified representation of the internal GhcHint type",
+              "type": "array",
+	      "items": {
+		  "type": "object"
+	      }
           },
           "message": {
             "description": "The string output of the diagnostic message by GHC",
@@ -43,6 +50,7 @@
         "required": [
           "span",
           "severity",
+          "code",
           "message"
         ],
         "additionalProperties": false
@@ -51,6 +59,7 @@
   },
   "required": [
     "version",
+    "ghcVersion",
     "diagnostics"
   ],
   "additionalProperties": false,

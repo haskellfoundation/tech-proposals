@@ -21,8 +21,8 @@ These `SDoc`s are simply a text encoding of the errors with some formatting feat
 By transforming the errors into `SDoc`s at the moment of creation, a lot of type-level information is lost,
 causing a headache for GHC developers and GHC API users.
 To improve on this problem, the [journey to represent errors as structured values has begun](https://gitlab.haskell.org/ghc/ghc/-/wikis/Errors-as-(structured)-values ). 
-In summary, this means to pass errors around as a specific type which contains the relevant information separated into different fields,
-rather than combining it all into one single `SDoc`. 
+In summary, this means passing errors around as a specific type which contains the relevant information separated into different fields,
+rather than combining it all into one single `SDoc`.
 
 Another change that has been made is the introduction of [error codes](https://gitlab.haskell.org/ghc/ghc/-/issues/21684) to uniquely identify each possible error output from GHC. 
 
@@ -34,9 +34,9 @@ The fundamental issue is that the structured errors are only presented to users 
 
 The first is that this is an _unnecessary_ pain. The errors are now passed as structured values internally, but the users are given a fairly unstructured value to parse themselves, leading to the requirement of always having to write a parser whenever consumption is desired.
 
-The second problem is that this plain text output is subject to change. Messages are often changed to make the content clearer, but each change results bubbles into a new requirement for the hand-written plain-text parser of error messages. This problem is mitigated a bit by the above-mentioned new inclusion of error codes, but even these error codes must be parsed from a non-standard structured output. 
+The second problem is that this plain text output is subject to change. Messages are often changed to make the content clearer, but each change bubbles into a new requirement for the hand-written plain-text parser of error messages. This problem is mitigated a bit by the above-mentioned new inclusion of error codes, but even these error codes must be parsed from a non-standard structured output. 
 
-The requirements to solve this problem are to enable the consumption of GHC's diagnostic message in a structured representation that closely matches the internal representation without requiring users to utilize the internals of GHC. The most reasonable solution is to use a compiler flag to dump the structured messages into a versioned JSON output, which is described by a JSON Schema, to standardize the expected output. The hope is that the community can reach a general consensus on the requirements imposed by such a JSON schema. While it will not be too costly to change the JSON schema as new requirements come up (simply increment the schema version), the ideal situation is to present here an opportunity to provide input on the current schema and receive constructive criticism. The conversation is also open on whether or not a JSON schema is really required.
+The requirements to solve this problem are to enable the consumption of GHC's diagnostic message in a structured representation that closely matches the internal representation without requiring users to utilize the internals of GHC. The most reasonable solution is to use a compiler flag to dump the structured messages into a versioned JSON output, which is described by a JSON Schema, to standardize the expected output. The hope is that the community can reach a general consensus on the requirements imposed by such a JSON schema. While it will not be too costly to change the JSON schema as new requirements come up (simply increment the schema version), the ideal situation is to present here an opportunity to provide input on the current schema and receive constructive criticism.
 
 ## Prior Art and Related Efforts
 
@@ -64,13 +64,17 @@ Just on the surface, the first object is of a different kind than the second, th
 
 The extra `d` in `-ddump-json` indicates that this is a developer flag, but our aim is to make this a first class feature.
 
-The aim is to create a JSON interface for GHC diagnostics, standardized by a JSON schema. Then, the `-ddump-flag` flag will be replaced by the first-class `-dump-flag` flag, and subsequently, whatever implementation changes are necessary to make the new flag conform to the new specification will be performed.
+The aim is to create a JSON interface for GHC diagnostics, standardized by a JSON schema. Then, the `-ddump-flag` flag will be replaced by the first-class `-dump-diags-json` flag, and subsequently, the implementation will be changed so that the diagnostics will be output in a JSON format which conforms to the schema presented in this proposal.
 
 The past attempt did not succeed simply due to lack of effort and resources devoted to it, as well as a lack of structured error representations. Now that structured errors are pervasive within GHC, such a JSON dump is both feasible and practical.
 
 ## Technical Content
 
-The most important component of the technical content is the JSON schema itself. The JSON schema is not reproduced here, as it is quite long. Instead, it can be found in the directory of the same name, with title `schema.json`. To demonstrate the appropriateness of the proposed JSON schema, the internal error representation is produced below. Comments removed for brevity.
+The most important component of the technical content is the JSON schema itself. The JSON schema is not reproduced here, as it is quite long. Instead, it can be found in the directory of the same name, with title `schema.json`. 
+
+The schema consists of some top-level information, as well as a list of diagnostic messages. The top level information is simply a `version` field and a `ghcVersion` field. The `version` field is a crucial way for users to evaluate changes to the JSON schema. It will be updated each time a change is made to the JSON schema. The `ghcVersion` field reports the version of GHC. This is useful information because components of the JSON output may want to expose JSON-ified internals of GHC which may themselves have output dependent on GHC's version. Additionally, the GHC version serves as a marker to indicate the progress of error code coverage for the ongoing effort to supply error codes for all diagnostic messages. Supplying this information allows consumers to be sensitive to those changes.
+
+What follows is an explanation of the diagnostic message's schema. To demonstrate the appropriateness of the proposed schema, the internal diagnostic representation is produced below. Comments are removed for brevity.
 ```haskell
 -- compiler/GHC/Types/Error.hs
 data MsgEnvelope e = MsgEnvelope
@@ -84,7 +88,6 @@ class (HasDefaultDiagnosticOpts (DiagnosticOpts a)) => Diagnostic a where
   type DiagnosticOpts a
   diagnosticMessage :: DiagnosticOpts a -> a -> DecoratedSDoc
   diagnosticReason  :: a -> DiagnosticReason
-
   -- | Extract any hints a user might use to repair their
   -- code to avoid this diagnostic.
   diagnosticHints   :: a -> [GhcHint]
@@ -94,20 +97,25 @@ All of the above is explained in the [wiki](https://gitlab.haskell.org/ghc/ghc/-
 
 The output of the JSON dump would consist of a list of errors, as well as a top level version. Each error contains the following fields:
  - `"span"` corresponding to the above `SrcSpan`
+   - required by the schema
    - This contains sub-fields, specified in the schema, which contains line numbers, etc.
  - `"severity"` corresponding to the above `Severity`
+   - required by the schema
  - `"code"` corresponding to the change in this [proposal](https://github.com/haskellfoundation/tech-proposals/blob/main/proposals/accepted/024-error-messages.md) and the above `DiagnosticCode` in typeclass `Diagnostic`
+   -  this is required by the schema but is allowed to have a value of `null`. The hope is that once all diagnostics officially have error codes, this can be required and nonnullable, but that will happen once `diagnosticCode` itself doesn't return a `DiagnosticCode` wrapped in a `Maybe`
  - `"hints"` corresponding to the above `[GhcHint]`
-   - This is perhaps one that remains a bit of a question mark. To what degree should this be specified? There are quite a few possible constructors, and so it may be overly tedious to specify every single one as a possible output in the JSON schema. On the other hand, it may be insufficient to allow arbitrary JSON to be put forward. Maybe a reasonable compromise is to give back the name of the constructor followed by a list of the constructors arguments. 
+   - The schema itself doesn't validate at all what these may be, only that they are themselves objects. In my view, the best way to handle them is to output a JSON-ified version of the type `GhcHint`. Any attempt to specify them more than that will result in spiraling complexity and a required update every time the `GhcHint` type changes. Another alternative is to just remove them from the output and only present suggestions as they are rendered in the `message`.
  - `"message"` corresponding to `DecoratedSDoc` of `diagnosticMessage`
- - `"reason"` corresponding to `diagnosticReason`
+   - this is required by the schema, and is the actual string output produced at the command line
  
- The top level version is crucial for indicating to downstream consumers which JSON schema they must comply with in the case that the schema is updated in the future (which is quite likely).
- 
+The top level version is crucial for indicating to downstream consumers which JSON schema they must comply with in the case that the schema is updated in the future (which is quite likely).
+
+Information encoded in `diagnosticReason` is not included in this initial version, as that feature is currently unstable. It can be incorporated down the line once it is both more stable and there is a desire to consume that information from users. 
 For demonstrative purposes, here is an example valid instance of the schema.
 ```json
 {
   "version": "1.0.0",
+  "ghcVersion": "9.2.8",
   "diagnostics": [
     {
       "span": {
@@ -138,8 +146,9 @@ The schema evolution process is currently undetermined, though I imagine that du
 Stakeholders consist of anyone that desires to consume a JSON output of GHC diagnostics without leveraging the GHC API. Some possible stakeholders are listed explicitly [here](https://gitlab.haskell.org/ghc/ghc/-/issues/19278#note_503994). These are:
  - Chris Smith of https://code.world
  - Joseph Sumabat
+ - Tom Smeding of https://play.haskell.org 
 
-Joseph Sumabat replied to my emails and his input has been incorporated into the included schema. I believe the Haskell community would benefit as a whole from improved tooling, and this effort will help in this regard by making an easy to consume representation of GHC's diagnostics.
+I believe the Haskell community would benefit as a whole from improved tooling, and this effort will help in this regard by making an easy to consume representation of GHC's diagnostics.
 
 ## Success
 
