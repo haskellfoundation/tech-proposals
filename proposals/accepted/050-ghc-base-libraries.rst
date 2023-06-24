@@ -72,18 +72,18 @@ Proposal
 
 We propose to divide ``base`` into three packages:
 
+- ``ghc-internals``: exposes aspects of GHC's internals that may be of interest to "hard-core" developers interested in maximum performance (see `Nikita's blog post <https://nikita-volkov.github.io/internal-convention-is-a-mistake/>`__).
+  The API of ``ghc-internals`` is of no direct interest to the CLC --- only its effects on the API of base.
+
+- ``base``: as now, whose API is curated by CLC.
+  Depends on ``ghc-internals``, and hence on ``ghc-bignum`` and ``ghc-prim``.
+
 - ``ghc-experimental``, initially empty, depends on ``base`` and on ``ghc-internals``.
   Functions and data types here are intended to have their ultimate home in base, but while they are settling down they are subject to much weaker stability guarantees.
   Generally, new functions and types introduced in GHC Proposals would start their life here.
   Example: new type families and type constructors for tuples, `GHC Proposal #475 <https://github.com/ghc-proposals/ghc-proposals/pull/475>`__.
 
   Another example: future APIs to access RTS statistics, which are fairly stable and user-exposed, but which are (by design) coupled closely to GHC's runtime and hence may change.
-
-- ``base``: as now, whose API is curated by CLC.
-  Depends on ``ghc-internals``, and hence on ``ghc-bignum`` and ``ghc-prim``.
-
-- ``ghc-internals``: exposes aspects of GHC's internals that may be of interest to "hard-core" developers interested in maximum performance (see `Nikita's blog post <https://nikita-volkov.github.io/internal-convention-is-a-mistake/>`__).
-  The API of ``ghc-internals`` is of no direct interest to the CLC --- only its effects on the API of base.
 
 All three packages conform rigorously to the PVP.
 (But see Section 5.3)
