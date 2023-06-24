@@ -96,6 +96,8 @@ Some observations about this structure:
 
   - The name ``ghc-internals`` is a pretty strong signal all by itself.
 
+  - Cabal description and README explains how it is intended used (and not used).
+
   - Hoogle could (by default anyway) never show stuff from ``ghc-internals``.
 
   - Do not upload Haddocks for ``ghc-internals`` to Hackage.
