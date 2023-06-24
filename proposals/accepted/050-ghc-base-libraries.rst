@@ -307,3 +307,7 @@ There are other stakeholders in this space who we should consult, in addition to
 - It might be easy for the new security-vulnerability mechanism to also flag packages that depend transitively on ``ghc-internals``.
   If they depend on it via ``base``, this is fine.
   But if they depend on it via another package, this could be a hazard migrating to a newer GHC the code authors were not aware of.
+
+**HLint team**
+
+- Can we add a check for imports from ``ghc-internals``?
