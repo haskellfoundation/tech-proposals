@@ -110,10 +110,6 @@ Some observations about this structure:
 
   - ``cabal check`` (a per-package check) could warn on packages that use ``ghc-internals``.
 
-  - Offer tools for dependency analysis (“software supply chain analysis” to use faddish term) to analyze transitive dependencies
-
-    - Most users want to only use these packages via ``base`` or other whitelisted packages which they explicitly trust to “encapsulate the instability”
-
   - ...what else?
 
 - In contrast, clients are *not* discouraged from depending on ``ghc-experimental``; although again its name should convey the idea that it might change at short notice.
