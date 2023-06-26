@@ -104,6 +104,7 @@ The output of the JSON dump would consist of a list of errors, as well as a top 
  - `"code"` corresponding to the change in this [proposal](https://github.com/haskellfoundation/tech-proposals/blob/main/proposals/accepted/024-error-messages.md) and the above `DiagnosticCode` in typeclass `Diagnostic`
    -  this is required by the schema but is allowed to have a value of `null`. The hope is that once all diagnostics officially have error codes, this can be required and nonnullable, but that will happen once `diagnosticCode` itself doesn't return a `DiagnosticCode` wrapped in a `Maybe`
  - `"hints"` corresponding to the above `[GhcHint]`
+   - While these are required by the schema, `[]` is an allowed value
    - The schema itself doesn't validate at all what these may be, only that they are themselves objects. In my view, the best way to handle them is to output a JSON-ified version of the type `GhcHint`. Any attempt to specify them more than that will result in spiraling complexity and a required update every time the `GhcHint` type changes. Another alternative is to just remove them from the output and only present suggestions as they are rendered in the `message`.
  - `"message"` corresponding to `DecoratedSDoc` of `diagnosticMessage`
    - this is required by the schema, and is the actual string output produced at the command line
@@ -111,6 +112,7 @@ The output of the JSON dump would consist of a list of errors, as well as a top 
 The top level version is crucial for indicating to downstream consumers which JSON schema they must comply with in the case that the schema is updated in the future (which is quite likely).
 
 Information encoded in `diagnosticReason` is not included in this initial version, as that feature is currently unstable. It can be incorporated down the line once it is both more stable and there is a desire to consume that information from users. 
+
 For demonstrative purposes, here is an example valid instance of the schema.
 ```json
 {
@@ -120,13 +122,18 @@ For demonstrative purposes, here is an example valid instance of the schema.
     {
       "span": {
         "file": "typecheck/should_fail/T2414.hs",
-        "startLine": 9,
-        "startCol": 13,
-        "endLine": 9,
-        "endCol": 17
+        "start": {
+          "line": 9,
+          "column": 13
+        },
+        "end": {
+          "line": 9,
+          "column": 17
+        }
       },
       "severity": "Error",
       "code": 27958,
+	  "hints": [],
       "message": "    • Couldn't match type ‘b0’ with ‘(Bool, b0)’ \n Expected: b0 -> Maybe (Bool, b0) \nActual: b0 -> Maybe b0 \n• In the first argument of ‘unfoldr’, namely ‘Just’ \nIn the expression: unfoldr Just \nIn an equation for ‘f’: f = unfoldr Just"
     }
   ]
@@ -137,7 +144,7 @@ The schema itself will be brought into version control of the GHC repo and tests
 
 One of the major benefits of utilizing a JSON schema is that the expected JSON payload can be well-defined for consumers of the messages. This has massive benefits, as consumers can presume the structure of the output without having to analyze the contents for the presence or absence of particular bits of data. However, one drawback may be the over specification of the output. There may be some opportunities in which flexibility is a benefit for the output. However, this schema can be adapted as further feedback rolls in (with incremented version), making the good net outweigh the bad.
 
-In addition to adding a `-dump-json` flag, it may also prove useful to provide a `-dump-json-schema` flag which simply produces the relevant JSON schema for that particular version of GHC. This I leave open for discussion. Provided that the schema is in an easy to find location, it may be overkill.
+In addition to adding a `-dump-diags-json` flag, it may also prove useful to provide a `-dump-diags-json-schema` flag which simply produces the relevant JSON schema for that particular version of GHC. This I leave open for discussion. Provided that the schema is in an easy to find location, it may be overkill.
 
 The schema evolution process is currently undetermined, though I imagine that due to the infrequency with which the schema will need to be changed, it can be handled on a case-by-base basis. Though keeping a running list of all relevant stakeholders that may need to be informed could be a good idea. 
 

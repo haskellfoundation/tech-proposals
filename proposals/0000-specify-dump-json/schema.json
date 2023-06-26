@@ -36,11 +36,11 @@
             ]
           },
           "hints": {
-              "description": "The hints suggested by GHC in a JSON-ified representation of the internal GhcHint type",
-              "type": "array",
-	      "items": {
-		  "type": "object"
-	      }
+            "description": "The hints suggested by GHC in a JSON-ified representation of the internal GhcHint type",
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
           },
           "message": {
             "description": "The string output of the diagnostic message by GHC",
@@ -51,6 +51,7 @@
           "span",
           "severity",
           "code",
+          "hints",
           "message"
         ],
         "additionalProperties": false
@@ -65,36 +66,45 @@
   "additionalProperties": false,
   "$defs": {
     "span": {
-      "description": "The location of the diagnostic",
+      "description": "The span of the diagnostic",
       "type": "object",
       "properties": {
         "file": {
           "description": "The file in which the diagnostic occurs",
           "type": "string"
         },
-        "startLine": {
-          "description": "The start line of the diagnostic",
-          "type": "integer"
+        "start": {
+          "description": "The start location of the diagnostic",
+          "$ref": "#/$defs/location"
         },
-        "startCol": {
-          "description": "The start column of the diagnostics",
-          "type": "integer"
-        },
-        "endLine": {
-          "description": "The end line of the diagnostics",
-          "type": "integer"
-        },
-        "endCol": {
-          "description": "The end column of the diagnostic",
-          "type": "integer"
+        "end": {
+          "description": "The end location of the diagnostic",
+          "$ref": "#/$defs/location"
         }
       },
       "required": [
         "file",
-        "startLine",
-        "startCol",
-        "endLine",
-        "endCol"
+        "start",
+        "end"
+      ],
+      "additionalProperties": false
+    },
+    "location": {
+      "description": "A location in a text file",
+      "type": "object",
+      "properties": {
+        "line": {
+          "description": "The line number",
+          "type": "integer"
+        },
+        "column": {
+          "description": "The column number",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "line",
+        "column"
       ],
       "additionalProperties": false
     }
