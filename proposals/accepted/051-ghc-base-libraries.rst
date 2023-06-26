@@ -7,12 +7,12 @@ Combining stability with innovation
 
 :Date: June 2023
 :Authors:
-  John Ericson,
-  Ben Gamari,
-  Adam Gundry,
-  Andrew Lelechenko,
-  Julian Ospald,
-  Simon Peyton Jones
+  John Ericson — secretary,
+  Ben Gamari — GHC,
+  Adam Gundry — GHC,
+  Andrew Lelechenko — CLC,
+  Julian Ospald — CLC,
+  Simon Peyton Jones — GHC
 
 .. sectnum::
 .. contents::
