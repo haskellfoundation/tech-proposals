@@ -94,7 +94,7 @@ We propose to divide ``base`` into three packages:
   Example: new type families and type constructors for tuples, `GHC Proposal #475 <https://github.com/ghc-proposals/ghc-proposals/pull/475>`__.
 
   Another example: future APIs to access RTS statistics, which are fairly stable and user-exposed, but which are (by design) coupled closely to GHC's runtime and hence may change.
-  
+
   As its name suggests, the API of ``ghc-experimental`` is curated by the GHC team, although the CLC is willing to offer (non-binding) opinions, if consulted.
 
 All three packages conform rigorously to the PVP.
