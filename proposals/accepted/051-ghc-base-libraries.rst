@@ -24,6 +24,7 @@ This document describes an plan agreed between the GHC Team and the Core Librari
 
 Formally, then, it is not so much a proposal as a record of an outcome.
 We are, nevertheless, using the Haskell Foundation Technical Working Group proposals repo, so that we can have a permanent public record of how we plan to work, so that others can comment, and so that the document can be polished to add clarity where necessary.
+
 Goals
 =====
 
