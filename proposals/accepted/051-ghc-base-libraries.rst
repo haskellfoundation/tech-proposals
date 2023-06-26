@@ -143,7 +143,7 @@ Some observations about this structure:
   The impact on clients should therefore be zero.
 
   Over time, the GHC developers may make CLC proposals to remove types and functions that are currently in the ``base`` API, but are in truth part of GHC's implementation, and were originally exposed by historical accident.
-  But these are *future*\ proposals.
+  But these are *future* proposals.
 
   To make the transition suggested in these future proposals easier to manage, we have in progress a "deprecated exports" mechanism that will ease such transitions.
   For a transitional period, ``base`` can continue to export the function, but with a deprecation warning saying something like:
