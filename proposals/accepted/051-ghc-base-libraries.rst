@@ -17,6 +17,13 @@ Combining stability with innovation
 .. sectnum::
 .. contents::
 
+Introduction
+=========
+
+This document describes an plan agreed between the GHC Team and the Core Libraries Committee, saying how we plan to work in partnership to reconcile the goals of innovation and stability for GHC and its ecosystem.
+
+Formally, then, it is not so much a proposal as a record of an outcome.
+We are, nevertheless, using the Haskell Foundation Technical Working Group proposals repo, so that we can have a permanent public record of how we plan to work, so that others can comment, and so that the document can be polished to add clarity where necessary.
 Goals
 =====
 
@@ -26,7 +33,7 @@ This proposal seeks to reconcile two goals, both of which are complex and multi-
    Managing API changes of ``base`` is the CLC's primary mandate.
    If ``base`` changes gratuitously, everyone suffers.
 
-2. **The GHC team wants the freedom to:**
+2. **The GHC team seeks the freedom to:**
 
    - Innovate in the language design.
      GHC has hundreds of extensions, and people suggest more all the time, via the GHC Proposals process.
@@ -76,7 +83,7 @@ Proposal
 We propose to divide ``base`` into three packages:
 
 - ``ghc-internals``: exposes aspects of GHC's internals that may be of interest to "hard-core" developers interested in maximum performance (see `Nikita's blog post <https://nikita-volkov.github.io/internal-convention-is-a-mistake/>`__).
-  The API of ``ghc-internals`` is of no direct interest to the CLC --- only its effects on the API of base.
+  The API of ``ghc-internals`` is fully under the control of the GHC team, and of no direct interest to the CLC --- only its effects on the API of base.
 
 - ``base``: as now, whose API is curated by CLC.
   Depends on ``ghc-internals``, and hence on ``ghc-bignum`` and ``ghc-prim``.
@@ -87,6 +94,8 @@ We propose to divide ``base`` into three packages:
   Example: new type families and type constructors for tuples, `GHC Proposal #475 <https://github.com/ghc-proposals/ghc-proposals/pull/475>`__.
 
   Another example: future APIs to access RTS statistics, which are fairly stable and user-exposed, but which are (by design) coupled closely to GHC's runtime and hence may change.
+  
+  As its name suggests, the API of ``ghc-experimental`` is curated by the GHC team, although the CLC is willing to offer (non-binding) opinions, if consulted.
 
 All three packages conform rigorously to the PVP.
 (But see Section 5.3)
@@ -217,10 +226,14 @@ It is unproductive for the GHC Steering Committee to have a long discussion, acc
 
 We propose that:
 
-- A GHC Proposal should advertise, in a separate section, that it makes changes to the ``base`` API, and what those changes are.
+- A GHC Proposal should advertise, in a separate section:
+
+  -  What changes, if any, it make to ``ghc-experimental``
+
+  -  What changes, if any, it make to ``base``
 
 - If there are any such changes, the author (and shepherd) should explicitly invite the CLC to participate in the discussion about the proposal.
-  The CLC will devote some effort to participating, and subsequently hold a non-binding vote.
+  The CLC will devote some effort to participating and, in the case of changes to ``base``, will subsequently hold a non-binding vote.
 
 - Approval of the proposal (by the GHC Steering Committee, with the non-binding vote of CLC) is not a guarantee that the final implementation will land;
   that depends on the implementation being well engineered etc (GHC team);
