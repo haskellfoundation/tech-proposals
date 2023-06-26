@@ -26,9 +26,12 @@ This proposal seeks to reconcile two goals, both of which are complex and multi-
    Managing API changes of ``base`` is the CLC's primary mandate.
    If ``base`` changes gratuitously, everyone suffers.
 
-2. **The GHC team wants the freedom to innovate, and to move rapidly to fix bugs and improve performance**.
-   GHC has hundreds of extensions, and people suggest more all the time.
-   This dynamism is not accidental: it is a core part of the Haskell ecosystem and culture.
+2. **The GHC team wants the freedom to:**
+
+   - Innovate in the language design.
+     GHC has hundreds of extensions, and people suggest more all the time, via the GHC Proposals process.
+
+   - Move rapidly to fix bugs, improve performance, and refactor GHC's internals to pay down technical debt.
 
 The two goals are in risk of conflict, and we have seen such conflict in the past.
 The purpose of this proposal is to reconcile these goals, in a way that satisfies all parties.
