@@ -84,7 +84,7 @@ Proposal
 We propose to divide ``base`` into three packages:
 
 - ``ghc-internals``: exposes aspects of GHC's internals that may be of interest to "hard-core" developers interested in maximum performance (see `Nikita's blog post <https://nikita-volkov.github.io/internal-convention-is-a-mistake/>`__).
-  The API of ``ghc-internals`` is fully under the control of the GHC team, and of no direct interest to the CLC --- only its effects on the API of base.
+  The API of ``ghc-internals`` is fully under the control of the GHC team, and of no direct interest to the CLC — only its effects on the API of base.
 
 - ``base``: as now, whose API is curated by CLC.
   Depends on ``ghc-internals``, and hence on ``ghc-bignum`` and ``ghc-prim``.
