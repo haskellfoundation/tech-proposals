@@ -170,7 +170,7 @@ Some observations about this structure:
 
   - allowing the GHC Steering Committee to add new functions and types in ``ghc-experimental``.
 
-- One might wonder why GHC has three "internal" packages: ``ghc-internals``, ``ghc-bignum``, and ``ghc-prim``? Could they not be a single package? Answer: technically yes, but it helps to keep dependencies and responsibilities clear.
+- The three "internal" packages: ``ghc-internals``, ``ghc-bignum``, and ``ghc-prim``, could arguably be a single package, but the GHC team has decided that encapsulating the relevant code in this way helps to keep dependencies and responsibilities clear.
   And it's purely an internal GHC matter; if the team wants to structure GHC's internals with three packages, or ten, that's up to them.
 
 Continuous integration
