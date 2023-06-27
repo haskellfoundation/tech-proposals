@@ -48,6 +48,7 @@ Each of us places different emphasis on these goals, but respects them both.
 The CLC does not want to constrain GHC unnecessarily; and the GHC team does not want to undermine CLC's efforts, indeed quite the reverse!
 
 The proposal is based on `HF Proposal: standard library reform <https://github.com/haskellfoundation/tech-proposals/pull/47>`__, but is independent of it.
+You can find more background in `CLC issue #146 <https://github.com/haskell/core-libraries-committee/issues/146>`__.
 
 Things we all agree about
 =========================
