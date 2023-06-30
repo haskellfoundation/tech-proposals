@@ -35,13 +35,6 @@
               "null"
             ]
           },
-          "hints": {
-            "description": "The hints suggested by GHC in a JSON-ified representation of the internal GhcHint type",
-            "type": "array",
-            "items": {
-              "type": "object"
-            }
-          },
           "message": {
             "description": "The string output of the diagnostic message by GHC",
             "type": "string"
@@ -51,7 +44,6 @@
           "span",
           "severity",
           "code",
-          "hints",
           "message"
         ],
         "additionalProperties": false

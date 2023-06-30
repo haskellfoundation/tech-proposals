@@ -103,9 +103,6 @@ The output of the JSON dump would consist of a list of errors, as well as a top 
    - required by the schema
  - `"code"` corresponding to the change in this [proposal](https://github.com/haskellfoundation/tech-proposals/blob/main/proposals/accepted/024-error-messages.md) and the above `DiagnosticCode` in typeclass `Diagnostic`
    -  this is required by the schema but is allowed to have a value of `null`. The hope is that once all diagnostics officially have error codes, this can be required and nonnullable, but that will happen once `diagnosticCode` itself doesn't return a `DiagnosticCode` wrapped in a `Maybe`
- - `"hints"` corresponding to the above `[GhcHint]`
-   - While these are required by the schema, `[]` is an allowed value
-   - The schema itself doesn't validate at all what these may be, only that they are themselves objects. In my view, the best way to handle them is to output a JSON-ified version of the type `GhcHint`. Any attempt to specify them more than that will result in spiraling complexity and a required update every time the `GhcHint` type changes. Another alternative is to just remove them from the output and only present suggestions as they are rendered in the `message`.
  - `"message"` corresponding to `DecoratedSDoc` of `diagnosticMessage`
    - this is required by the schema, and is the actual string output produced at the command line
  
@@ -133,7 +130,6 @@ For demonstrative purposes, here is an example valid instance of the schema.
       },
       "severity": "Error",
       "code": 27958,
-	  "hints": [],
       "message": "    • Couldn't match type ‘b0’ with ‘(Bool, b0)’ \n Expected: b0 -> Maybe (Bool, b0) \nActual: b0 -> Maybe b0 \n• In the first argument of ‘unfoldr’, namely ‘Just’ \nIn the expression: unfoldr Just \nIn an equation for ‘f’: f = unfoldr Just"
     }
   ]
@@ -160,3 +156,16 @@ I believe the Haskell community would benefit as a whole from improved tooling, 
 ## Success
 
 I expect the implementation to take no more than 2 or so months. The project will be considered a success when an appropriate JSON dump flag is shipped with GHC which serves the purpose of providing a JSON structured representation of error messages which complies with a JSON schema in version control.
+
+## Future Work
+
+Besides the obvious requirement of maintenance of this feature, there are also some opportunities for future work worth flagging here. 
+The first is the presentation of `GhcHint` type in the JSON message. 
+As it stands now, the best practice for encoding these in the JSON output is not obvious and requires further discussion. 
+Therefore, it is better to push forward an initial implementation containing the above mentioned fields. 
+The inclusion of `GhcHint` can then be better explored once the use cases of the JSON output are better understood and consumers can be consulted. 
+
+Additionally, there is work to provide a simple Haskell library which parses the output of the JSON dump. 
+Such a library would facilitate easier consumption of the output for those interested in writing applications in Haskell without using the GHC API.
+
+These plans are contingent on the completion of the above matters. 
