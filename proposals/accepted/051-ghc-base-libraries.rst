@@ -28,27 +28,26 @@ We are, nevertheless, using the Haskell Foundation Technical Working Group propo
 Goals
 =====
 
-This proposal seeks to reconcile two goals, both of which are complex and multi-faceted.
+This proposal allows the GHC team and the Core Libraries Committee to work in a productive partnership.
+What we want to achieve is this:
 
-1. **The Core Libraries Committee seeks to exercise its control over decisions affecting 'base' (API, performance, semantics), including its dependencies.**
-   Managing API changes of ``base`` is the CLC's primary mandate.
-   If ``base`` changes gratuitously, everyone suffers.
+* The CLC has full autonomy over decisions affecting ``base`` (API, performance, semantics), including the indirect consequences on ``base`` of changes to its dependencies.
 
-2. **The GHC team seeks the freedom to:**
+* The GHC team has maximum freedom (consistent with the CLC's curation of ``base``) to:
 
-   - Innovate in the language design.
-     GHC has hundreds of extensions, and people suggest more all the time, via the GHC Proposals process.
+  * Innovate in the language design.
+    GHC has hundreds of extensions, and people suggest more all the time, via the GHC Proposals process.
 
-   - Move rapidly to fix bugs, improve performance, and refactor GHC's internals to pay down technical debt.
+  * Move rapidly to fix bugs, improve performance, and refactor GHC's internals to pay down technical debt.
 
-The two goals are in risk of conflict, and we have seen such conflict in the past.
-The purpose of this proposal is to reconcile these goals, in a way that satisfies all parties.
+The proposal sets up
+mechanisms (e.g. what packages exist),
+responsibilities (e.g. who curates which package),
+and processes (e.g. who should be consulted and when)
+that support both CLC and the GHC team to follow their respective goals without tripping over each other.
 
-Each of us places different emphasis on these goals, but respects them both.
-The CLC does not want to constrain GHC unnecessarily; and the GHC team does not want to undermine CLC's efforts, indeed quite the reverse!
-
-The proposal is based on `HF Proposal: standard library reform <https://github.com/haskellfoundation/tech-proposals/pull/47>`__, but is independent of it.
-You can find more background in `CLC issue #146 <https://github.com/haskell/core-libraries-committee/issues/146>`__.
+> The proposal is based on `HF Proposal 47 <https://github.com/haskellfoundation/tech-proposals/pull/47>`__, but is independent of it.
+> You can find more background in `CLC issue #146 <https://github.com/haskell/core-libraries-committee/issues/146>`__.
 
 Things we all agree about
 =========================
