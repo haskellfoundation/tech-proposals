@@ -105,7 +105,7 @@ Some observations about this structure:
 
 - We should develop both social and technical mechanisms to discourage people from depending directly on ``ghc-internals``, because if such dependencies become frequent and ossified, it will lead to future pain when the API changes.
   The very name ``ghc-internals`` should serve as a very strong signal in its own right, but even so, saying "we told you not to rely on it" may be true but won't lessen that pain.
-  The specific mechanisms do not form part of this proposal, but some possibilities are discussed in :ref:`discourage-brainstorm`.
+  The specific mechanisms do not form part of this proposal, but some possibilities are `discussed in a separate section <#discourage-brainstorm>`__.
 
     Note: "discourage" does not imply "ban".
     It must remain possible for hard-core developers to depend on `ghc-internals`.
