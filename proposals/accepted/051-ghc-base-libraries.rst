@@ -46,8 +46,8 @@ responsibilities (e.g. who curates which package),
 and processes (e.g. who should be consulted and when)
 that support both CLC and the GHC team to follow their respective goals without tripping over each other.
 
-> The proposal is based on `HF Proposal 47 <https://github.com/haskellfoundation/tech-proposals/pull/47>`__, but is independent of it.
-> You can find more background in `CLC issue #146 <https://github.com/haskell/core-libraries-committee/issues/146>`__.
+  The proposal is based on `HF Proposal 47 <https://github.com/haskellfoundation/tech-proposals/pull/47>`__, but is independent of it.
+  You can find more background in `CLC issue #146 <https://github.com/haskell/core-libraries-committee/issues/146>`__.
 
 Things we all agree about
 =========================
@@ -103,29 +103,13 @@ All three packages conform rigorously to the PVP.
 
 Some observations about this structure:
 
-- We should use all possible social and technical means to discourage people from depending directly on ``ghc-internals``, because if such dependencies become frequent and ossified, it will lead to future pain when the API changes.
-  Saying "we told you not to rely on it" may be true, but won't lessen that pain.
-  What mechanisms could we use?
+- We should develop both social and technical mechanisms to discourage people from depending directly on ``ghc-internals``, because if such dependencies become frequent and ossified, it will lead to future pain when the API changes.
+  The very name ``ghc-internals`` should serve as a very strong signal in its own right, but even so, saying "we told you not to rely on it" may be true but won't lessen that pain.
+  The specific mechanisms do not form part of this proposal, but some possibilities are discussed in :ref:`discourage-brainstorm`.
 
-  - The name ``ghc-internals`` is a pretty strong signal all by itself.
-
-  - Cabal description and README explains how it is intended used (and not used).
-
-  - Hoogle could (by default anyway) never show stuff from ``ghc-internals``.
-
-  - Do not upload Haddocks for ``ghc-internals`` to Hackage.
-    (Ditto ``ghc-prim``.) Need to make sure that if someone wants to follow the Haddock source-code link to (say) Functor, they should still find it regardless of where it is actually defined.
-
-  - We could consider issuing a warning if you say ``-package ghc-internals`` (or ``ghc-bignum`` or ``ghc-prim``), one that was hard to silence.
-    Since we can have module-level ``WARNING`` pragmas with custom categories, one way to realise this would be to pick a category and add such pragmas to every module in the relevant packages, though we might want to do something more systematic.
-    The text of the warnings could encourage users to
-
-    - switch to a function exposed by base, and/or
-    - petition the CLC to expose this super-useful function from base.
-
-  - ``cabal check`` (a per-package check) could warn on packages that use ``ghc-internals``.
-
-  - ...what else?
+    Note: "discourage" does not imply "ban".
+    It must remain possible for hard-core developers to depend on `ghc-internals`.
+    Our goal is only that naive developers should not do so by accident.
 
 - In contrast, clients are *not* discouraged from depending on ``ghc-experimental``; although again its name should convey the idea that it might change at short notice.
 
@@ -218,6 +202,31 @@ Moreover, they will help with CI for changes to GHC itself! (It is rather *more*
 
 Discussion
 ==========
+
+.. _discourage-brainstorm:
+
+Discourging the (direct) use of ``ghc-internals``
+-------------------------------------------------
+
+Here are some ideas to be explored later for how to discorage the use of ``ghc-internals``.
+
+- The name ``ghc-internals`` is a pretty strong signal all by itself.
+
+- Cabal description and README explains how it is intended used (and not used).
+
+- Hoogle could (by default anyway) never show stuff from ``ghc-internals``.
+
+- Do not upload Haddocks for ``ghc-internals`` to Hackage.
+  (Ditto ``ghc-prim``.) Need to make sure that if someone wants to follow the Haddock source-code link to (say) Functor, they should still find it regardless of where it is actually defined.
+
+- We could consider issuing a warning if you say ``-package ghc-internals`` (or ``ghc-bignum`` or ``ghc-prim``), one that was hard to silence.
+  Since we can have module-level ``WARNING`` pragmas with custom categories, one way to realise this would be to pick a category and add such pragmas to every module in the relevant packages, though we might want to do something more systematic.
+  The text of the warnings could encourage users to
+
+  - switch to a function exposed by base, and/or
+  - petition the CLC to expose this super-useful function from base.
+
+- ``cabal check`` (a per-package check) could warn on packages that use ``ghc-internals``.
 
 GHC Proposals process
 ---------------------
