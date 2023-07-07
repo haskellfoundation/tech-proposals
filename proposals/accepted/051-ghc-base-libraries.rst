@@ -129,7 +129,7 @@ Some observations about this structure:
   Over time, the GHC developers may make CLC proposals to remove types and functions that are currently in the ``base`` API, but are in truth part of GHC's implementation, and were originally exposed by historical accident.
   But these are *future* proposals.
 
-  To make the transition suggested in these future proposals easier to manage, we have in progress a ["deprecated exports"](https://github.com/ghc-proposals/ghc-proposals/pull/595) mechanism that will ease such transitions.
+  To make the transition suggested in these future proposals easier to manage, we have in progress a `"deprecated exports" <https://github.com/ghc-proposals/ghc-proposals/pull/595>`__ mechanism that will ease such transitions.
   For a transitional period, ``base`` can continue to export the function, but with a deprecation warning saying something like:
 
     This is going to disappear from base.
@@ -203,10 +203,10 @@ Moreover, they will help with CI for changes to GHC itself! (It is rather *more*
 Discussion
 ==========
 
-.. _discourage-brainstorm:
-
 Discourging the (direct) use of ``ghc-internals``
 -------------------------------------------------
+
+.. _discourage-brainstorm:
 
 Here are some ideas to be explored later for how to discorage the use of ``ghc-internals``.
 
