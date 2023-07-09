@@ -46,7 +46,7 @@ responsibilities (e.g. who curates which package),
 and processes (e.g. who should be consulted and when)
 that support both CLC and the GHC team to follow their respective goals without tripping over each other.
 
-The proposal is based on `HF Proposal 47 <https://github.com/haskellfoundation/tech-proposals/pull/47>`__, but is independent of it.
+The proposal is based on `HF Proposal #47 <https://github.com/haskellfoundation/tech-proposals/pull/47>`__, but is independent of it.
 You can find more background in `CLC issue #146 <https://github.com/haskell/core-libraries-committee/issues/146>`__.
 
 Things we all agree about
@@ -309,6 +309,21 @@ After all, type ``S`` in ``ghc-experimental`` may change, which would break ``l`
 Agreed answer: no.
 That is, we do not make it best-practice for library authors to give ``C`` instances for types exported only by ``ghc-experimental``.
 (They can, of course, but it's fine not to.)
+
+Reinstallable base
+------------------
+
+At the moment each version of GHC comes with a fixed, immutable version of ``base``.
+Some members of the community would like to be able to upgrade/re-install the ``base`` package without changing the version of GHC.
+(For example, see `this Haskell Discourse thread <https://discourse.haskell.org/t/pre-pre-hftp-decoupling-base-and-ghc/3727>`__ and the earlier versions of now-closed `HF Proposal #47 <https://github.com/haskellfoundation/tech-proposals/pull/47>`__.)
+The goal of such reinstalling would be both to (a) support multiple versions of ``base`` with the same GHC, and (b) support multiple versions of GHC with the same ``base``.
+
+By separating ``ghc-internals`` from ``base``, this proposal may make the reinstallable ``base`` project one step more feasible.
+In particular, by corralling the code that is intimately tied to a specific version of GHC in ``ghc-internals``, one might hope the code left in ``base`` would be portable across versions of GHC with no extra effort.
+
+Nevertheless, *supporting reinstallable ``base`` is not a goal of this proposal*, nor is it an immediate consequence of it.
+There is not yet agreement that this is a goal worth pursuing.
+What code should be moved from ``base`` to ``ghc-internals`` is also out of scope (as described above in the proposal proper), and without knowing those details, we cannot know whether ``base`` would incidentally become more portable either.
 
 Other teams to consult
 ======================
