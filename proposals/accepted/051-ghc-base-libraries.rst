@@ -322,7 +322,7 @@ By separating ``ghc-internals`` from ``base``, this proposal may make the reinst
 In particular, by corralling the code that is intimately tied to a specific version of GHC in ``ghc-internals``, one might hope the code left in ``base`` would be portable across versions of GHC with no extra effort.
 
 Nevertheless, *supporting reinstallable ``base`` is not a goal of this proposal*, nor is it an immediate consequence of it.
-There is not yet agreement that this is a goal worth pursuing.
+There is not yet consensus that this is a goal worth pursuing.
 What code should be moved from ``base`` to ``ghc-internals`` is also out of scope (as described above in the proposal proper), and without knowing those details, we cannot know whether ``base`` would incidentally become more portable either.
 
 Other teams to consult
