@@ -46,8 +46,8 @@ responsibilities (e.g. who curates which package),
 and processes (e.g. who should be consulted and when)
 that support both CLC and the GHC team to follow their respective goals without tripping over each other.
 
-  The proposal is based on `HF Proposal 47 <https://github.com/haskellfoundation/tech-proposals/pull/47>`__, but is independent of it.
-  You can find more background in `CLC issue #146 <https://github.com/haskell/core-libraries-committee/issues/146>`__.
+The proposal is based on `HF Proposal 47 <https://github.com/haskellfoundation/tech-proposals/pull/47>`__, but is independent of it.
+You can find more background in `CLC issue #146 <https://github.com/haskell/core-libraries-committee/issues/146>`__.
 
 Things we all agree about
 =========================
@@ -107,9 +107,9 @@ Some observations about this structure:
   The very name ``ghc-internals`` should serve as a very strong signal in its own right, but even so, saying "we told you not to rely on it" may be true but won't lessen that pain.
   The specific mechanisms do not form part of this proposal, but some possibilities are `discussed in a separate section <#discourage-brainstorm>`__.
 
-    Note: "discourage" does not imply "ban".
-    It must remain possible for hard-core developers to depend on `ghc-internals`.
-    Our goal is only that naive developers should not do so by accident.
+  Note: "discourage" does not imply "ban".
+  It must remain possible for hard-core developers to depend on `ghc-internals`.
+  Our goal is only that naive developers should not do so by accident.
 
 - In contrast, clients are *not* discouraged from depending on ``ghc-experimental``; although again its name should convey the idea that it might change at short notice.
 
