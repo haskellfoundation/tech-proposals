@@ -12,6 +12,10 @@ In particular, the TWG should provide a forum for all the following:
 Collectively, the documents that serve as the basis for these discussions are called _Haskell Foundation Technical Proposals_ (HFTP).
 Additionally, at its option, the TWG will host projects and discussions that don't directly fit into the above categories, but that seem to be useful for the community as a whole.
 
+RFCs may be used to coordinate decisions across multiple decision-making bodies.
+For instance, a cross-cutting proposal that affects both the Haskell language, GHC internals, and core libraries should be approved by the GHC Steering Committee, the GHC developers, and the core libraries committee, yet none of them are the natural venue for the discussion.
+In these cases, the TWG may delegate acceptance authority to these other bodies, after ensuring that the relevant stakeholders are included.
+
 The TWG will address the following concerns:
  * Soliciting projects from the community, where relevant
  * Ensuring that relevant stakeholders have been contacted and that their input and needs have been considered
