@@ -1,9 +1,10 @@
 .. sectnum::
 
-# Module naming conventions for GHC base libraries
+Module naming conventions for GHC base libraries
+==================================================
 
-## Motivation
-
+Motivation
+----------
 The accepted `Proposal #51: GHC base libraries <https://github.com/haskellfoundation/tech-proposals/blob/main/proposals/accepted/051-ghc-base-libraries.rst>`_
 defines the following libraries:
 
@@ -20,15 +21,18 @@ The question arises of what module names should be used. For example, suppose th
 to use the package name in the ``import`` statement, to disambiguate.  But it's *extremely* confusing.  This proposal articulates a set of conventions to
 help us design module names.
 
-## The proposal
+The proposal
+============
 
-### Proposal 1
+Proposal 1
+-----------
 
 * Modules in ``base``, ``ghc-experimental``, ``ghc-prim``, ``ghc-internals`` etc should all have distinct names.
 
 That principle leads immediately to the question: what should those names be?  Hence proposal 2.
 
-### Proposal 2
+Proposal 2
+-----------
 
 * Modules in GHC's internal libraries (``ghc-prim``, ``ghc-internals`` etc) should be of form ``GHC.*``.
 * Modules in ``ghc-experimental`` should be of form ``Experimental.*``.
@@ -39,7 +43,8 @@ So example we might have
 * ``Experimental.Tuple`` or ``Experimental.Data.Tuple`` in ``ghc-experimental``
 * ``Data.Tuple`` in ``base``
 
-### Proposal 3
+Proposal 3
+-----------
 
 The current ``base`` API exposes many modules starting with ``GHC.*``, so the proposed conventions could only
 apply to *new* modules.
@@ -48,8 +53,8 @@ apply to *new* modules.
   from ``base``, either exposing their desired API through a stable, CLC-curated, module in ``base``; or removing it altogether.  Of course
   there would be a significant deprecation cycle, to allow client libraries to adapt.
 
-### Alternatives
-
+Alternatives
+==============
 * We could use ``GHC.*`` for modules in ``ghc-experimental``, and maybe ``GHC.Internals.*`` for module in ``ghc-internals``.  But
 
   * There are two sorts of GHC-specific-ness to consider:
@@ -64,8 +69,8 @@ apply to *new* modules.
   * This sort of naming is conventionally used to distinguish modules *within* a package, not *between* packages.
   * It would still suffer from the cost of renaming hundreds of modules in ``ghc-internals``
 
-### Discussion
-
+Discussion
+============
 What should we do about the ``ghc`` package, which exposes GHC as a library, through the GHC API?
 It wouldn't really make sense to call it ``Experimental.*``.  And yet, under the above proposals, ``GHC.*`` connotes
 "internal, unstable" which should not be true of the GHC API (although it is today).
