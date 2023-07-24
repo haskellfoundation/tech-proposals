@@ -1,10 +1,9 @@
 .. sectnum::
 
-Module naming conventions for GHC base libraries
-==================================================
+**Module naming conventions for GHC base libraries**
 
 Motivation
-----------
+=============
 The accepted `Proposal #51: GHC base libraries <https://github.com/haskellfoundation/tech-proposals/blob/main/proposals/accepted/051-ghc-base-libraries.rst>`_
 defines the following libraries:
 
