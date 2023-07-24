@@ -10,7 +10,7 @@ defines the following libraries:
 * ``base``: the foundational library on which the rest of the ecosystem is based.  Is API is carefully curated by the `Core Libraries Committee <https://github.com/haskell/core-libraries-committee>`_, and is kept rather stable.
 
 * ``ghc-experimental``: the home of experimental extensions to GHC, usually ones proposed by the
-   `GHC Steering Committee <https://github.com/ghc-proposals/ghc-proposals/>`_.
+  `GHC Steering Committee <https://github.com/ghc-proposals/ghc-proposals/>`_.
   Functions and types in here are usually candidates for later transfer into ``base``.  It is user-facing (user are encouraged to depend on it), but its API is less stable than ``base``.
 
 * ``ghc-prim, ghc-internals`` (and perhaps others): define functions and data types used internally by GHC to support the API of ``base`` and ``ghc-experimental``.
