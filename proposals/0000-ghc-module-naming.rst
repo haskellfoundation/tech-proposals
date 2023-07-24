@@ -38,6 +38,7 @@ Proposal 2
 * Modules in ``base`` should not have either of these prefixes.
 
 So example we might have
+
 * ``GHC.Tuple`` in ``ghc-internals``,
 * ``Experimental.Tuple`` or ``Experimental.Data.Tuple`` in ``ghc-experimental``
 * ``Data.Tuple`` in ``base``
