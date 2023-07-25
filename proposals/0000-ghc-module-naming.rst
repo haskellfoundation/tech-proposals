@@ -19,6 +19,7 @@ defines the following libraries:
   * It is user-facing (user are encouraged to depend on it), but its API is less stable than ``base``.
 
 * ``ghc-prim, ghc-internals`` (and perhaps others): define functions and data types used internally by GHC to support the API of ``base`` and ``ghc-experimental``.
+
   * These libraries come with no stability guarantees: they may change at short notice.
 
 In addition we already have:
