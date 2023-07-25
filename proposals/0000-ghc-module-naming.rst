@@ -7,11 +7,15 @@ Background and motivation
 The accepted `Proposal #51: GHC base libraries <https://github.com/haskellfoundation/tech-proposals/blob/main/proposals/accepted/051-ghc-base-libraries.rst>`_
 defines the following libraries:
 
-* ``base``: the foundational library on which the rest of the ecosystem is based.  Is API is carefully curated by the `Core Libraries Committee <https://github.com/haskell/core-libraries-committee>`_, and is kept rather stable.
+* ``base``: the foundational library on which the rest of the ecosystem is based.
+
+  * Its API is carefully curated by the `Core Libraries Committee <https://github.com/haskell/core-libraries-committee>`_, and is kept rather stable.
 
 * ``ghc-experimental``: the home of experimental extensions to GHC, usually ones proposed by the
   `GHC Steering Committee <https://github.com/ghc-proposals/ghc-proposals/>`_.
+
   * Functions and types in here are usually candidates for later transfer into ``base``.  But not necessarily: if a collection of functions is not adopted widely enough, it may not be proposed for a move to `base`.
+
   * It is user-facing (user are encouraged to depend on it), but its API is less stable than ``base``.
 
 * ``ghc-prim, ghc-internals`` (and perhaps others): define functions and data types used internally by GHC to support the API of ``base`` and ``ghc-experimental``.
@@ -30,10 +34,11 @@ help us design module names.
 The proposal
 ============
 
-This proposal is split into four for easier discussion.  Each sub-proposal builds on the
+This proposal is split into four sub-proposals for easier discussion.  Each sub-proposal builds on the
 earlier ones -- they are increments, not alternatives.
 
-The goals of this proposal are deliberately limited to establish naming conventions.  We propose no new mechanisms.
+The goals of this proposal are deliberately limited to establish naming conventions.  We do not propose
+any changes to ``ghc`` or to ``cabal``.
 
 Proposal 1
 -----------
@@ -61,9 +66,9 @@ Proposal 3
 The current ``base`` API exposes many modules starting with ``GHC.*``, so the proposed conventions could only
 apply to *new* modules.
 
-* Over time, and with the agreement and support of the Core Libraries Committee, we may remove some ``GHC.*`` modules
+* Over time, and only with the agreement and support of the Core Libraries Committee, we may remove some ``GHC.*`` modules
   from ``base``, especially ones that are barely used, or are manifestly "internal" (i.e. part of the implementation
-  of other, more public functions.
+  of other, more public functions).
   Of course there would be a significant deprecation cycle, to allow client libraries to adapt.
 
 Proposal 3 only expresses a direction of travel.  We will have to see what the CLC's attitude is,
@@ -99,6 +104,7 @@ That would have made it clear that the design of overloaded records still evolvi
 Once the design becomes settled and stable, it could move to ``base``, perhaps in a module like ``Data.Records``.
 
 Other similar examples include
+
 * The tuple proposal of `GHC Proposal 475 <https://github.com/ghc-proposals/ghc-proposals/blob/master/proposals/0475-tuple-syntax.rst>`_
 * The `DataToTag CLC proposal <https://github.com/haskell/core-libraries-committee/issues/104>`_ would have been easier to expose through ``ghc-experimental`` in the first instance.
 
@@ -109,11 +115,12 @@ Alternatives
   the module moves from ``ghc-experimental`` to ``base``. For example, we might add ``Data.Tuple`` to ``ghc-experimental`` containing the new type constructors ``Tuple2``, ``Tuple3`` etc that are proposed in `GHC Proposal 475 <https://github.com/ghc-proposals/ghc-proposals/blob/master/proposals/0475-tuple-syntax.rst>`_.   However:
 
   * In the meantime there are two modules both called ``Data.Tuple``.  This is bad.  Which one does ``import Data.Tuple`` import?  (Look at the Cabal file, perhaps?)  How can I import both?  (Package-qualified imports perhaps.) So it will really only help in the case of a brand-new module, not already in ``base``.
-  * It loses the explicit cue given by ``import Experimental.Data.Tuple``.
+  * It loses the explicit cue, in the source code, given by ``import Experimental.Data.Tuple``.
 
 * We could use ``GHC.*`` for modules in ``ghc-experimental``, and maybe ``GHC.Internals.*`` for module in ``ghc-internals``.  But
 
   * There are two sorts of GHC-specific-ness to consider:
+
     * Modules that are part of GHC's implementations
     * Modules that support a GHC extension, blessed by the GHC Steering Committee
 
@@ -121,9 +128,10 @@ Alternatives
 
   * It would be a huge upheaval (with impact on users) to rename hundreds of modules in ``ghc-internals``.
 
-* We could use ``GHC.Experimental.*`` for modules in ``ghc-experimental``.  But that seems a bit backwards: ``GHC.Tuple`` (in ``ghc-internals``) would look more stable (less experimental) than ``GHC.Experimental.Tuple`` in ``ghc-experimental``; but the reverse is the case.
+* We could use ``GHC.Experimental.*`` for modules in ``ghc-experimental``.  But that seems a bit backwards: ``GHC.Tuple`` (in ``ghc-internals``) would superficially appear more stable (less experimental) than ``GHC.Experimental.Tuple`` in ``ghc-experimental``; but the reverse is the case.
 
 * We could use a suffix ``*.Internals`` or ``*.Experimental`` instead of a prefix.  But
+
   * This sort of naming is conventionally used to distinguish modules *within* a package, not *between* packages.
   * It would still suffer from the cost of renaming hundreds of modules in ``ghc-internals``
 
