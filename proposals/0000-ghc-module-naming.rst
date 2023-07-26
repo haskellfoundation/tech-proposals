@@ -133,7 +133,13 @@ Alternatives
 
 * We could use a suffix ``*.Internals`` or ``*.Experimental`` instead of a prefix.  But
 
-  * This sort of naming is conventionally used to distinguish modules *within* a package, not *between* packages.
-  * It would still suffer from the cost of renaming hundreds of modules in ``ghc-internals``
+  * This sort of naming is often used to distinguish modules *within* a package, not *between* packages.
+  * In the case of ``ghc-internals`` it would still suffer from the cost of renaming hundreds of modules.
 
+* Concerning Proposal 4, we could instead use
+
+  * ``GHC.API`` (but then the public namespace is inside the internal one)
+  * ``GHCAPI``
+  * ``GHCapi``
+  * ``Language.Haskell.GHC`` or ``Language.GHC``
 
