@@ -13,6 +13,9 @@ Split out AST and Parser libraries from GHC
 Abstract
 ========
 
+Problem
+-------
+
 The community lacks AST and Parser libraries for Haskell that are both self-contained and up-to-date.
 Experience has shown that there is only way one way to meet each criterion:
 
@@ -21,7 +24,14 @@ Experience has shown that there is only way one way to meet each criterion:
 - Be separate from GHC, so the library is forced to be self-contained
 
 However, no library has so far done both, to meet both criteria.
+
+Solution
+--------
+
 The purpose of this proposal is to make that library finally exist.
+The Haskell Foundation will finance the completion of the existing "Trees that grow" project, decoupling GHC's AST and parser from the rest of the compiler so they can be moved to separate libraries.
+Those libaries will be "normal" haskell libraries, without any weird dependencies or build process, and published on Hackage.
+Those libraries will be used by GHC, ensuring they are maintained.
 
 Background, Prior Art, and Related Efforts
 ==========================================
