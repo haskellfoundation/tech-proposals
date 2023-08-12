@@ -68,7 +68,7 @@ There are also
 `some GHC Wiki pages <https://gitlab.haskell.org/ghc/ghc/-/wikis/implementing-trees-that-grow>`_,
 and a `GHC Issue Label <https://gitlab.haskell.org/ghc/ghc/-/issues/?label_name%5B%5D=TTG>`_ for it.
 
-The goal of the Trees that Grow paper was to allow creating variants of Haskell AST to more faithfully capture the input and output of each compilation pass, and also the ``template-haskell`` library.
+The goal of the Trees that Grow paper was to allow creating variants of Haskell AST to more faithfully capture the input and output of each compilation pass, and also the ``template-haskell`` library. [#intra]_
 It presents these data types:
 
 .. code-block:: haskell
@@ -80,6 +80,7 @@ It presents these data types:
 The idea that they are "promoted" via ``DataKinds``, and then type families used in the AST will have instances for these promoted values.
 This allows those consumers to "adjust" the AST for their purpose.
 
+.. [#intra]
   It might sound like the goal is only different usages within GHC, but remember that ``template-haskell`` is a separate library used by users of Haskell not just developers of Haskell.
   A goal of at least some usage outside GHC was always there.
 
