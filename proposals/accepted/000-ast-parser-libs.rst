@@ -1,28 +1,95 @@
-Haskell Foundation Project Template - place your title here
+Split out AST and Parser libraries from GHC
 ===========================================================
-
-*This template is for Haskell Foundation Technical Proposals that are projects to be executed by the Haskell Foundation, without necessarily having any further involvement by the proposer.*
-
-*Please delete the italic text before submitting.*
 
 Abstract
 --------
 
-*This section should provide a summary of the proposal that identifies the key problems to be solved and summarizes the solution.*
+The community lacks AST and Parser libraries for Haskell that are both self-contained and up-to-date.
+Experience has shown that there is only way one way to meet each criterion:
 
-Background
-----------
+- Be used by GHC, so the library cannot fall behind new language development
 
-*This section should explain any background (targeting a casual audience) needed to understand the proposal’s motivation (e.g. a high level overview of the technical details and some history).*
+- Be separate from GHC, so the library is forced to be self-contained
+
+However, no library has so far done both, to meet both criteria.
+The purpose of this proposal is to make that library finally exist.
+
+Background, Prior Art, and Related Efforts
+------------------------------------------
+
+Making such a library has long been a goal of the Haskell community.
+This section highlights various past and ongoing efforts accordingly.
+
+*This section is purely informative; readers familiar with this backstory can skip this section and move on to the proposal proper.*
+
+``haskell-src-exts``
+~~~~~~~~~~~~~~~~~~~~
+
+An older attempt is the venerable `haskell-src-exts <https://hackage.haskell.org/package/haskell-src-exts>`_ library.
+This is actually was part of a larger project called the `"Haskell Suite" <https://github.com/haskell-suite>`_, the purpose of which was "to implement the whole Haskell compiler as a set of libraries".
+However, the whole compiler doesn't appear to exist, and the project as a whole ceased development .
+``haskell-src-exts`` lasted longer, but had great trouble keeping up with GHC, and is now also unmaintained since 2020.
+
+The lessons are clear:
+``haskell-src-exts`` succeeded in being modular and self-contained, failed in trying to keep up with GHC.
+Given the size of the community, competing head-on with GHC or trying to keep up with it is very difficult.
+Being used by GHC, so keeping up happens automatically, is the clearest way to avoid this problem.
+
+``ghc-lib-parser``
+~~~~~~~~~~~~~~~~~~
+
+A newer attempt is `ghc-lib-parser <https://hackage.haskell.org/package/ghc-lib-parser>`_ library.
+Prior users of ``haskell-src-exts`` `like HLint <https://github.com/ndmitchell/hlint/issues/645>`_ have largely migrated from ``haskell-src-exts`` to ``ghc-lib-parser``.
+But ``ghc-lib-parser`` is *not* actually a separately developed library; rather it is one that is extracted from GHC's own source.
+This ensures it is up to date with the latest behavior.
+But this extraction process is complex, and results in a far larger library than is desired: see the *hundreds* of modules included inside it, many of which have nothing to do with the Haskell surface language.
+All this `"bycatch" <https://en.wikipedia.org/wiki/Bycatch>`_ in the extraction process results in a library that daunting to use, and which has a harder time presenting any sort of stable interface.
+
+The developers of ``ghc-lib-parser`` would not dispute the above criticisms, for this state of affairs was never intended to be a permanent solution, but rather just a stop gap.
+Whereas ``ghc-lib-parser`` succeeds in keeping up with GHC because it *is* GHC, it fails in being self-contained because modularity cannot be `"fixed in post" [production] <https://tvtropes.org/pmwiki/pmwiki.php/Main/FixItInPost>`_.
+Code that is intended to be separate from any one consumer must be developed with those boundaries enforced during development.
+
+Trees that grow
+~~~~~~~~~~~~~~~
+
+As we can see, each of these prior two attempts did one of the two things right, and correspondingly met one of our two criteria.
+There is, however, a third project, that over the years has aimed to allow us to finally hit both criteria: "Trees that grow".
+The name comes from `this paper <https://www.microsoft.com/en-us/research/uploads/prod/2016/11/trees-that-grow.pdf>`_.
+There are also
+`some GHC Wiki pages <https://gitlab.haskell.org/ghc/ghc/-/wikis/implementing-trees-that-grow>`_,
+and a `GHC Issue Label <https://gitlab.haskell.org/ghc/ghc/-/issues/?label_name%5B%5D=TTG>`_ for it.
+
+The goal of the Trees that Grow paper was to allow creating variants of Haskell AST to more faithfully capture the input and output of each compilation pass, and also the ``template-haskell`` library.
+It presents these data types:
+
+.. code-block:: haskell
+
+  data Component = Compiler Pass | TemplateHaskell
+
+  data Pass = Parser | Renamer | TypeChecker
+
+The idea that they are "promoted" via ``DataKinds``, and then type families used in the AST will have instances for these promoted values.
+This allows those consumers to "adjust" the AST for their purpose.
+
+  It might sound like the goal is only different usages within GHC, but remember that ``template-haskell`` is a separate library used by users of Haskell not just developers of Haskell.
+  A goal of at least some usage outside GHC was always there.
+
+The Trees That Grow project is now 6 years old, and has met great success in avoiding partiality in the compiler, "making illegal states unrepresentable" as many Haskellers would put it.
+But progress on `reducing AST & parser dependencies <https://gitlab.haskell.org/ghc/ghc/-/issues/19932>`_ has been less easily forthcoming.
+I have separated out the modules defining the AST under `Language.Haskell.Syntax.*` we wish to split out, and we have tests to track progress reducing their deps, and the parser's deps.
+But progress is unsteady and unpredictable.
+
+The basic problem is that the benefits don't actually kick in until the deps are *all* gone, and the code is actually separated out.
+Partial progress isn't really directly useful to anyone, and these counters just scoreboard by which we hope to get closer to the end goal.
+It is thus hard to do this work with volunteers only, because it is emphatically *not* `"itch scratching" <https://en.wikipedia.org/wiki/The_Cathedral_and_the_Bazaar>`_ work where incremental progress leads immediate incremental benefits to the contributor.
+
+The Haskell Foundation's support in getting this "over the finish line", at which the community *will* benefit, and benefit greatly, is thus a crucial way we can surmount the coordination failure the lack of incremental payoff causes.
 
 Problem Statement
 -----------------
 
 *This section should describe the problem that the proposal intends to solve and how solving the problem will benefit the Haskell community.
 It should also enumerate the requirements against which a solution should be evaluated.*
-
-Prior Art and Related Efforts
------------------------------
 
 *This section should describe prior attempts to solve the problem, other relevant prior work, and what others in the community are doing to address the problem.
 It should describe the relationship between the proposed work and the existing efforts.
