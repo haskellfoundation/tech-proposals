@@ -90,10 +90,6 @@ It presents these data types:
 The idea that they are "promoted" via ``DataKinds``, and then type families used in the AST will have instances for these promoted values.
 This allows those consumers to "adjust" the AST for their purpose.
 
-.. [#intra]
-  It might sound like the goal is only different usages within GHC, but remember that ``template-haskell`` is a separate library used by users of Haskell not just developers of Haskell.
-  A goal of at least some usage outside GHC was always there.
-
 The Trees That Grow project is now 6 years old, and has met great success in avoiding partiality in the compiler, "making illegal states unrepresentable" as many Haskellers would put it.
 But progress on `reducing AST & parser dependencies <https://gitlab.haskell.org/ghc/ghc/-/issues/19932>`_ has been less easily forthcoming.
 I have separated out the modules defining the AST under `Language.Haskell.Syntax.*` we wish to split out, and we have tests to track progress reducing their deps, and the parser's deps.
@@ -104,6 +100,10 @@ Partial progress isn't really directly useful to anyone, and these counters just
 It is thus hard to do this work with volunteers only, because it is emphatically *not* `"itch scratching" <https://en.wikipedia.org/wiki/The_Cathedral_and_the_Bazaar>`_ work where incremental progress leads immediate incremental benefits to the contributor.
 
 The Haskell Foundation's support in getting this "over the finish line", at which point the community *will* benefit, and benefit greatly, is thus a crucial way we can surmount the coordination failure the lack of incremental payoff causes.
+
+.. [#intra]
+  It might sound like the goal is only different usages within GHC, but remember that ``template-haskell`` is a separate library used by users of Haskell not just developers of Haskell.
+  A goal of at least some usage outside GHC was always there.
 
 Problem Statement
 =================
