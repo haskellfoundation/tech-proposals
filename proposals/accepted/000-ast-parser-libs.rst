@@ -1,8 +1,17 @@
+===========================================
 Split out AST and Parser libraries from GHC
-===========================================================
+===========================================
+
+:Date: August 2023
+:Authors:
+  John Ericson,
+  ???
+
+.. sectnum::
+.. contents::
 
 Abstract
---------
+========
 
 The community lacks AST and Parser libraries for Haskell that are both self-contained and up-to-date.
 Experience has shown that there is only way one way to meet each criterion:
@@ -15,7 +24,7 @@ However, no library has so far done both, to meet both criteria.
 The purpose of this proposal is to make that library finally exist.
 
 Background, Prior Art, and Related Efforts
-------------------------------------------
+==========================================
 
 Making such a library has long been a goal of the Haskell community.
 This section highlights various past and ongoing efforts accordingly.
@@ -23,7 +32,7 @@ This section highlights various past and ongoing efforts accordingly.
 *This section is purely informative; readers familiar with this backstory can skip this section and move on to the proposal proper.*
 
 ``haskell-src-exts``
-~~~~~~~~~~~~~~~~~~~~
+--------------------
 
 An older attempt is the venerable `haskell-src-exts <https://hackage.haskell.org/package/haskell-src-exts>`_ library.
 This is actually was part of a larger project called the `"Haskell Suite" <https://github.com/haskell-suite>`_, the purpose of which was "to implement the whole Haskell compiler as a set of libraries".
@@ -36,7 +45,7 @@ Given the size of the community, competing head-on with GHC or trying to keep up
 Being used by GHC, so keeping up happens automatically, is the clearest way to avoid this problem.
 
 ``ghc-lib-parser``
-~~~~~~~~~~~~~~~~~~
+------------------
 
 A newer attempt is `ghc-lib-parser <https://hackage.haskell.org/package/ghc-lib-parser>`_ library.
 Prior users of ``haskell-src-exts`` `like HLint <https://github.com/ndmitchell/hlint/issues/645>`_ have largely migrated from ``haskell-src-exts`` to ``ghc-lib-parser``.
@@ -50,7 +59,7 @@ Whereas ``ghc-lib-parser`` succeeds in keeping up with GHC because it *is* GHC, 
 Code that is intended to be separate from any one consumer must be developed with those boundaries enforced during development.
 
 Trees that grow
-~~~~~~~~~~~~~~~
+---------------
 
 As we can see, each of these prior two attempts did one of the two things right, and correspondingly met one of our two criteria.
 There is, however, a third project, that over the years has aimed to allow us to finally hit both criteria: "Trees that grow".
@@ -86,7 +95,7 @@ It is thus hard to do this work with volunteers only, because it is emphatically
 The Haskell Foundation's support in getting this "over the finish line", at which the community *will* benefit, and benefit greatly, is thus a crucial way we can surmount the coordination failure the lack of incremental payoff causes.
 
 Problem Statement
------------------
+=================
 
 *This section should describe the problem that the proposal intends to solve and how solving the problem will benefit the Haskell community.
 It should also enumerate the requirements against which a solution should be evaluated.*
@@ -96,28 +105,28 @@ It should describe the relationship between the proposed work and the existing e
 If past attempts did not succeed, this section should provide a theory of why not.*
 
 Technical Content
------------------
+=================
 
 *This section should describe the work that is being proposed to the community for comment, including both technical aspects (choices of system architecture, integration with existing tools and workflows) and community governance (how the developed project will be administered, maintained, and otherwise cared for in the future).
 It should also describe the benefits, drawbacks, and risks that are associated with these decisions.
 It can be a good idea to describe alternative approaches here as well, and why the proposer prefers the current approach.*
 
 Timeline
---------
+========
 
 *Are there any deadlines that the HF needs to be aware of?*
 
 Budget
-------
+======
 
 *How much money is needed to accomplish the goal? How will it be used?*
 
 Stakeholders
-------------
+============
 
 *Who stands to gain or lose from the implementation of this proposal? Proposals should identify stakeholders so that they can be contacted for input, and a final decision should not occur without having made a good-faith effort to solicit representative feedback from important stakeholder groups.*
 
 Success
--------
+=======
 
 *Under what conditions will the project be considered a success?*
