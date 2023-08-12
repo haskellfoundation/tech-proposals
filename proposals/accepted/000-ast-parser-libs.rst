@@ -133,6 +133,8 @@ Proof of success: Use by Haddock
 
 **Time Estimate:** ??
 
+https://gitlab.haskell.org/ghc/ghc/-/issues/21592#note_519447 Note how this use-case only needs the AST not parser.
+
 Separate the AST
 ----------------
 
@@ -156,3 +158,10 @@ Stakeholders
 - Haddock Developers
 
 - HLint Developers
+
+Future Work
+===========
+
+Factored out pretty print (exact print)
+
+Depends on resolution of things like https://gitlab.haskell.org/ghc/ghc/-/issues/23447
