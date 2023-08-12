@@ -92,7 +92,7 @@ The basic problem is that the benefits don't actually kick in until the deps are
 Partial progress isn't really directly useful to anyone, and these counters just scoreboard by which we hope to get closer to the end goal.
 It is thus hard to do this work with volunteers only, because it is emphatically *not* `"itch scratching" <https://en.wikipedia.org/wiki/The_Cathedral_and_the_Bazaar>`_ work where incremental progress leads immediate incremental benefits to the contributor.
 
-The Haskell Foundation's support in getting this "over the finish line", at which the community *will* benefit, and benefit greatly, is thus a crucial way we can surmount the coordination failure the lack of incremental payoff causes.
+The Haskell Foundation's support in getting this "over the finish line", at which point the community *will* benefit, and benefit greatly, is thus a crucial way we can surmount the coordination failure the lack of incremental payoff causes.
 
 Problem Statement
 =================
