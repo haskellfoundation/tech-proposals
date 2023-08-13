@@ -41,32 +41,38 @@ This section highlights various past and ongoing efforts accordingly.
 
 *This section is purely informative; readers familiar with this backstory can skip this section and move on to the proposal proper.*
 
-``haskell-src-exts``
---------------------
+.. |haskell-src-exts| replace:: ``haskell-src-exts``
+.. _haskell-src-exts: https://hackage.haskell.org/package/haskell-src-exts
 
-An older attempt is the venerable `haskell-src-exts <https://hackage.haskell.org/package/haskell-src-exts>`_ library.
-This is actually was part of a larger project called the `"Haskell Suite" <https://github.com/haskell-suite>`_, the purpose of which was "to implement the whole Haskell compiler as a set of libraries".
-However, the whole compiler doesn't appear to exist, and the project as a whole ceased development .
-``haskell-src-exts`` lasted longer, but had great trouble keeping up with GHC, and is now also unmaintained since 2020.
+.. |ghc-lib-parser| replace:: ``ghc-lib-parser``
+.. _ghc-lib-parser: https://hackage.haskell.org/package/ghc-lib-parser
 
-The lessons are clear:
-``haskell-src-exts`` succeeded in being modular and self-contained, failed in trying to keep up with GHC.
-Given the size of the community, competing head-on with GHC or trying to keep up with it is very difficult.
-Being used by GHC, so keeping up happens automatically, is the clearest way to avoid this problem.
-
-``ghc-lib-parser``
+|haskell-src-exts|
 ------------------
 
-A newer attempt is `ghc-lib-parser <https://hackage.haskell.org/package/ghc-lib-parser>`_ library.
-Prior users of ``haskell-src-exts`` `like HLint <https://github.com/ndmitchell/hlint/issues/645>`_ have largely migrated from ``haskell-src-exts`` to ``ghc-lib-parser``.
-But ``ghc-lib-parser`` is *not* actually a separately developed library; rather it is one that is extracted from GHC's own source.
-This ensures it is up to date with the latest behavior.
-But this extraction process is complex, and results in a far larger library than is desired: see the *hundreds* of modules included inside it, many of which have nothing to do with the Haskell surface language.
-All this `"bycatch" <https://en.wikipedia.org/wiki/Bycatch>`_ in the extraction process results in a library that daunting to use, and which has a harder time presenting any sort of stable interface.
+An older attempt is the venerable "Haskell-Source with Extensions (HSE)" package, also known as |haskell-src-exts|_ . This is actually part of a larger project called the `"Haskell Suite" <https://github.com/haskell-suite>`_, the purpose of which was "to implement the whole Haskell compiler as a set of libraries". However, the whole compiler doesn't appear to exist, and the project as a whole ceased development .
 
-The developers of ``ghc-lib-parser`` would not dispute the above criticisms, for this state of affairs was never intended to be a permanent solution, but rather just a stop gap.
-Whereas ``ghc-lib-parser`` succeeds in keeping up with GHC because it *is* GHC, it fails in being self-contained because modularity cannot be `"fixed in post" [production] <https://tvtropes.org/pmwiki/pmwiki.php/Main/FixItInPost>`_.
-Code that is intended to be separate from any one consumer must be developed with those boundaries enforced during development.
+`HLint <https://hackage.haskell.org/package/hlint>`_, the Haskell linter project developed continuously since 2008 relied heavily on |haskell-src-exts| which lasted longer than the rest of suite, but had great trouble keeping up with GHC. In Februrary 2019, |ghc-lib-parser| `was released <http://neilmitchell.blogspot.com/2019/02/announcing-ghc-lib.html>`_ and in May 2019 an `announcement <https://mail.haskell.org/pipermail/haskell-cafe/2019-May/131166.html>`_ that there would be no further |haskell-src-exts| releases followed and the advice given for anyone wishing to parse Haskell programs to "use the GHC API, specifically you can use |ghc-lib-parser|".
+
+The lessons are clear:
+
+- |haskell-src-exts| succeeded in being modular and self-contained but failed trying to keep up with GHC;
+- given the size of the community, competing head-on with GHC or trying to keep up with it is very difficult:
+
+  - being used by GHC, so keeping up happens automatically, is the clearest way to avoid this problem.
+
+|ghc-lib-parser|
+------------------
+
+In June 2019, `HLint began transitition <http://neilmitchell.blogspot.com/2019/06/hlints-path-to-ghc-parser.html>`_ to |ghc-lib-parser| and in May 2020, the release of HLint-3.0 which "uses the GHC parser" `was announced <http://neilmitchell.blogspot.com/2020/05/hlint-30.html>`_. Today, most users of |haskell-src-exts| have largely migrated from |haskell-src-exts| to |ghc-lib-parser| [#exampleghclibparserusers]_.
+
+A |ghc-lib-parser|_ package contains GHC compiler sources packaged as a library [#ghcinception]_. This ensures it is up to date with the latest behavior but this extraction process is complex, requires constant patching to keep pace with GHC evolution, and results in a far larger library than is desired: see the *hundreds* of modules included inside it, many of which have nothing to do with the Haskell surface language. All this `"bycatch" <https://en.wikipedia.org/wiki/Bycatch>`_ in the extraction process results in a library that daunting to use, and which has a hard time presenting a stable interface.
+
+Whereas |ghc-lib-parser| succeeds in keeping up with GHC because it *is* GHC, it fails in being self-contained because modularity cannot be `"fixed in post" [production] <https://tvtropes.org/pmwiki/pmwiki.php/Main/FixItInPost>`_. Code that is intended to be separate from any one consumer must be developed with those boundaries enforced during development.
+
+.. [#ghcinception] The extraction process was enabled by insights gained from the `"GHCinception" <https://mgsloan.com/posts/ghcinception/>`_ or "GHC in GHCi" initative.
+
+.. [#exampleghclibparserusers] Today for example, notable users include `ormolu <https://hackage.haskell.org/package/ormolu>`_, `ghcide <https://hackage.haskell.org/package/ghcide>`_, `hls-hlint-plugin <https://hackage.haskell.org/package/hls-hlint-plugin>`_, `hindent <https://hackage.haskell.org/package/hindent>`_ & `stylish-haskell <https://hackage.haskell.org/package/stylish-haskell>`_.
 
 Trees that grow
 ---------------
