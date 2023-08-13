@@ -264,25 +264,28 @@ Stakeholders
 
 *Who stands to gain or lose from the implementation of this proposal? Proposals should identify stakeholders so that they can be contacted for input, and a final decision should not occur without having made a good-faith effort to solicit representative feedback from important stakeholder groups.*
 
-- GHC Developers
+GHC Developers
+--------------
 
-  The proposal is asking that we change out code in GHC is organized, so it is crucial that we solicit feedback from the broader `GHC Team <https://gitlab.haskell.org/ghc/ghc-hq/-/tree/main#2-the-ghc-team>`_, and the narrow `GHC HQ group <https://gitlab.haskell.org/ghc/ghc-hq/-/tree/main#3-ghc-hq-group>`_ in particular.
-  It is John's understanding that the GHC developers are broadly supportive of the goal here in the abstract,
-  (after all, SPJ was an author of the Trees That Grow paper),
-  but some of the specific details needed to get this done in a timely manner may be more controversial.
+The proposal is asking that we change out code in GHC is organized, so it is crucial that we solicit feedback from the broader `GHC Team <https://gitlab.haskell.org/ghc/ghc-hq/-/tree/main#2-the-ghc-team>`_, and the narrow `GHC HQ group <https://gitlab.haskell.org/ghc/ghc-hq/-/tree/main#3-ghc-hq-group>`_ in particular.
+It is John's understanding that the GHC developers are broadly supportive of the goal here in the abstract,
+(after all, SPJ was an author of the Trees That Grow paper),
+but some of the specific details needed to get this done in a timely manner may be more controversial.
 
-  In particular, introducing more extension points to ensure rapid progress was very controversial before, and in return for putting up with such a thing as stop-gap, the GHC HQ might want something in return, like an additional phase of work to eliminate the new extension points afterwords.
+In particular, introducing more extension points to ensure rapid progress was very controversial before, and in return for putting up with such a thing as stop-gap, the GHC HQ might want something in return, like an additional phase of work to eliminate the new extension points afterwords.
 
-- Haddock Developers
+Haddock Developers
+------------------
 
-  The Haddock maintainers will likewise be maintaining the result of the Summer of Code project, along with the integration work done as part of this.
-  We should ensure that they are satisfied with the work being done here and it comports with their overall desires for the project.
+The Haddock maintainers will likewise be maintaining the result of the Summer of Code project, along with the integration work done as part of this.
+We should ensure that they are satisfied with the work being done here and it comports with their overall desires for the project.
 
-- HLint Developers
+HLint Developers
+----------------
 
-  The HLint developers have been heavily involved with reusable AST and parser work every step of the way, and should continue to be involved with this too.
-  In addition, we've chosen HLint to be the integration step for the second half just like Haddock was in the first.
-  Thankfully, one of the HLint developers, Shayne Fletcher, is also a co-author of this proposal!
+The HLint developers have been heavily involved with reusable AST and parser work every step of the way, and should continue to be involved with this too.
+In addition, we've chosen HLint to be the integration step for the second half just like Haddock was in the first.
+Thankfully, one of the HLint developers, Shayne Fletcher, is also a co-author of this proposal!
 
 Future Work
 ===========
