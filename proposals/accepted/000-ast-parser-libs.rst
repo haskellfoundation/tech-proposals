@@ -239,6 +239,9 @@ We will continue the tradition discussed in the background section of using HLin
 The migration from |haskell-src-exts| to |ghc-lib-parser| was quite difficult because those libraries are nothing alike.
 In contrast, we expect the migration from |ghc-lib-parser| to the new AST and parser libraries to be quite simple and pleasant, because the two new libraries should be very similar to |ghc-lib-parser|, and where they differ they should be strictly easier to use than before.
 
+.. todo::
+   Any more detail we can write here?
+
 Stakeholders
 ============
 
