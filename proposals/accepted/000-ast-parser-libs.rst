@@ -170,6 +170,31 @@ We don't need to worry about code entangling, just data entangling.
 
 The timeline for this is pretty short because there exists an easy last-resort way to decouple anything:
 just add another TTG type family.
+This came up with some acrimony in `GHC Issue #21628 <https://gitlab.haskell.org/ghc/ghc/-/issues/21628>`_, discussing whether it was better to try to change GHC's ``FastString`` or abstract over it.
+The purpose of this proposal isn't to relitigate that issue, but because this proposal *is* about resource allocation, something does need to be said on the broader tradeoffs at play
+
+There is no disagreement that as-is, that data type is not suitable for a nice self-contained library. [#faststring-unsuitable]_
+The disagreement is whether TTG should be blocked on reworking ``FastString`` somehow to be better for GHC and non-GHC alike, or whether we should just side-step the issue entirely.
+
+I make no claims about what is better in the long term for GHC, but when reworking ``FastString`` and benchmarking the new algorthms might take `**Days to Weeks**`, we can side-step the issue with a new ``StringP`` type family "extension point" like the existing ``IdP`` one in **minutes**. [#extension-point]_
+
+Out of a basic fiduciary towards the ``Haskell Foundation``, we thus declare that unless "Plan A" works out very quickly, "Plan B" of just introducing another extension point should be used.
+We can also revisit the issue later, *after* we have our factored-out AST library.
+
+.. [#faststring-unsuitable]
+  Everyone agrees it is insuitable in its current state because things like:
+
+  - Global state because of `string interning <https://en.wikipedia.org/wiki/String_interning>`, with a global variable baked into the RTS no less!
+
+  - Memoizing features for other parts of the compiler unrelated to parsing, such as the `"Z-Encoding" <https://gitlab.haskell.org/ghc/ghc/-/blob/261c4acbfdaf5babfc57ab0cef211edb66153fb1/libraries/ghc-boot/GHC/Utils/Encoding.hs#L43>` GHC happens to use for object file symbol `name mangling <https://en.wikipedia.org/wiki/Name_mangling>`.
+
+  Everyone *also* agrees that it is worth revising whether these algorithmic decision still make sense given modern hardware, see `GHC Issue #17259 <https://gitlab.haskell.org/ghc/ghc/-/issues/17259>`_.
+
+.. [#extension-point]
+  "Extension point" is Trees That Grow parlance for such a type family.
+  The idea is that the AST library no longer refers to a data type like ``FastString`` directory, but instead refers to an abstract ``StringP p``.
+  Then, GHC can define `StringP (GhcPass _) = FastString`` to use it client side, across all compilation passes.
+  All term-level code continues to works exactly the same as before without modification.
 
 Proof of success: Use by Haddock
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
