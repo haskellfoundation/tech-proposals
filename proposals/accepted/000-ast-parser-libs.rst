@@ -60,6 +60,7 @@ In Februrary 2019, |ghc-lib-parser| `was released <http://neilmitchell.blogspot.
 The lessons are clear:
 
 - |haskell-src-exts| succeeded in being modular and self-contained but failed trying to keep up with GHC;
+
 - given the size of the community, competing head-on with GHC or trying to keep up with it is very difficult:
 
   - being used by GHC, so keeping up happens automatically, is the clearest way to avoid this problem.
