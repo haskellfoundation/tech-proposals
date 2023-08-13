@@ -128,7 +128,7 @@ This allows those consumers to "adjust" the AST for their purpose.
 
 The Trees That Grow project is now 6 years old, and has met great success in avoiding partiality in the compiler, "making illegal states unrepresentable" as many Haskellers would put it.
 But progress on `reducing AST & parser dependencies <https://gitlab.haskell.org/ghc/ghc/-/issues/19932>`_ has been less easily forthcoming.
-I have separated out the modules defining the AST under `Language.Haskell.Syntax.*` we wish to split out, and we have tests to track progress reducing their deps, and the parser's deps.
+I have separated out the modules defining the AST under ``Language.Haskell.Syntax.*`` we wish to split out, and we have tests to track progress reducing their deps, and the parser's deps.
 But progress is unsteady and unpredictable.
 
 The basic problem is that the benefits don't actually kick in until the deps are *all* gone, and the code is actually separated out.
@@ -163,10 +163,19 @@ Separate the AST
 Split library
 ~~~~~~~~~~~~~
 
-**Time Estimate:** 1 -- 2 Weeks
+**Time Estimate:** 1 – 2 Weeks
 
 The first step is just separating data definitions.
 We don't need to worry about code entangling, just data entangling.
+We have already separated those data definitions into modules in the ``Language.Haskell.Syntax.*`` namespace.
+
+Concretely, the work in this step is to:
+
+#. Modify those modules to not import any other modules in ``ghc`` (``GHC.*`` modules).
+
+#. Move those modules to a new separate AST library in the GHC repo.
+
+#. Adjust ``build-depends`` across the repo so ``ghc`` and any other Haskell Package gets those modules from the new library instead, and CI passes.
 
 The timeline for this is pretty short because there exists an easy last-resort way to decouple anything:
 just add another TTG type family.
@@ -201,17 +210,34 @@ Proof of success: Use by Haddock
 
 **Time Estimate:** ??
 
-https://gitlab.haskell.org/ghc/ghc/-/issues/21592#note_519447 Note how this use-case only needs the AST not parser.
+It might seem odd that there is a real-world use case for an AST without a Parser, but we do in fact have one: a Summer of Haskell project reducing Haddock's depedencies on GHC.
+The situation is nicely described by Laurent who is mentoring the project `here <https://gitlab.haskell.org/ghc/ghc/-/issues/21592#note_519447>`_, but we'll recap the basics:
+
+Haddock as whole is still using the complete ``ghc`` library, and parsing is continuing to happen that way.
+Individual rendering backends, however, are being split out into separate packages, and those are only using the ``Language.Haskell.Syntax.*`` modules.
+
+That is all being done by the Summer of Haskell project.
+What is to be done in this step is to make those backend packages just depend on the new AST library.
+If the Summer of Haskell projects succeeds, this should be very easy since it is precisely those ``Language.Haskell.Syntax.*`` modules that will end up in the AST library.
+All code should continue to work as before, since ``ghc`` will also use the new AST library, and thus the parsing initiated by the frontend and the backends should automatically agree on data structures.
 
 Separate the Parser
 -------------------
 
 **Time Estimate:** ??
 
+This work is more uncertain, because the parser and post-processing steps necessary to get an actual AST may use utility functions currently entangled with the rest of the compiler.
+It maybe be the case that we need to finish the far more certain first step (AST library) to get better clarity on what work remains for the parser, and thus price this step accurately.
+
 Proof of success: Use by HLint
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Time Estimate:** ??
+
+We will continue the tradition discussed in the background section of using HLint to validate that parsers for Haskell are usable by real-world programs that are not GHC.
+
+The migration from |haskell-src-exts| to |ghc-lib-parser| was quite difficult because those libraries are nothing alike.
+In contrast, we expect the migration from |ghc-lib-parser| to the new AST and parser libraries to be quite simple and pleasant, because the two new libraries should be very similar to |ghc-lib-parser|, and where they differ they should be strictly easier to use than before.
 
 Stakeholders
 ============
