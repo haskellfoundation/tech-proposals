@@ -116,17 +116,24 @@ It can be a good idea to describe alternative approaches here as well, and why t
 
 *How much money is needed to accomplish the goal? How will it be used?*
 
-The project is split into two separate steps: separating the parser, and separating the AST.
+The project is split into two separate steps: separating the AST, and separating the parser.
 Each step has a method, time estimate, and (most importantly) clear success criteria, including use by downstream projects to ensure value is delivered.
 The intent is thus that they are self-contained, and can be individually funded.
 
-Separate the Parser
--------------------
+
+Separate the AST
+----------------
 
 Split library
 ~~~~~~~~~~~~~
 
-**Time Estimate:** ??
+**Time Estimate:** 1--2 Weeks
+
+The first step is just separating data definitions.
+We don't need to worry about code entangling, just data entangling.
+
+The timeline for this is pretty short because there exists an easy last-resort way to decouple anything:
+just add another TTG type family.
 
 Proof of success: Use by Haddock
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -135,11 +142,8 @@ Proof of success: Use by Haddock
 
 https://gitlab.haskell.org/ghc/ghc/-/issues/21592#note_519447 Note how this use-case only needs the AST not parser.
 
-Separate the AST
-----------------
-
-Split library
-~~~~~~~~~~~~~
+Separate the Parser
+-------------------
 
 **Time Estimate:** ??
 
