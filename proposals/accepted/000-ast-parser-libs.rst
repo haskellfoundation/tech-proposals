@@ -62,7 +62,7 @@ However, the whole compiler doesn't appear to exist, and the project as a whole 
 
 In Februrary 2019, |ghc-lib-parser| `was released <http://neilmitchell.blogspot.com/2019/02/announcing-ghc-lib.html>`_ and in May 2019 an `announcement <https://mail.haskell.org/pipermail/haskell-cafe/2019-May/131166.html>`_ that there would be no further |haskell-src-exts| releases followed and the advice given for anyone wishing to parse Haskell programs to "use the GHC API, specifically you can use |ghc-lib-parser|".
 
-A |ghc-lib-parser|_ package contains GHC compiler sources packaged as a library [#ghcinception]_.
+A |ghc-lib-parser|_ package contains GHC compiler sources packaged as a library [#ghc-inception]_.
 This ensures it is up to date with the latest behavior but this extraction process is complex, requires constant patching to keep pace with GHC evolution, and results in a far larger library than is desired:
 see the *hundreds* of modules included inside it, many of which have nothing to do with the Haskell surface language.
 All this `"bycatch" <https://en.wikipedia.org/wiki/Bycatch>`_ in the extraction process results in a library that daunting to use, and which has a hard time presenting a stable interface.
@@ -78,7 +78,7 @@ The lesson from |haskell-src-exts| are clear:
 Whereas |ghc-lib-parser| succeeds in keeping up with GHC because it *is* GHC, it fails in being self-contained because modularity cannot be `"fixed in post" [production] <https://tvtropes.org/pmwiki/pmwiki.php/Main/FixItInPost>`_.
 Code that is intended to be separate from any one consumer must be developed with those boundaries enforced during development.
 
-.. [#ghcinception] The extraction process was enabled by insights gained from the `"GHCinception" <https://mgsloan.com/posts/ghcinception/>`_ or "GHC in GHCi" initative.
+.. [#ghc-inception] The extraction process was enabled by insights gained from the `"GHCinception" <https://mgsloan.com/posts/ghcinception/>`_ or "GHC in GHCi" initative.
 
 Downstream projects
 -------------------
@@ -93,7 +93,7 @@ following the release of |ghc-lib-parser| and deprecation of |haskell-src-exts| 
 `HLint began the transitition <http://neilmitchell.blogspot.com/2019/06/hlints-path-to-ghc-parser.html>`_ to |ghc-lib-parser|.
 In May 2020, the release of HLint-3.0 which "uses the GHC parser" `was announced <http://neilmitchell.blogspot.com/2020/05/hlint-30.html>`_.
 
-Today, most users of |haskell-src-exts| have largely migrated from |haskell-src-exts| to |ghc-lib-parser| [#exampleghclibparserusers]_.
+Today, most users of |haskell-src-exts| have largely migrated from |haskell-src-exts| to |ghc-lib-parser| [#example-ghc-lib-parser-users]_.
 But just because all these projects are using |ghc-lib-parser| doesn't mean everything is well.
 **Insert quote about maintainence overhead.**
 The cost of detail with changes to the AST is inevitable --- supporting new language features will inevitably cost developer time.
@@ -102,7 +102,7 @@ But all the other busywork of re-extracting the code, etc., is entirely avoidabl
 It is the opinion of the authors of this proposal that should an independent AST parser libraries be maintained upstream with GHC, the costs saved for downstream developers should _greatly_ exceed any costs incurred by GHC developers.
 The goal is thus *not* to simply shift a burden from one group of community members to another, but create a positive-sum outcome where there is far less busywork and more flourishing tooling than before.
 
-.. [#exampleghclibparserusers] Today for example, notable users include HLint_, `ormolu <https://hackage.haskell.org/package/ormolu>`_, `ghcide <https://hackage.haskell.org/package/ghcide>`_, `hls-hlint-plugin <https://hackage.haskell.org/package/hls-hlint-plugin>`_, `hindent <https://hackage.haskell.org/package/hindent>`_ & `stylish-haskell <https://hackage.haskell.org/package/stylish-haskell>`_.
+.. [#example-ghc-lib-parser-users] Today for example, notable users include HLint_, `ormolu <https://hackage.haskell.org/package/ormolu>`_, `ghcide <https://hackage.haskell.org/package/ghcide>`_, `hls-hlint-plugin <https://hackage.haskell.org/package/hls-hlint-plugin>`_, `hindent <https://hackage.haskell.org/package/hindent>`_ & `stylish-haskell <https://hackage.haskell.org/package/stylish-haskell>`_.
 
 Trees that grow
 ---------------
@@ -229,6 +229,9 @@ Separate the Parser
 This work is more uncertain, because the parser and post-processing steps necessary to get an actual AST may use utility functions currently entangled with the rest of the compiler.
 It maybe be the case that we need to finish the far more certain first step (AST library) to get better clarity on what work remains for the parser, and thus price this step accurately.
 
+.. todo::
+   Any more detail we can write here?
+
 Proof of success: Use by HLint
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -249,13 +252,37 @@ Stakeholders
 
 - GHC Developers
 
+  The proposal is asking that we change out code in GHC is organized, so it is crucial that we solicit feedback from the broader `GHC Team <https://gitlab.haskell.org/ghc/ghc-hq/-/tree/main#2-the-ghc-team>`_, and the narrow `GHC HQ group <https://gitlab.haskell.org/ghc/ghc-hq/-/tree/main#3-ghc-hq-group>`_ in particular.
+  It is John's understanding that the GHC developers are broadly supportive of the goal here in the abstract,
+  (after all, SPJ was an author of the Trees That Grow paper),
+  but some of the specific details needed to get this done in a timely manner may be more controversial.
+
+  In particular, introducing more extension points to ensure rapid progress was very controversial before, and in return for putting up with such a thing as stop-gap, the GHC HQ might want something in return, like an additional phase of work to eliminate the new extension points afterwords.
+
 - Haddock Developers
 
+  The Haddock maintainers will likewise be maintaining the result of the Summer of Code project, along with the integration work done as part of this.
+  We should ensure that they are satisfied with the work being done here and it comports with their overall desires for the project.
+
 - HLint Developers
+
+  The HLint developers have been heavily involved with reusable AST and parser work every step of the way, and should continue to be involved with this too.
+  In addition, we've chosen HLint to be the integration step for the second half just like Haddock was in the first.
+  Thankfully, one of the HLint developers, Shayne Fletcher, is also a co-author of this proposal!
 
 Future Work
 ===========
 
-Factored out pretty print (exact print)
+Pretty-printing
+---------------
 
-Depends on resolution of things like https://gitlab.haskell.org/ghc/ghc/-/issues/23447
+Just as it is nice to accompany the AST with logic to convert raw text syntax to it (the parser),
+so it is nice to also accompany the AST with logic to do the opposite: render back to text (the pretty-printer).
+
+There has been much work to allow this to be done in a faithful round trip, know as "exact-print" functionality.
+However, the detail of how this works are still fast-evolving. [#exact-print-evolving]
+
+We therefore think it is best to leave factoring out the pretty-printer into a reusable library (either part of the parser library, or a new 3rd reusable library) as a future work.
+
+.. [#exact-print-evolving]
+   See `GHC Issue #23447 <https://gitlab.haskell.org/ghc/ghc/-/issues/23447>`_ for example.
