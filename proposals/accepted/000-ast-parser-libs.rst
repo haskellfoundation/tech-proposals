@@ -193,7 +193,7 @@ We can also revisit the issue later, *after* we have our factored-out AST librar
 .. [#extension-point]
   "Extension point" is Trees That Grow parlance for such a type family.
   The idea is that the AST library no longer refers to a data type like ``FastString`` directory, but instead refers to an abstract ``StringP p``.
-  Then, GHC can define `StringP (GhcPass _) = FastString`` to use it client side, across all compilation passes.
+  Then, GHC can define ``StringP (GhcPass _) = FastString`` to use it client side, across all compilation passes.
   All term-level code continues to works exactly the same as before without modification.
 
 Proof of success: Use by Haddock
