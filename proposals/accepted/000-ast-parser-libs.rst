@@ -141,6 +141,20 @@ The Haskell Foundation's support in getting this "over the finish line", at whic
   It might sound like the goal is only different usages within GHC, but remember that ``template-haskell`` is a separate library used by users of Haskell not just developers of Haskell.
   A goal of at least some usage outside GHC was always there.
 
+Reinstallable GHC Lib
+---------------------
+
+One of the problems ``ghc-lib-parser`` aims to solve is that ``ghc`` the library is current cumbersome to install as a regular haskell library (as opposed to by switching toolchains entirely).
+There is currently work in flight to solve that.
+One that is done, projects like HLint_ *could* just depend on ``ghc`` directly, and still be easily buildable (with Cabal / with Stack / from Hackage) as today.
+
+Just doing this isn't a good solution though, because ``ghc`` exposes a much a wider surface area than what these projects actually want.
+For stability's sake, it is better that those libraries dependent on narrower parsing / AST libraries that only provide what they need.
+And longer term, we hope the "tug of war" of between GHC and these projects as consumers of those libraries, versus just the others having to deal with whatever GHC does with just itself in mind, will result in a higher-quality, more flexible, and overall friendlier library.
+
+In `this comment <https://gitlab.haskell.org/ghc/ghc/-/issues/14409#note_506489>`_, it is suggested that factoring out the AST and parser can be a good first step making a more modular in GHC in general.
+This proposal wish to *stay neutral* on the merits of such a future direction, but it would be remiss not to at least highlight it as one possible outcome.
+
 Roadmap
 =======
 
