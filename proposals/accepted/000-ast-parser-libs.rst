@@ -176,7 +176,7 @@ The purpose of this proposal isn't to relitigate that issue, but because this pr
 There is no disagreement that as-is, that data type is not suitable for a nice self-contained library. [#faststring-unsuitable]_
 The disagreement is whether TTG should be blocked on reworking ``FastString`` somehow to be better for GHC and non-GHC alike, or whether we should just side-step the issue entirely.
 
-I make no claims about what is better in the long term for GHC, but when reworking ``FastString`` and benchmarking the new algorthms might take `**Days to Weeks**`, we can side-step the issue with a new ``StringP`` type family "extension point" like the existing ``IdP`` one in **minutes**. [#extension-point]_
+I make no claims about what is better in the long term for GHC, but when reworking ``FastString`` and benchmarking the new algorthms might take **Days to Weeks**, we can side-step the issue with a new ``StringP`` type family "extension point" like the existing ``IdP`` one in **minutes**. [#extension-point]_
 
 Out of a basic fiduciary towards the ``Haskell Foundation``, we thus declare that unless "Plan A" works out very quickly, "Plan B" of just introducing another extension point should be used.
 We can also revisit the issue later, *after* we have our factored-out AST library.
