@@ -5,7 +5,7 @@ Split out AST and Parser libraries from GHC
 :Date: August 2023
 :Authors:
   John Ericson,
-  ???
+  Shayne Fletcher
 
 .. sectnum::
 .. contents::
