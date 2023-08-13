@@ -163,7 +163,7 @@ Separate the AST
 Split library
 ~~~~~~~~~~~~~
 
-**Time Estimate:** 1--2 Weeks
+**Time Estimate:** 1 -- 2 Weeks
 
 The first step is just separating data definitions.
 We don't need to worry about code entangling, just data entangling.
