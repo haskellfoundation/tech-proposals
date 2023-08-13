@@ -89,7 +89,7 @@ Ultimately, it is those projects we want to help out.
 HLint_, the Haskell linter project developed continuously since 2008 is the most notable one, not just because its longstanding and wide use, but also because many of the developers that worked on the previous two libraries also worked on it --- use by HLint served as proof the libraries were fit-for-purpose.
 
 In June 2019,
-following the release of |ghc-lib-parser| and deprecation of |haskell-src_exts| earlier that year as described above,
+following the release of |ghc-lib-parser| and deprecation of |haskell-src-exts| earlier that year as described above,
 `HLint began the transitition <http://neilmitchell.blogspot.com/2019/06/hlints-path-to-ghc-parser.html>`_ to |ghc-lib-parser|.
 In May 2020, the release of HLint-3.0 which "uses the GHC parser" `was announced <http://neilmitchell.blogspot.com/2020/05/hlint-30.html>`_.
 
