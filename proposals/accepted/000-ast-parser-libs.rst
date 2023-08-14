@@ -78,7 +78,8 @@ The lesson from |haskell-src-exts| are clear:
 Whereas |ghc-lib-parser| succeeds in keeping up with GHC because it *is* GHC, it fails in being self-contained because modularity cannot be `"fixed in post" [production] <https://tvtropes.org/pmwiki/pmwiki.php/Main/FixItInPost>`_.
 Code that is intended to be separate from any one consumer must be developed with those boundaries enforced during development.
 
-.. [#ghc-inception] The extraction process was enabled by insights gained from the `"GHCinception" <https://mgsloan.com/posts/ghcinception/>`_ or "GHC in GHCi" initative.
+.. [#ghc-inception]
+  The extraction process was enabled by insights gained from the `"GHCinception" <https://mgsloan.com/posts/ghcinception/>`_ or "GHC in GHCi" initative.
 
 Downstream projects
 -------------------
@@ -102,7 +103,8 @@ But all the other busywork of re-extracting the code, etc., is entirely avoidabl
 It is the opinion of the authors of this proposal that should an independent AST parser libraries be maintained upstream with GHC, the costs saved for downstream developers should _greatly_ exceed any costs incurred by GHC developers.
 The goal is thus *not* to simply shift a burden from one group of community members to another, but create a positive-sum outcome where there is far less busywork and more flourishing tooling than before.
 
-.. [#example-ghc-lib-parser-users] Today for example, notable users include HLint_, `ormolu <https://hackage.haskell.org/package/ormolu>`_, `ghcide <https://hackage.haskell.org/package/ghcide>`_, `hls-hlint-plugin <https://hackage.haskell.org/package/hls-hlint-plugin>`_, `hindent <https://hackage.haskell.org/package/hindent>`_ & `stylish-haskell <https://hackage.haskell.org/package/stylish-haskell>`_.
+.. [#example-ghc-lib-parser-users]
+  Today for example, notable users include HLint_, `ormolu <https://hackage.haskell.org/package/ormolu>`_, `ghcide <https://hackage.haskell.org/package/ghcide>`_, `hls-hlint-plugin <https://hackage.haskell.org/package/hls-hlint-plugin>`_, `hindent <https://hackage.haskell.org/package/hindent>`_ & `stylish-haskell <https://hackage.haskell.org/package/stylish-haskell>`_.
 
 Trees that grow
 ---------------
@@ -297,7 +299,7 @@ Just as it is nice to accompany the AST with logic to convert raw text syntax to
 so it is nice to also accompany the AST with logic to do the opposite: render back to text (the pretty-printer).
 
 There has been much work to allow this to be done in a faithful round trip, know as "exact-print" functionality.
-However, the detail of how this works are still fast-evolving. [#exact-print-evolving]
+However, the detail of how this works are still fast-evolving. [#exact-print-evolving]_
 
 We therefore think it is best to leave factoring out the pretty-printer into a reusable library (either part of the parser library, or a new 3rd reusable library) as a future work.
 
