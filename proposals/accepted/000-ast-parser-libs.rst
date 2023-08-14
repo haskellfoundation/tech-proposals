@@ -203,7 +203,7 @@ The disagreement is whether TTG should be blocked on reworking ``FastString`` so
 
 I make no claims about what is better in the long term for GHC, but when reworking ``FastString`` and benchmarking the new algorthms might take **Days to Weeks**, we can side-step the issue with a new ``StringP`` type family "extension point" like the existing ``IdP`` one in **minutes**. [#extension-point]_
 
-Out of a basic fiduciary towards the ``Haskell Foundation``, we thus declare that unless "Plan A" works out very quickly, "Plan B" of just introducing another extension point should be used.
+Out of a basic fiduciary towards the Haskell Foundation, we thus declare that unless "Plan A" works out very quickly, "Plan B" of just introducing another extension point should be used.
 We can also revisit the issue later, *after* we have our factored-out AST library.
 
 .. [#faststring-unsuitable]
