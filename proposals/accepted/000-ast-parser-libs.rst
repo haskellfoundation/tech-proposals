@@ -96,7 +96,7 @@ In May 2020, the release of HLint-3.0 which "uses the GHC parser" `was announced
 
 Today, most users of |haskell-src-exts| have largely migrated from |haskell-src-exts| to |ghc-lib-parser| [#example-ghc-lib-parser-users]_.
 But just because all these projects are using |ghc-lib-parser| doesn't mean everything is well.
-**Insert quote about maintainence overhead.**
+Shayne Fetcher reports that keeping up with the latest GHC chagnes with the |ghc-lib-parser|/``ghc-lib``/``ghc-lib-parser-ex``/HLint stack generally costs him **an hour or two a week, and often more**.
 The cost of detail with changes to the AST is inevitable --- supporting new language features will inevitably cost developer time.
 But all the other busywork of re-extracting the code, etc., is entirely avoidable, *not* inherent to the task at hand.
 
