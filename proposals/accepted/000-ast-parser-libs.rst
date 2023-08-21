@@ -180,6 +180,8 @@ Separate the AST
 Split library
 ~~~~~~~~~~~~~
 
+**Executor**: Haskell Foundation
+
 **Time Estimate:** 1 – 2 Weeks
 
 The first step is just separating data definitions.
@@ -225,6 +227,8 @@ We can also revisit the issue later, *after* we have our factored-out AST librar
 Proof of success: Use by Haddock
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+**Executor**: Laurent P. René de Cotret (volunteer)
+
 **Time Estimate:** 4 weeks of part-time work
 
 It might seem odd that there is a real-world use case for an AST without a Parser, but we do in fact have one: a `Haskell Foundation Technical Proposal <https://github.com/haskellfoundation/tech-proposals/pull/44>`_ and associated `Summer of Haskell <https://summer.haskell.org/news/2023-05-14-summer-of-haskell-2023-project-selections.html#maximally-decoupling-haddock-and-ghc>`_ project reducing Haddock's depedencies on GHC.
@@ -241,6 +245,8 @@ All code should continue to work as before, since ``ghc`` will also use the new 
 Separate the Parser
 -------------------
 
+**Executor**: Haskell Foundation
+
 **Time Estimate:** ??
 
 This work is more uncertain, because the parser and post-processing steps necessary to get an actual AST may use utility functions currently entangled with the rest of the compiler.
@@ -252,15 +258,16 @@ It maybe be the case that we need to finish the far more certain first step (AST
 Proof of success: Use by HLint
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-**Time Estimate:** ??
+**Executor**: Shayne Fletcher (volunteer)
+
+**Time Estimate:** 6 weeks of part-time work
 
 We will continue the tradition discussed in the background section of using HLint to validate that parsers for Haskell are usable by real-world programs that are not GHC.
 
 The migration from |haskell-src-exts| to |ghc-lib-parser| was quite difficult because those libraries are nothing alike.
 In contrast, we expect the migration from |ghc-lib-parser| to the new AST and parser libraries to be quite simple and pleasant, because the two new libraries should be very similar to |ghc-lib-parser|, and where they differ they should be strictly easier to use than before.
 
-.. todo::
-   Any more detail we can write here?
+Shayne Fetcher volunteers to lead this integration as a core HLint maintainer.
 
 Stakeholders
 ============
