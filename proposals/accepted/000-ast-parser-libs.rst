@@ -5,7 +5,8 @@ Split out AST and Parser libraries from GHC
 :Date: August 2023
 :Authors:
   John Ericson,
-  Shayne Fletcher
+  Shayne Fletcher,
+  Laurent P. René de Cotret
 
 .. sectnum::
 .. contents::
@@ -224,17 +225,17 @@ We can also revisit the issue later, *after* we have our factored-out AST librar
 Proof of success: Use by Haddock
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-**Time Estimate:** ??
+**Time Estimate:** 4 weeks of part-time work
 
-It might seem odd that there is a real-world use case for an AST without a Parser, but we do in fact have one: a Summer of Haskell project reducing Haddock's depedencies on GHC.
+It might seem odd that there is a real-world use case for an AST without a Parser, but we do in fact have one: a `Haskell Foundation Technical Proposal <https://github.com/haskellfoundation/tech-proposals/pull/44>`_ and associated `Summer of Haskell <https://summer.haskell.org/news/2023-05-14-summer-of-haskell-2023-project-selections.html#maximally-decoupling-haddock-and-ghc>`_ project reducing Haddock's depedencies on GHC.
 The situation is nicely described by Laurent who is mentoring the project `here <https://gitlab.haskell.org/ghc/ghc/-/issues/21592#note_519447>`_, but we'll recap the basics:
 
-Haddock as whole is still using the complete ``ghc`` library, and parsing is continuing to happen that way.
+Haddock as a whole is still using the complete ``ghc`` library, and parsing is continuing to happen that way.
 Individual rendering backends, however, are being split out into separate packages, and those are only using the ``Language.Haskell.Syntax.*`` modules.
 
-That is all being done by the Summer of Haskell project.
+That is all being done by the Summer of Haskell project, and will be finished by Laurent if need be once the project is over.
 What is to be done in this step is to make those backend packages just depend on the new AST library.
-If the Summer of Haskell projects succeeds, this should be very easy since it is precisely those ``Language.Haskell.Syntax.*`` modules that will end up in the AST library.
+This should be straightforward since it is precisely those ``Language.Haskell.Syntax.*`` modules that will end up in the AST library.
 All code should continue to work as before, since ``ghc`` will also use the new AST library, and thus the parsing initiated by the frontend and the backends should automatically agree on data structures.
 
 Separate the Parser
