@@ -168,7 +168,7 @@ It is currently defined in ``base:GHC.Records``, which is an odd module to have 
 Moreover there is
 more than one GHC proposal that suggest changes to its design (e.g. see `GHC Proposal 158 <https://github.com/ghc-proposals/ghc-proposals/blob/master/proposals/0158-record-set-field.rst>`_); it is not nearly as stable as most of ``base``
 
-If ``ghc-experimental`` had existed we would have put it in ``ghc-experimental:Experimental.Records``.
+If ``ghc-experimental`` had existed we would have put it in ``ghc-experimental:Data.Records.Experimental``.
 That would have made it clear that the design of overloaded records still evolving.
 Once the design becomes settled and stable, it could move to ``base``, perhaps in a module like ``Data.Records``.
 
