@@ -83,6 +83,10 @@ Why ``GHC.Internal.*`` for modules in ``ghc-internal``?  Would ``GHC.*`` not be 
 
 * The prefix ``GHC.Internal`` serves as an additional clue to the importing module that this API is not stable.
 
+* Since ``ghc-internal`` is brand new, we can name its modules however we like.  However, ``ghc-prim`` exists
+  already and we may have to live with modules like ``GHC.CString`` in ``ghc-prim`` for a while.  Perhaps
+  we make the switch slowly over time, by introducing ``GHC.Internal.CString`` and deprecating ``GHC.CString``.
+
 Note that among the GHC implementation packages (``ghc-prim``, ``ghc-internal``, ``ghc-bignum`` etc) there
 is no expectation that the module name signals which package the module is in. It's just an internal
 implementation matter.
