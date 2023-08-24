@@ -110,11 +110,11 @@ but it was a clear consensus from the discussion about the proposal:
 
   This pattern, of a module in ``ghc-experimental`` that is closely related to one in ``base`` seems likely to be common.
 
-* On the other hand, GHC-internal modules are often unrelated to the naming scheme of ``base``.
-  Here a prefix feels more appropriate.  Moreover this ``GHC.*`` convention is already widely
-  used, in both ``base`` and ``ghc-prim``, as well as the modules that implement GHC itself, so
-  using a prefix aligns with current practice.
-  
+* On the other hand, GHC-internal modules are often unrelated to the naming
+  scheme of ``base``.  Here a prefix feels more appropriate.  Moreover using a
+  prefix aligns with current practice: the ``GHC.*`` convention is extensively
+  used in the GHC-internal modules currently in ``base``, and ``ghc-prim``, as
+  well as the modules that implement GHC itself.
 
 Proposal 3
 -----------
