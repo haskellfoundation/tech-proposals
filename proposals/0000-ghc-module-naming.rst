@@ -8,12 +8,14 @@ The accepted `Proposal #51: GHC base libraries <https://github.com/haskellfounda
 defines the following libraries:
 
 * ``base``:
+
   * The foundational library on which the rest of the Haskell ecosystem is based.
   * Its API is carefully curated by the `Core Libraries Committee <https://github.com/haskell/core-libraries-committee>`_, and is kept rather stable.
   * Depends on ``ghc-internal`` (and ``ghc-prim`` etc), but *not* on ``ghc-experimental``.
   * Major version bumps are at the Core Libraries Committee's discretion.
 
 * ``ghc-experimental``:
+
   * The home of experimental extensions to GHC, usually ones proposed by the
   `GHC Steering Committee <https://github.com/ghc-proposals/ghc-proposals/>`_.
 
@@ -29,6 +31,7 @@ defines the following libraries:
   * Define functions and data types used internally by GHC to support the API of ``base`` and ``ghc-experimental``.
 
   * These libraries come with no stability guarantees: they may change at short notice.
+  * Certain to have a major version bump with every GHC release.
 
 In addition we already have:
 
