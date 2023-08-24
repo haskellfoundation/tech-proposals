@@ -71,7 +71,7 @@ Proposal 2
 So example we might have
 
 * ``GHC.Internal.Bits`` in ``ghc-internal``,
-* ``Data.Bits.Experimental`` in ``ghc-experimental``a
+* ``Data.Bits.Experimental`` in ``ghc-experimental``
 * ``Data.Bits``, and currently also ``GHC.Bits``, in ``base``
 
 Why ``GHC.Internal.*`` for modules in ``ghc-internal``?  Would ``GHC.*`` not be enough? Here's why:
