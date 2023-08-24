@@ -157,7 +157,7 @@ For example, the public API could have modules of form ``GhcAPI.*``, or ``GHC.AP
 
 Timescale
 ==========
-The first release of GHC with `ghc-experimental` and `ghc-internal` will be GHC 9.10, which expect to
+The first release of GHC with ``ghc-experimental`` and ``ghc-internal`` will be GHC 9.10, which expect to
 release in early 2024.  It would be good to establish naming conventions for modules well before this date.
 
 Example lifecycle
