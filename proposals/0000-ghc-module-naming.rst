@@ -17,7 +17,7 @@ defines the following libraries:
 * ``ghc-experimental``:
 
   * The home of experimental extensions to GHC, usually ones proposed by the
-  `GHC Steering Committee <https://github.com/ghc-proposals/ghc-proposals/>`_.
+    `GHC Steering Committee <https://github.com/ghc-proposals/ghc-proposals/>`_.
 
   * Functions and types in here are usually candidates for later transfer into ``base``.  But not necessarily: if a collection of functions is not adopted widely enough, it may not be proposed for a move to `base`.  Or it could move to another library entirely.
 
@@ -28,6 +28,7 @@ defines the following libraries:
   * Likely to have a major version bump with each GHC release.
 
 * ``ghc-prim, ghc-internal`` (and perhaps others; it's an internal GHC implementation decision):
+
   * Define functions and data types used internally by GHC to support the API of ``base`` and ``ghc-experimental``.
 
   * These libraries come with no stability guarantees: they may change at short notice.
@@ -70,10 +71,11 @@ Proposal 2
 So example we might have
 
 * ``GHC.Internal.Bits`` in ``ghc-internal``,
-* ``Data.Bits.Experimental`` in ``ghc-experimental``
+* ``Data.Bits.Experimental`` in ``ghc-experimental``a
 * ``Data.Bits``, and currently also ``GHC.Bits``, in ``base``
 
 Why ``GHC.Internal.*`` for modules in ``ghc-internal``?  Would ``GHC.*`` not be enough? Here's why:
+
 * ``base`` already has ``GHC.Bits``, and Proposal 1 stops us re-using the same module name in ``ghc-internal``.
   If we were starting from a blank sheet of paper we might have no ``GHC.*`` modules in ``base``, but there
   curently 138 such modules and it seems unlikely that we will ever remove all, or even most, of them from
@@ -87,6 +89,7 @@ implementation matter.
 
 Using a prefix for ``ghc-internal`` and a suffix for ``ghc-experimental`` may seem inconsistent,
 but it was a clear consensus from the discussion about the proposal:
+
 * ``Data.Tuple.Experimental``, for example, is an companion/extension of ``Data.Tuple``; some exports may move from one to the other. Many developers sort their imports alphabetically. Making this a suffix means all ``Data.Tuple``-related imports are next to each other.  For example, one might prefer this::
 
     import Control.Applicative
@@ -144,8 +147,7 @@ a random fuction whose name or type, or very existence, might change without war
 * The public API of package ``ghc`` (GHC as a library) should have modules whose names clearly distinguish them
   from internal modules.
 
-For example, the public API could have modules of form ``GhcAPI.*``, or ``GHC.API.*``, or something else.
-The specifica are a matter for the future GHC API working group.
+For example, the public API could have modules of form ``GhcAPI.*``, or ``GHC.API.*``, or ``Language.Haskell.GHC.*`` or something else. The specifics are a matter for the future GHC API working group.
 
 
 
@@ -179,29 +181,4 @@ Alternatives
 
   * In the meantime there are two modules both called ``Data.Tuple``.  This is bad.  Which one does ``import Data.Tuple`` import?  (Look at the Cabal file, perhaps?)  How can I import both?  (Package-qualified imports perhaps.) So it will really only help in the case of a brand-new module, not already in ``base``.
   * It loses the explicit cue, in the source code, given by ``import Experimental.Data.Tuple``.
-
-* We could use ``GHC.*`` for modules in ``ghc-experimental``, and maybe ``GHC.Internals.*`` for module in ``ghc-internal``.  But
-
-  * There are two sorts of GHC-specific-ness to consider:
-
-    * Modules that are part of GHC's implementations
-    * Modules that support a GHC extension, blessed by the GHC Steering Committee
-
-    It is worth distinguishing these: it's confusing if both start with ``GHC.``.
-
-  * It would be a huge upheaval (with impact on users) to rename hundreds of modules in ``ghc-internal``.
-
-* We could use ``GHC.Experimental.*`` for modules in ``ghc-experimental``.  But that seems a bit backwards: ``GHC.Tuple`` (in ``ghc-internal``) would superficially appear more stable (less experimental) than ``GHC.Experimental.Tuple`` in ``ghc-experimental``; but the reverse is the case.
-
-* We could use a suffix ``*.Internals`` or ``*.Experimental`` instead of a prefix.  But
-
-  * This sort of naming is often used to distinguish modules *within* a package, not *between* packages.
-  * In the case of ``ghc-internal`` it would still suffer from the cost of renaming hundreds of modules.
-
-* Concerning Proposal 4, we could instead use
-
-  * ``GHC.API`` (but then the public namespace is inside the internal one)
-  * ``GHCAPI``
-  * ``GHCapi``
-  * ``Language.Haskell.GHC`` or ``Language.GHC``
 
