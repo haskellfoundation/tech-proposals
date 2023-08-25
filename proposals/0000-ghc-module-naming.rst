@@ -175,7 +175,7 @@ Once the design becomes settled and stable, it could move to ``base``, perhaps i
 Other similar examples include
 
 * The tuple proposal of `GHC Proposal 475 <https://github.com/ghc-proposals/ghc-proposals/blob/master/proposals/0475-tuple-syntax.rst>`_
-* The `DataToTag CLC proposal <https://github.com/haskell/core-libraries-committee/issues/104>`_ would have been easier to expose through ``ghc-experimental`` in the first instance.
+* `GHC Proposal 330 (Decorate exceptions with backtrace information) <https://github.com/bgamari/ghc-proposals/blob/stacktraces/proposals/0000-exception-backtraces.rst>`_ proposes significant new additions to the API of exceptions.
 
 Alternatives
 ==============
