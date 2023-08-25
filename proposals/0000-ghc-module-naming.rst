@@ -184,5 +184,5 @@ Alternatives
   the module moves from ``ghc-experimental`` to ``base``. For example, we might add ``Data.Tuple`` to ``ghc-experimental`` containing the new type constructors ``Tuple2``, ``Tuple3`` etc that are proposed in `GHC Proposal 475 <https://github.com/ghc-proposals/ghc-proposals/blob/master/proposals/0475-tuple-syntax.rst>`_.   However:
 
   * In the meantime there are two modules both called ``Data.Tuple``.  This is bad.  Which one does ``import Data.Tuple`` import?  (Look at the Cabal file, perhaps?)  How can I import both?  (Package-qualified imports perhaps.) So it will really only help in the case of a brand-new module, not already in ``base``.
-  * It loses the explicit cue, in the source code, given by ``import Experimental.Data.Tuple``.
+  * It loses the explicit cue, in the source code, given by ``import Data.Tuple.Experimental``.
 
