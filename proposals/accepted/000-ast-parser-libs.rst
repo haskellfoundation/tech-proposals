@@ -277,7 +277,7 @@ For the first case, we might consider factoring ``Outputable`` into a separate l
 Or we can prioritize a more dedicated exact-print solution to use instead of ``Outputable`` (see the future work section).
 
 For the second case, we might have to do something temporary like e.g. continuing to use an auto-extracted library liek |ghc-lib-parser|, but depending on our newly factored-output libraries, to get this functionality for HLint_.
-But longer term, we refer to the discussion of ``OPTIONS_GHC`` in "Modularizing GHC" [modularizing-ghc]_.
+But longer term, we refer to the discussion of ``OPTIONS_GHC`` in [modularizing-ghc]_.
 The steps advocated there will avoid this problem entirely by restricting ``OPTIONS_GHC`` and giving it a more minimal data structure that is easily to factor out.
 
 Shayne Fetcher volunteers to lead the HLint integration as a core HLint maintainer.
