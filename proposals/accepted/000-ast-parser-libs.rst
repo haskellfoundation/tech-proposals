@@ -260,14 +260,30 @@ Proof of success: Use by HLint
 
 **Executor**: Shayne Fletcher (volunteer)
 
-**Time Estimate:** 6 weeks of part-time work
+**Time Estimate:** 8 weeks of part-time work
 
 We will continue the tradition discussed in the background section of using HLint to validate that parsers for Haskell are usable by real-world programs that are not GHC.
 
 The migration from |haskell-src-exts| to |ghc-lib-parser| was quite difficult because those libraries are nothing alike.
 In contrast, we expect the migration from |ghc-lib-parser| to the new AST and parser libraries to be quite simple and pleasant, because the two new libraries should be very similar to |ghc-lib-parser|, and where they differ they should be strictly easier to use than before.
 
-Shayne Fetcher volunteers to lead this integration as a core HLint maintainer.
+Note that HLint does use a few other things behind the AST and Parser that currently make it into |ghc-lib-parser|, but which we might want in our new libraries.
+
+#. It uses GHC's multi-purpose ``Outputable`` instead of some more dedicated exact-printing machinary
+
+#. It uses ``parseDynamicFilePragma``, and thus GHC's infamous ``DynFlags`` to support pragmas like ``{-# LANGUAGE ... #-}`` and ``{-# OPTIONS_GHC ... #-}``.
+
+For the first case, we might consider factoring ``Outputable`` into a separate library too.
+Or we can prioritize a more dedicated exact-print solution to use instead of ``Outputable`` (see the future work section).
+
+For the second case, we might have to do something temporary like e.g. continuing to use an auto-extracted library liek |ghc-lib-parser|, but depending on our newly factored-output libraries, to get this functionality for HLint_.
+But longer term, we refer to the discussion of ``OPTIONS_GHC`` in "Modularizing GHC" [modularizing-ghc]_.
+The steps advocated there will avoid this problem entirely by restricting ``OPTIONS_GHC`` and giving it a more minimal data structure that is easily to factor out.
+
+Shayne Fetcher volunteers to lead the HLint integration as a core HLint maintainer.
+
+.. [modularizing-ghc]
+   https://hsyl20.fr/home/files/papers/2022-ghc-modularity.pdf
 
 Stakeholders
 ============
@@ -310,6 +326,8 @@ There has been much work to allow this to be done in a faithful round trip, know
 However, the detail of how this works are still fast-evolving. [#exact-print-evolving]_
 
 We therefore think it is best to leave factoring out the pretty-printer into a reusable library (either part of the parser library, or a new 3rd reusable library) as a future work.
+
+That said, if ``Outputable`` becomes too much of a hassle for HLint_, as described above, we might prioritize this.
 
 .. [#exact-print-evolving]
    See `GHC Issue #23447 <https://gitlab.haskell.org/ghc/ghc/-/issues/23447>`_ for example.
