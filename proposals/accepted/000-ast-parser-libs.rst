@@ -24,7 +24,7 @@ Experience has shown that there is only way one way to meet each criterion:
 
 - Be separate from GHC, so the library is forced to be self-contained
 
-However, no library has so far done both, to meet both criteria.
+However, no library has so far done both, nor met meet both criteria.
 
 Solution
 --------
@@ -63,7 +63,7 @@ However, the whole compiler doesn't appear to exist, and the project as a whole 
 
 In Februrary 2019, |ghc-lib-parser| `was released <http://neilmitchell.blogspot.com/2019/02/announcing-ghc-lib.html>`_ and in May 2019 an `announcement <https://mail.haskell.org/pipermail/haskell-cafe/2019-May/131166.html>`_ that there would be no further |haskell-src-exts| releases followed and the advice given for anyone wishing to parse Haskell programs to "use the GHC API, specifically you can use |ghc-lib-parser|".
 
-A |ghc-lib-parser|_ package contains GHC compiler sources packaged as a library [#ghc-inception]_.
+A |ghc-lib-parser|_ package contains GHC compiler sources packaged as a library. [#ghc-inception]_
 This ensures it is up to date with the latest behavior but this extraction process is complex, requires constant patching to keep pace with GHC evolution, and results in a far larger library than is desired:
 see the *hundreds* of modules included inside it, many of which have nothing to do with the Haskell surface language.
 All this `"bycatch" <https://en.wikipedia.org/wiki/Bycatch>`_ in the extraction process results in a library that daunting to use, and which has a hard time presenting a stable interface.
@@ -88,24 +88,31 @@ Downstream projects
 In addition to going over the major AST/parser libraries for Haskell, it is also useful to talk about the most notable projects that use them.
 Ultimately, it is those projects we want to help out.
 
-HLint_, the Haskell linter project developed continuously since 2008 is the most notable one, not just because its longstanding and wide use, but also because many of the developers that worked on the previous two libraries also worked on it --- use by HLint served as proof the libraries were fit-for-purpose.
+HLint_, the Haskell linter project developed continuously since 2008 is the most notable one, not just because its longstanding and wide use, but also because many of the developers that worked on the previous two libraries also worked on it — use by HLint served as proof the libraries were fit-for-purpose.
 
 In June 2019,
 following the release of |ghc-lib-parser| and deprecation of |haskell-src-exts| earlier that year as described above,
 `HLint began the transitition <http://neilmitchell.blogspot.com/2019/06/hlints-path-to-ghc-parser.html>`_ to |ghc-lib-parser|.
 In May 2020, the release of HLint-3.0 which "uses the GHC parser" `was announced <http://neilmitchell.blogspot.com/2020/05/hlint-30.html>`_.
 
-Today, most users of |haskell-src-exts| have largely migrated from |haskell-src-exts| to |ghc-lib-parser| [#example-ghc-lib-parser-users]_.
+Today, most users of |haskell-src-exts| have largely migrated from |haskell-src-exts| to |ghc-lib-parser|. [#example-ghc-lib-parser-users]_
 But just because all these projects are using |ghc-lib-parser| doesn't mean everything is well.
 Shayne Fetcher reports that keeping up with the latest GHC chagnes with the |ghc-lib-parser|/``ghc-lib``/``ghc-lib-parser-ex``/HLint stack generally costs him **an hour or two a week, and often more**.
-The cost of detail with changes to the AST is inevitable --- supporting new language features will inevitably cost developer time.
+The cost of detail with changes to the AST is inevitable — supporting new language features will inevitably cost developer time.
 But all the other busywork of re-extracting the code, etc., is entirely avoidable, *not* inherent to the task at hand.
 
-It is the opinion of the authors of this proposal that should an independent AST parser libraries be maintained upstream with GHC, the costs saved for downstream developers should _greatly_ exceed any costs incurred by GHC developers.
+It is the opinion of the authors of this proposal that should an independent AST parser libraries be maintained upstream with GHC, the costs saved for downstream developers should *greatly* exceed any costs incurred by GHC developers.
 The goal is thus *not* to simply shift a burden from one group of community members to another, but create a positive-sum outcome where there is far less busywork and more flourishing tooling than before.
 
 .. [#example-ghc-lib-parser-users]
-  Today for example, notable users include HLint_, `ormolu <https://hackage.haskell.org/package/ormolu>`_, `ghcide <https://hackage.haskell.org/package/ghcide>`_, `hls-hlint-plugin <https://hackage.haskell.org/package/hls-hlint-plugin>`_, `hindent <https://hackage.haskell.org/package/hindent>`_ & `stylish-haskell <https://hackage.haskell.org/package/stylish-haskell>`_.
+  Today for example, notable users include
+  HLint_,
+   `ormolu <https://hackage.haskell.org/package/ormolu>`_,
+   `ghcide <https://hackage.haskell.org/package/ghcide>`_,
+   `hls-hlint-plugin <https://hackage.haskell.org/package/hls-hlint-plugin>`_,
+   `hindent <https://hackage.haskell.org/package/hindent>`_,
+   and
+   `stylish-haskell <https://hackage.haskell.org/package/stylish-haskell>`_.
 
 Trees that grow
 ---------------
@@ -131,7 +138,7 @@ This allows those consumers to "adjust" the AST for their purpose.
 
 The Trees That Grow project is now 6 years old, and has met great success in avoiding partiality in the compiler, "making illegal states unrepresentable" as many Haskellers would put it.
 But progress on `reducing AST & parser dependencies <https://gitlab.haskell.org/ghc/ghc/-/issues/19932>`_ has been less easily forthcoming.
-I have separated out the modules defining the AST under ``Language.Haskell.Syntax.*`` we wish to split out, and we have tests to track progress reducing their deps, and the parser's deps.
+We have separated out the modules defining the AST under ``Language.Haskell.Syntax.*`` we wish to split out, and we have tests to track progress reducing their deps, and the parser's deps.
 But progress is unsteady and unpredictable.
 
 The basic problem is that the benefits don't actually kick in until the deps are *all* gone, and the code is actually separated out.
@@ -160,14 +167,6 @@ This proposal wish to *stay neutral* on the merits of such a future direction, b
 
 Roadmap
 =======
-
-*This section should describe the work that is being proposed to the community for comment, including both technical aspects (choices of system architecture, integration with existing tools and workflows) and community governance (how the developed project will be administered, maintained, and otherwise cared for in the future).
-It should also describe the benefits, drawbacks, and risks that are associated with these decisions.
-It can be a good idea to describe alternative approaches here as well, and why the proposer prefers the current approach.*
-
-*Are there any deadlines that the HF needs to be aware of?*
-
-*How much money is needed to accomplish the goal? How will it be used?*
 
 The project is split into two separate steps: separating the AST, and separating the parser.
 Each step has a method, time estimate, and (most importantly) clear success criteria, including use by downstream projects to ensure value is delivered.
@@ -204,10 +203,15 @@ The purpose of this proposal isn't to relitigate that issue, but because this pr
 There is no disagreement that as-is, that data type is not suitable for a nice self-contained library. [#faststring-unsuitable]_
 The disagreement is whether TTG should be blocked on reworking ``FastString`` somehow to be better for GHC and non-GHC alike, or whether we should just side-step the issue entirely.
 
-I make no claims about what is better in the long term for GHC, but when reworking ``FastString`` and benchmarking the new algorthms might take **Days to Weeks**, we can side-step the issue with a new ``StringP`` type family "extension point" like the existing ``IdP`` one in **minutes**. [#extension-point]_
+We make no claims about what is better in the long term for GHC, but when reworking ``FastString`` and benchmarking the new algorthms might take **Days to Weeks**, we can side-step the issue with a new ``StringP`` type family "extension point" like the existing ``IdP`` one in **minutes**. [#extension-point]_
 
-Out of a basic fiduciary towards the Haskell Foundation, we thus declare that unless "Plan A" works out very quickly, "Plan B" of just introducing another extension point should be used.
-We can also revisit the issue later, *after* we have our factored-out AST library.
+Out of a basic fiduciary duty, we thus declare that unless "Plan A" works out almost as quickly, "Plan B" of just introducing another extension point should be used.
+We can also revisit getting rid of any newly-added extension points later, *after* we have our factored-out AST library.
+
+N.B. Third-party code (e.g. HLint_ will often also need ``Data`` instances for the AST.
+We could consider making those polymorphic again as they used to be, and factoring them out accordingly.
+Or, we can just let downstream projects define their own instances specialized do their own extension type (as GHC does with ``GhcPass``).
+The latter is a good cheap "plan B" to delay dealing with those instances so they don't block this milestone.
 
 .. [#faststring-unsuitable]
   Everyone agrees it is insuitable in its current state because things like:
