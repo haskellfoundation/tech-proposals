@@ -256,8 +256,13 @@ Separate the Parser
 This work is more uncertain, because the parser and post-processing steps necessary to get an actual AST may use utility functions currently entangled with the rest of the compiler.
 It maybe be the case that we need to finish the far more certain first step (AST library) to get better clarity on what work remains for the parser, and thus price this step accurately.
 
-.. todo::
-   Any more detail we can write here?
+.. note::
+
+   We have a couple options on how to deal with the uncertainty here.
+   For example:
+
+   - We could either remove this and the HLint integration from the current proposal, saving it for a future proposal.
+   - we could accept the whole proposal but make sure we edit this section once the previous two are completed with more information before stored.
 
 Proof of success: Use by HLint
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
