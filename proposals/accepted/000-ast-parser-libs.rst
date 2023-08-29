@@ -172,7 +172,6 @@ The project is split into two separate steps: separating the AST, and separating
 Each step has a method, time estimate, and (most importantly) clear success criteria, including use by downstream projects to ensure value is delivered.
 The intent is thus that they are self-contained, and can be individually funded.
 
-
 Separate the AST
 ----------------
 
@@ -303,10 +302,13 @@ GHC Developers
 --------------
 
 The proposal is asking that we change out code in GHC is organized, so it is crucial that we solicit feedback from the broader `GHC Team <https://gitlab.haskell.org/ghc/ghc-hq/-/tree/main#2-the-ghc-team>`_, and the narrow `GHC HQ group <https://gitlab.haskell.org/ghc/ghc-hq/-/tree/main#3-ghc-hq-group>`_ in particular.
-It is John's understanding that the GHC developers are broadly supportive of the goal here in the abstract,
+It is John's understanding that the GHC developers are broadly supportive of the goal here in the abstract
 (after all, SPJ was an author of the Trees That Grow paper),
-but some of the specific details needed to get this done in a timely manner may be more controversial.
+and also of the approach of tackling the AST and Parser separately.
+`GHC Issue #21592 <https://gitlab.haskell.org/ghc/ghc/-/issues/21592>`_ from @alt-romes
+contains a very good summary of that initial consensus, including relevant quotes from key people from various previous discussion threads scattered about and potentially hard to find otherwise.
 
+However, some of the specific details needed to get this done in a timely manner may be more controversial.
 In particular, introducing more extension points to ensure rapid progress was very controversial before, and in return for putting up with such a thing as stop-gap, the GHC HQ might want something in return, like an additional phase of work to eliminate the new extension points afterwords.
 
 Haddock Developers
