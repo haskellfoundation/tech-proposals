@@ -31,7 +31,7 @@ Solution
 
 The purpose of this proposal is to make that library finally exist.
 The Haskell Foundation will finance the completion of the existing "Trees that grow" project, decoupling GHC's AST and parser from the rest of the compiler so they can be moved to separate libraries.
-Those libaries will be "normal" haskell libraries, without any weird dependencies or build process, and published on Hackage.
+Those libraries will be "normal" Haskell libraries, without any unusual dependencies or build processes, and published on Hackage.
 Those libraries will be used by GHC, ensuring they are maintained.
 
 Background, Prior Art, and Related Efforts
@@ -154,7 +154,7 @@ The Haskell Foundation's support in getting this "over the finish line", at whic
 Reinstallable GHC Lib
 ---------------------
 
-One of the problems ``ghc-lib-parser`` aims to solve is that ``ghc`` the library is current cumbersome to install as a regular haskell library (as opposed to by switching toolchains entirely).
+One of the problems ``ghc-lib-parser`` aims to solve is that ``ghc`` the library is current cumbersome to install as a regular Haskell library (as opposed to by switching toolchains entirely).
 There is currently work in flight to solve that.
 One that is done, projects like HLint_ *could* just depend on ``ghc`` directly, and still be easily buildable (with Cabal / with Stack / from Hackage) as today.
 
@@ -163,7 +163,7 @@ For stability's sake, it is better that those libraries dependent on narrower pa
 And longer term, we hope the "tug of war" of between GHC and these projects as consumers of those libraries, versus just the others having to deal with whatever GHC does with just itself in mind, will result in a higher-quality, more flexible, and overall friendlier library.
 
 In `this comment <https://gitlab.haskell.org/ghc/ghc/-/issues/14409#note_506489>`_, it is suggested that factoring out the AST and parser can be a good first step making a more modular in GHC in general.
-This proposal wish to *stay neutral* on the merits of such a future direction, but it would be remiss not to at least highlight it as one possible outcome.
+This proposal wishes to *stay neutral* on the merits of such a future direction, but it would be remiss not to at least highlight it as one possible outcome.
 
 Roadmap
 =======
@@ -284,7 +284,7 @@ Note that HLint does use a few other things behind the AST and Parser that curre
 For the first case, we might consider factoring ``Outputable`` into a separate library too.
 Or we can prioritize a more dedicated exact-print solution to use instead of ``Outputable`` (see the future work section).
 
-For the second case, we might have to do something temporary like e.g. continuing to use an auto-extracted library liek |ghc-lib-parser|, but depending on our newly factored-output libraries, to get this functionality for HLint_.
+For the second case, we might have to do something temporary like e.g. continuing to use an auto-extracted library like |ghc-lib-parser|, but depending on our newly factored-output libraries, to get this functionality for HLint_.
 But longer term, we refer to the discussion of ``OPTIONS_GHC`` in [modularizing-ghc]_.
 The steps advocated there will avoid this problem entirely by restricting ``OPTIONS_GHC`` and giving it a more minimal data structure that is easily to factor out.
 
