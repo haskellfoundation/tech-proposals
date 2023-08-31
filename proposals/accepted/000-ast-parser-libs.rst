@@ -227,6 +227,27 @@ The latter is a good cheap "plan B" to delay dealing with those instances so the
   Then, GHC can define ``StringP (GhcPass _) = FastString`` to use it client side, across all compilation passes.
   All term-level code continues to works exactly the same as before without modification.
 
+Conditions
+^^^^^^^^^^
+
+It is important to make clear what must *not* happen as a side-effect of this, so that we are careful to avoid extra costs.
+
+- The new AST library must live in the same repo, and not cause and extra Git submodule.
+  Synchronizing changes across Git submodules is a drag on on GHC development today, and we must not make that problem worse.
+
+- The new AST library be loadable in the same GHCi session as rest of GHC.
+  Having to restart tools to switch between libraries is a major productivity drag in the Haskell ecosystem, and we wouldn't want to impose it on GHC.
+  There is existing prior art of loading ``ghc`` and ``ghc-bin`` at the same time, and also recent developments in Cabal that that allow doing this in a less "hacky" manner.
+
+- Build / CI times should not be impacted.
+  Since Hadrian build Haskell modules individually, it doesn't much care about library boundaries.
+  Redividing the same modules into different libraries thus should have negligible impact on build times.
+
+- Some layer violations are not actually impediments to splitting out an AST library, and thus we should *not* prioritize fixing them with Haskell Foundation funds.
+
+  For example the type family ``GhcNoTc`` doesn't belong in a GHC-agnostic parsing library, as indicated by its name, as it doesn't incur any imports into the rest of GHC from those modules, it doesn't actually impose a problem.
+  We can simply include it in the AST library, and non-GHC clients can write instances for it like they do for the proper extension points.
+
 Proof of success: Use by Haddock
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -262,6 +283,11 @@ It maybe be the case that we need to finish the far more certain first step (AST
 
    - We could either remove this and the HLint integration from the current proposal, saving it for a future proposal.
    - we could accept the whole proposal but make sure we edit this section once the previous two are completed with more information before stored.
+
+Conditions
+^^^^^^^^^^
+
+- The same conditions on splitting a library without negatively impacting GHC development are imposed as in the separating the AST step.
 
 Proof of success: Use by HLint
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
