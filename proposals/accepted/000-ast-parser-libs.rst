@@ -215,9 +215,9 @@ The latter is a good cheap "plan B" to delay dealing with those instances so the
 .. [#faststring-unsuitable]
   Everyone agrees it is insuitable in its current state because things like:
 
-  - Global state because of `string interning <https://en.wikipedia.org/wiki/String_interning>`, with a global variable baked into the RTS no less!
+  - Global state because of `string interning <https://en.wikipedia.org/wiki/String_interning>`_, with a global variable baked into the RTS no less!
 
-  - Memoizing features for other parts of the compiler unrelated to parsing, such as the `"Z-Encoding" <https://gitlab.haskell.org/ghc/ghc/-/blob/261c4acbfdaf5babfc57ab0cef211edb66153fb1/libraries/ghc-boot/GHC/Utils/Encoding.hs#L43>` GHC happens to use for object file symbol `name mangling <https://en.wikipedia.org/wiki/Name_mangling>`.
+  - Memoizing features for other parts of the compiler unrelated to parsing, such as the `"Z-Encoding" <https://gitlab.haskell.org/ghc/ghc/-/blob/261c4acbfdaf5babfc57ab0cef211edb66153fb1/libraries/ghc-boot/GHC/Utils/Encoding.hs#L43>`_ GHC happens to use for object file symbol `name mangling <https://en.wikipedia.org/wiki/Name_mangling>`.
 
   Everyone *also* agrees that it is worth revising whether these algorithmic decision still make sense given modern hardware, see `GHC Issue #17259 <https://gitlab.haskell.org/ghc/ghc/-/issues/17259>`_.
 
