@@ -59,7 +59,7 @@ However, the whole compiler doesn't appear to exist, and the project as a whole 
 ``haskell-src-exts`` lasted longer, but had great trouble keeping up with GHC, and is now also unmaintained since 2020.
 
 |ghc-lib-parser|
-------------------
+----------------
 
 In Februrary 2019, |ghc-lib-parser| `was released <http://neilmitchell.blogspot.com/2019/02/announcing-ghc-lib.html>`_ and in May 2019 an `announcement <https://mail.haskell.org/pipermail/haskell-cafe/2019-May/131166.html>`_ that there would be no further |haskell-src-exts| releases followed and the advice given for anyone wishing to parse Haskell programs to "use the GHC API, specifically you can use |ghc-lib-parser|".
 
@@ -107,12 +107,12 @@ The goal is thus *not* to simply shift a burden from one group of community memb
 .. [#example-ghc-lib-parser-users]
   Today for example, notable users include
   HLint_,
-   `ormolu <https://hackage.haskell.org/package/ormolu>`_,
-   `ghcide <https://hackage.haskell.org/package/ghcide>`_,
-   `hls-hlint-plugin <https://hackage.haskell.org/package/hls-hlint-plugin>`_,
-   `hindent <https://hackage.haskell.org/package/hindent>`_,
-   and
-   `stylish-haskell <https://hackage.haskell.org/package/stylish-haskell>`_.
+  `ormolu <https://hackage.haskell.org/package/ormolu>`_,
+  `ghcide <https://hackage.haskell.org/package/ghcide>`_,
+  `hls-hlint-plugin <https://hackage.haskell.org/package/hls-hlint-plugin>`_,
+  `hindent <https://hackage.haskell.org/package/hindent>`_,
+  and
+  `stylish-haskell <https://hackage.haskell.org/package/stylish-haskell>`_.
 
 Trees that grow
 ---------------
@@ -268,6 +268,9 @@ All code should continue to work as before, since ``ghc`` will also use the new 
 
 Separate the Parser
 -------------------
+
+Split library
+~~~~~~~~~~~~~
 
 **Executor**: Haskell Foundation
 
