@@ -204,7 +204,7 @@ The disagreement is whether TTG should be blocked on reworking ``FastString`` so
 
 We make no claims about what is better in the long term for GHC, but when reworking ``FastString`` and benchmarking the new algorthms might take **Days to Weeks**, we can side-step the issue with a new ``StringP`` type family "extension point" like the existing ``IdP`` one in **minutes**. [#extension-point]_
 
-Out of a basic fiduciary duty, we thus declare that unless "Plan A" works out almost as quickly, "Plan B" of just introducing another extension point should be used.
+Out of a basic desire to minimize costs where possible, we thus declare that unless "Plan A" works out almost as quickly, "Plan B" of just introducing another extension point should be used.
 We can also revisit getting rid of any newly-added extension points later, *after* we have our factored-out AST library.
 
 N.B. Third-party code (e.g. HLint_ will often also need ``Data`` instances for the AST.
