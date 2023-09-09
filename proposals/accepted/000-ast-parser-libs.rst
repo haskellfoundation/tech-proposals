@@ -194,15 +194,33 @@ Concretely, the work in this step is to:
 
 #. Adjust ``build-depends`` across the repo so ``ghc`` and any other Haskell Package gets those modules from the new library instead, and CI passes.
 
+``FastString``
+^^^^^^^^^^^^^^
+
 The timeline for this is pretty short because there exists an easy last-resort way to decouple anything:
 just add another TTG type family.
 This came up with some acrimony in `GHC Issue #21628 <https://gitlab.haskell.org/ghc/ghc/-/issues/21628>`_, discussing whether it was better to try to change GHC's ``FastString`` or abstract over it.
-The purpose of this proposal isn't to relitigate that issue, but because this proposal *is* about resource allocation, something does need to be said on the broader tradeoffs at play
+The purpose of this proposal isn't to relitigate that issue, but because this proposal *is* about resource allocation, something does need to be said on the broader trade-offs at play.
+
+``FastString`` is currently *directly* used in these places inside ``Language.Haskell.Syntax.*`` modules:
+
+- ``FieldLabelString`` (newtype)
+- ``HsOverLabel`` (``HsExpr``)
+- ``HsQuasiQuote`` (``HsUntypedSplice``)
+- ``HsString`` (``HsLit``)
+- ``HsIsString`` (``OverLitVal``) --- maybe only used by extension point?!
+- ``ModuleName`` (newtype)
+- ``HsIPName`` (newtype)
+- ``HsStrTy`` (``HsTyLit``)
+
+Note that overall ``FastString`` is used far more commonly in identifiers, but the AST is *already* parameterized over the choice of identifier type;
+That means that even though identifiers are extremely common in AST values, they do not induce dependencies from the ``Language.Haskell.Syntax.*``, since the choices of identifier types that use ``FastString`` are made downstream in the rest of GHC.
 
 There is no disagreement that as-is, that data type is not suitable for a nice self-contained library. [#faststring-unsuitable]_
 The disagreement is whether TTG should be blocked on reworking ``FastString`` somehow to be better for GHC and non-GHC alike, or whether we should just side-step the issue entirely.
 
-We make no claims about what is better in the long term for GHC, but when reworking ``FastString`` and benchmarking the new algorthms might take **Days to Weeks**, we can side-step the issue with a new ``StringP`` type family "extension point" like the existing ``IdP`` one in **minutes**. [#extension-point]_
+We make no claims about what is better in the long term for GHC, but when reworking ``FastString`` and benchmarking the new algorithms might take **Days to Weeks**, we can side-step the issue with a new type family "extension points" like the existing ``IdP`` one in **minutes** for these use-cases. [#extension-point]_
+(We could use a single ``StringP`` type family, but it might be nicer to use separate ones, like ``ModuleNameP``, so our extension points remain oriented to the "domain" of what we are doing.)
 
 Out of a basic desire to minimize costs where possible, we thus declare that unless "Plan A" works out almost as quickly, "Plan B" of just introducing another extension point should be used.
 We can also revisit getting rid of any newly-added extension points later, *after* we have our factored-out AST library.
