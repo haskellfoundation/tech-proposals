@@ -136,7 +136,7 @@ It presents these data types:
 The idea that they are "promoted" via ``DataKinds``, and then type families used in the AST will have instances for these promoted values.
 This allows those consumers to "adjust" the AST for their purpose.
 
-The Trees That Grow project is now 6 years old, and has met great success in avoiding partiality in the compiler, "making illegal states unrepresentable" as many Haskellers would put it.
+The Trees that Grow project is now 6 years old, and has met great success in avoiding partiality in the compiler, "making illegal states unrepresentable" as many Haskellers would put it.
 But progress on `reducing AST & parser dependencies <https://gitlab.haskell.org/ghc/ghc/-/issues/19932>`_ has been less easily forthcoming.
 We have separated out the modules defining the AST under ``Language.Haskell.Syntax.*`` we wish to split out, and we have tests to track progress reducing their deps, and the parser's deps.
 But progress is unsteady and unpredictable.
@@ -198,7 +198,7 @@ Concretely, the work in this step is to:
 ^^^^^^^^^^^^^^
 
 The timeline for this is pretty short because there exists an easy last-resort way to decouple anything:
-just add another TTG type family.
+just add another Trees that Grow type family.
 This came up with some acrimony in `GHC Issue #21628 <https://gitlab.haskell.org/ghc/ghc/-/issues/21628>`_, discussing whether it was better to try to change GHC's ``FastString`` or abstract over it.
 The purpose of this proposal isn't to relitigate that issue, but because this proposal *is* about resource allocation, something does need to be said on the broader trade-offs at play.
 
@@ -217,7 +217,7 @@ Note that overall ``FastString`` is used far more commonly in identifiers, but t
 That means that even though identifiers are extremely common in AST values, they do not induce dependencies from the ``Language.Haskell.Syntax.*``, since the choices of identifier types that use ``FastString`` are made downstream in the rest of GHC.
 
 There is no disagreement that as-is, that data type is not suitable for a nice self-contained library. [#faststring-unsuitable]_
-The disagreement is whether TTG should be blocked on reworking ``FastString`` somehow to be better for GHC and non-GHC alike, or whether we should just side-step the issue entirely.
+The disagreement is whether Trees That Grow should be blocked on reworking ``FastString`` somehow to be better for GHC and non-GHC alike, or whether we should just side-step the issue entirely.
 
 We make no claims about what is better in the long term for GHC, but when reworking ``FastString`` and benchmarking the new algorithms might take **Days to Weeks**, we can side-step the issue with a new type family "extension points" like the existing ``IdP`` one in **minutes** for these use-cases. [#extension-point]_
 (We could use a single ``StringP`` type family, but it might be nicer to use separate ones, like ``ModuleNameP``, so our extension points remain oriented to the "domain" of what we are doing.)
