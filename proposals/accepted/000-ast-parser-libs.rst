@@ -108,6 +108,7 @@ The goal is thus *not* to simply shift a burden from one group of community memb
   Today for example, notable users include
   HLint_,
   `ormolu <https://hackage.haskell.org/package/ormolu>`_,
+  `fourmolu <https://hackage.haskell.org/package/fourmolu>`_,
   `ghcide <https://hackage.haskell.org/package/ghcide>`_,
   `hls-hlint-plugin <https://hackage.haskell.org/package/hls-hlint-plugin>`_,
   `hindent <https://hackage.haskell.org/package/hindent>`_,
