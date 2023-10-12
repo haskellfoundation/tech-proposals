@@ -120,7 +120,50 @@ ghci> hashPassword 16 ("Fee fi fo fum!" :: ByteString) :: IO ByteString
 (8.84 secs, 2,138,266,840 bytes)
 ```
 
-It was quick and dirty testing in GHCi so your mileage may vary, but the results indicate that bindings to Botan may be significantly faster and consumes less memory than `crypton/ite`, if other modules / functions are similarly performant. Further implentation, testing, and benchmarking will be necessary to confirm this.
+Further testing of `Bcrypt` and `SHA-3` with benchmarking using `tasty-bench` shows a considerable increase in speed, although `Botan` memory usage cannot be accurately measured due to the FFI.
+
+```
+$ cabal bench --benchmark-options '+RTS -T' botan-low-bench
+Benchmark botan-low-bench: RUNNING...
+All
+  Bcrypt work factor
+    Crypton
+      twelve:    OK (1.65s)
+        550  ms ±  27 ms, 109 MB allocated,  30 KB copied,  34 MB peak memory
+      fourteen:  OK (6.57s)
+        2.198 s ±  29 ms, 492 MB allocated,  21 KB copied,  34 MB peak memory
+      sixteen:   OK (26.38s)
+        8.797 s ±  34 ms, 2.0 GB allocated,  32 KB copied,  34 MB peak memory
+    Botan
+      twelve:    OK (1.39s)
+        232  ms ±  14 ms,   0 B  allocated,   0 B  copied,  34 MB peak memory
+      fourteen:  OK (1.85s)
+        925  ms ±  30 ms,   0 B  allocated,   0 B  copied,  34 MB peak memory
+      sixteen:   OK (11.10s)
+        3.700 s ±  40 ms,   0 B  allocated,   0 B  copied,  34 MB peak memory
+  Hash
+    Crypton
+      password:  OK (1.17s)
+        1.10 μs ± 106 ns, 3.0 KB allocated,   0 B  copied,  45 MB peak memory
+      plaintext: OK (1.75s)
+        1.66 μs ± 109 ns, 3.0 KB allocated,   0 B  copied,  45 MB peak memory
+      longtext:  OK (2.31s)
+        9.04 ms ± 485 μs,   0 B  allocated,   0 B  copied,  45 MB peak memory
+    Botan
+      password:  OK (2.30s)
+        1.09 μs ±  61 ns, 1.1 KB allocated,  93 B  copied,  48 MB peak memory
+      plaintext: OK (1.58s)
+        1.49 μs ± 119 ns, 1.2 KB allocated,  93 B  copied,  49 MB peak memory
+      longtext:  OK (1.42s)
+        5.55 ms ± 423 μs, 1.0 MB allocated, 117 B  copied,  97 MB peak memory
+
+All 12 tests passed (60.66s)
+Benchmark botan-low-bench: FINISH
+```
+
+Results indicate that bindings to Botan may be significantly more performant than `crypton/ite`, if other modules / functions are similarly performant.
+
+Note that the memory use increase in Hash.Botan.longtext is due to the rough state of initial bindings, as the bindings are not yet leak-free. Despite this, it is still approximately twice as fast.
 
 # Prior Art and Related Efforts
 
