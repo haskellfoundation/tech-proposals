@@ -18,13 +18,13 @@ The collective properties of referential transparency, type systems, and monadic
 
 # Problem Statement
 
-The Haskell cryptography ecosystem lacks significant capability beyond basic primitives. This places a significant burden on developers to properly implement various security techniques, and it exposes end users to significant risk in the event of a lapse in security. There are commercial solutions, but there is no community-driven, community-owned solution, and one is unlikely to be developed without deliberate community effort (see Appendix A - Commercial Incentive Misalignment).
+The Haskell cryptography ecosystem lacks significant capability beyond basic primitives. This places a significant burden on developers to properly implement various security techniques, and it exposes end users to significant risk in the event of a lapse in security. There may be commercial solutions, but there is no community-driven, community-owned solution, and one is unlikely to be developed without deliberate community effort (see Appendix A - Commercial Incentive Misalignment).
 
 The Haskell cryptography ecosystem is also brittle and outdated. It is the product of considerable flux / churn over the years as various libraries have been developed and then deprecated or abandoned in favor of newer ones. The resulting libraries have highly-concrete interfaces and are strongly influenced by their implementation, both violating the abstraction barrier and preserving the design across successive libraries - as if their backend were to be changed, it would likely require changing or breaking the interface in turn.
 
 As a result, there are multiple cryptography libraries with similar interfaces, and it is not always clear which should be used preferentially. This promotes rot as downstream users unknownly rely on unmaintained libraries that slowly stop working.
 
-Furthermore, a number of important libraries in the ecosystem (eg, `cryptonite`) have recently been abandoned by their author. Their backend is written in C, which presents a long-term maintenance burden with a high knowledge and skill requirement. NaCl bindings such as `saltine` are a high-quality alternative, but solve only a limited set of problems.
+Furthermore, a number of important libraries in the cryptography ecosystem (eg, `cryptonite`, `asn1-encoding`, and `memory`) have recently been archived by their author and will no longer be receiving updates. Their backend is written in C, which presents a long-term maintenance burden with a high knowledge and skill requirement. NaCl bindings such as `saltine` are a high-quality alternative, but solve only a limited set of problems.
 
 The resulting brittleness has placed the long-term stability of important libraries such as `crypton`, `tls` and `x509` at risk of falling behind as compilers are upgraded, old standards are updated, and new standards are implemented. Additionally the instability creates an unattractive environment for developers, effectively driving them away to other ecosystems that can provide the necessary stability.
 
@@ -140,6 +140,7 @@ Specific libraries worth noting are:
 
 - Predecessors to `cryptonite` - all deprecated
     - [cryptohash](https://hackage.haskell.org/package/cryptohash)
+        - `cryptohash-md5`, `-sha1`, `-sha256`, `-sha512` are reduced-footprint forks
     - [cryptocipher](https://hackage.haskell.org/package/cryptocipher)
     - [crypto-pubkey](https://hackage.haskell.org/package/crypto-pubkey)
     - [crypto-random](https://hackage.haskell.org/package/crypto-random)
@@ -271,7 +272,7 @@ Each library should have:
 - Unit tests
 - CI tests for Linux, MacOS, and Windows
 
-The official repo will be owned by the [Haskell Cryptography Group ](https://github.com/haskell-cryptography) and maintained by myself as a member of the group. Another member of the Haskell Cryptography Group, or a member of the Haskell Foundation, will be selected to hold backup keys and permissions to the website, server, and official repositories as needed, in order to give project members access and to reduce any conflicts about ownership or maintenance.
+The official repo will be owned by the [Haskell Foundation](https://haskell.foundation/), and maintained by the [Haskell Cryptography Group](https://github.com/haskell-cryptography), with myself as the current maintainer. Another member of the Haskell Cryptography Group, or a member of the Haskell Foundation, will be selected to hold backup keys and permissions to any website, server, and official repositories as needed, in order to give project members access and to reduce any conflicts about ownership or maintenance.
 
 ## Budget
 
@@ -359,14 +360,16 @@ As such, commercial or for-profit approaches are incentivized to either invest i
 
 # Appendix B - Lack of ByteString `Bits` instance
 
-Essentially, `Bits`` (and the fixed-width `FiniteBits``) is a class that combines two concepts:
+Essentially, `Bits` (and the fixed-width `FiniteBits`) is a class that combines two concepts:
 
-    `Boolean / Heyting`` algebra, for which there is no concept of any 'internal bits' or structure and you are just operating on some object as a whole
+    `Boolean / Heyting` algebra, for which there is no concept of any 'internal bits' or structure and you are just operating on some object as a whole
     Things that are contructed from / encoded into a set of 'internal bits' using some encoding, for which individual bits are indexable / addressible, and thus individually boolean-operable. There is also a link here to indexing / representable, but that is getting way out of scope.
 
 Notably, the documentation itself further states that "The `Bits` class defines bitwise operations over integral types.". Technically this means that only things that are integer numbers should be `Bits` and `FiniteBits`, but Godel numbering rears its ugly head, and that just adds the question of whether `Bits`'s boolean operations are intended to apply to an object itself or its encoding, and as a result `Bits` and `FiniteBits` are restricted to objects for which the boolean operations are isomorphic to boolean operations over its encoding.
 
-Given this understanding, `ByteString` does not have a canonical `Bits` instance because it has no canonical integer representation - a given bytestring could represent many such integers, whether it be big endian or little endian, it could have a sign bit, or be two's complement. Its bits might not be contiguous or even ordered. It could easily satisfy a `Boolean` instance, but the issue of indexing individual bits and integral type requirement interferes with a full instance of `Bits`.
+Given this understanding, `ByteString` does not have a canonical `Bits` instance because it has no canonical integer representation - a given bytestring could represent many such integers, whether it be big endian or little endian, it could have a sign bit, or be two's complement. Its bits might not be contiguous or even ordered. It could easily satisfy a hypothetical `Boolean` instance, but the issue of indexing individual bits and integral type requirement interferes with a full instance of `Bits`.
+
+Solving this issue is out of scope of this proposal, and the tangible impact is low as it is easily solved with a simple newtype wrapper.
 
 # Appendix C - NaCl / libsodium is not a cryptographic sink
 
