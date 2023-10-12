@@ -181,7 +181,7 @@ The wiki lists [several libraries](https://wiki.haskell.org/Applications_and_lib
 
 Specific libraries worth noting are:
 
-- Predecessors to `cryptonite` - all deprecated
+- Predecessors to `cryptonite`
     - [cryptohash](https://hackage.haskell.org/package/cryptohash)
         - `cryptohash-md5`, `-sha1`, `-sha256`, `-sha512` are reduced-footprint forks
     - [cryptocipher](https://hackage.haskell.org/package/cryptocipher)
@@ -200,7 +200,7 @@ Specific libraries worth noting are:
     - [Crypto](https://hackage.haskell.org/package/Crypto) - a very old sink
     - [crypto-api](https://hackage.haskell.org/package/crypto-api) - cryptographic classes
 
-These prior efforts can be considered to be somewhat partially successful in presenting Haskell developers with access to cryptographic primitives, but present a significant development challenge and a high refactoring cost if dependencies become deprecated, which happens often. Of these libraries, a considerable amount are deprecated or have been dead for many years, with `cryptonite`, `crypton`, and `saltine` being clear front-runners in terms of current usage and transitive dependencies (and `sel` being under active development). 
+These prior efforts can be considered to be somewhat partially successful in presenting Haskell developers with access to cryptographic primitives, but present a significant development challenge and a high refactoring cost if dependencies become deprecated, which happens often. Of these libraries, a considerable amount are deprecated or archived, with `cryptonite`, `crypton`, and `saltine` being clear front-runners in terms of current usage and transitive dependencies (and `sel` being under active development). 
 
 Of these four, one is a fork of another (`crypton` and `cryptonite`), and the other two are bindings to `libsodium` which does not sufficiently capture our need for low-level cryptographic primitives in general. `crypton/ite` exposes a few highly- opinionated / specific classes for hashing, block and stream ciphers, but otherwise is focused on concrete implementations and functions. Both `crypton` and `cryptonite` rely on bindings to C implementations that have not undergone the same vetting as commonly-used C libraries; though the code is itself not suspect, the lack of provenance makes it ill-suited for recommendation in trusted environments, and maintenance of the C implementation poses burden of high technical skill. `libsodium` bindings are more trustworthy, but the limited options severely hamper interop with other systems unless they too are using `libsodium`, making them ill-suited for recommendation for some use cases.
 
@@ -333,11 +333,11 @@ As the intended engineer and member of the Haskell Cryptography Group carrying o
 
 - [Haskell Foundation](https://haskell.foundation/)
 
-As the intended source of funding, the Haskell Foundation would be invested in seeing that its funding is spent effectively.
+As the intended owner and source of funding for this project, the Haskell Foundation would be invested in seeing that its funding is spent effectively.
 
 - [Haskell Cryptography Group ](https://github.com/haskell-cryptography)
 
-As the intended owner of the project, this project will be new maintenance burden on the Haskell Cryptography Group.
+As the intended maintainer of the project, this project will be new burden on the Haskell Cryptography Group.
 
 - Users of existing cryptography libraries such as `crypton`, `cryptonite`, `libsodium / saltine`.
 
