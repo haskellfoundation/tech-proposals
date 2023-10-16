@@ -24,7 +24,9 @@ The Haskell cryptography ecosystem is also brittle and outdated. It is the produ
 
 As a result, there are multiple cryptography libraries with similar interfaces, and it is not always clear which should be used preferentially. This promotes rot as downstream users unknownly rely on unmaintained libraries that slowly stop working.
 
-Furthermore, a number of important libraries in the cryptography ecosystem (eg, `cryptonite`, `asn1-encoding`, and `memory`) have recently been archived by their author and will no longer be receiving updates. Their backend is written in C, which presents a long-term maintenance burden with a high knowledge and skill requirement. NaCl bindings such as `saltine` are a high-quality alternative, but solve only a limited set of problems.
+Furthermore, a number of important libraries in the cryptography ecosystem (eg, `cryptonite`, `asn1-encoding`, and `memory`) have recently been archived by their author and will no longer be receiving updates. Their backend is written in C, which presents a long-term maintenance burden with a high knowledge and skill requirement.
+
+NaCl bindings such as `saltine` are a high-quality alternative, but solve only a limited set of problems, as they only provide a few algorithms for select basic primitives, and do not support more complex protocols such as TLS and X509 (see Appendix C - NaCl / libsodium is not a cryptographic sink).
 
 The resulting brittleness has placed the long-term stability of important libraries such as `crypton`, `tls` and `x509` at risk of falling behind as compilers are upgraded, old standards are updated, and new standards are implemented. Additionally the instability creates an unattractive environment for developers, effectively driving them away to other ecosystems that can provide the necessary stability.
 
@@ -36,7 +38,7 @@ There are several additional reasons for this lack of suitable engineers:
 
 3) There is a persistent notion that functional languages are too slow for cryptography, despite it being based on historical reasons that have been mostly since addressed. Well-written modern Haskell approaches C in terms of speed, and has a much higher ergonomic-use and type-safety factor, but the public image has not caught up yet, and so the ecosystem has not received the investment and attention necessary to attract the attention of skilled engineers for developing either pure implementations or foreign bindings.
 
-4) A fair number of cryptographic projects in recent years has been specifically towards *cryptocurrencies*, rather than *cryptography in general*, and their results are at large fairly useless if they cannot be used outside of their ecosystems.
+4) A fair number of cryptographic projects in recent years has been specifically towards *cryptocurrencies*, rather than *cryptography in general*, and their results are not always applicable outside of their specific ecosystems or use case.
 
 All of these reasons have contributed to the stagnant state of Haskell cryptography, and have make it an unfavorable environment for application developers, especially developers of cryptosystems and distributed systems. However, none of these are actual blockers, and each of these things can be corrected with effort. There is much that can be done to improve the Haskell cryptography ecosystem, ranging from better low-level support, to higher-level abstractions:
 
@@ -101,7 +103,7 @@ The others were not selected for several reasons:
 
 - libgcrypt is C, and so the Haskell FFI can bind directly to it, but it has a GNU LGPL license, and provides less functionality than Botan
 - Crypto++ is C++, and has a Boost license (similar to BSD), but it does not export a C API, and provides less functionality than Botan
-- libsodium / NaCL does not provide the necessary functionality, and there are several Haskell libsodium bindings already (see Appendix C - NaCl / libsodium)
+- libsodium / NaCL does not provide the necessary functionality, and there are several Haskell libsodium bindings already (see Appendix C - NaCl / libsodium is not a cryptographic sink)
 - NSS has a copyleft license
 
 Bindings to Botan would solve the significant problem of dealing with common cryptography by providing much of the necessary 'cryptographic kitchen sink' via bindings to a suitably performant, suitably licensed, open-source library. The Haskell community would not be required to maintain the Botan cryptography library, only bindings to it, and this can be accomplished readily with some effort which has already begun. Furthermore, the Botan library supports several post-quantum cryptography algorithms, which is highly desirable.
@@ -206,7 +208,7 @@ Of these four, one is a fork of another (`crypton` and `cryptonite`), and the ot
 
 Following that, there is also `Z-Botan`, which has been apparently unmaintained for several years. Reviving it was considered, but would require a comprehensive and near-total rewrite in order to divest itself of `Z-Haskell` as a dependency. New bindings could instead draw significantly from `Z-Botan`, while presenting a much smaller maintenance and dependency surface.
 
-Furthermore, none of these libraries contain implementations of post-quantum cryptography schemes; although existing quantum computers are of insufficient capability to break commonly used algorithms such as Ed25519, this will not remain true forever, and it would be best to have quantum-resistant implementations ready for adoption long before such attacked become practical.
+Furthermore, none of these libraries contain implementations of post-quantum cryptography schemes; although existing quantum computers are of insufficient capability to break commonly used algorithms such as Ed25519, this will not remain true forever, and it is necessary to have quantum-resistant implementations ready for adoption long before such attacks become practical, as it is sufficient to capture the encrypted traffic now and decode it later when quantum computers have advanced in power.
 
 Each of these efforts has one or more of these issues that preclude them from being considered a complete success:
 
@@ -242,11 +244,11 @@ The `botan-bindings` library will contain raw bindings and is an almost direct, 
 
 ### botan-low
 
-The `botan-low` library will contain low-level bindings which wrap the FFI calls into IO actions. This library will handle the translation between buffers and ByteStrings, and throw exceptions in the case of errors, but will otherwise be a fairly faithful translation of the Botan interface. This library is suitable for use, but is not recommended for day-to-day programming due to statefulness and use of strings for algorithm selection.
+The `botan-low` library will contain low-level bindings which wrap the FFI calls into IO actions. This library will handle the translation between buffers and ByteStrings, and throw exceptions in the case of errors, but will otherwise be a fairly faithful translation of the Botan interface. This library is suitable for use, but is not recommended for day-to-day programming due to its low level interface, statefulness, and use of strings for algorithm selection.
 
 ### botan
 
-The `botan` library will contain high-level bindings which hide the stateful IO and expose appropriately idiomatic or pure interfaces. It will provide data types for algorithms, enumerations for constants, convenience methods for key and nonce generation, incremental processing of lazy bytestrings, and otherwise bring significant safety and ergonomics over `botan-low` and `botan-bindings`.
+The `botan` library will contain high-level bindings which hide the stateful IO and expose appropriately idiomatic or pure interfaces. It will provide data types for algorithms, enumerations for constants, convenience methods for key and nonce generation, incremental processing of lazy bytestrings, and otherwise bring significant safety and ergonomics over `botan-low` and `botan-bindings`. This library is suitable for use and is recommended for production use due to idiomatic interfaces and improved safety.
 
 ## Related Technical Content
 
@@ -389,6 +391,13 @@ The following Botan library features are goals, but are considered optional to t
 
 Effort will be made to include them if possible within the proposed timeline, and the project may be extended at the discretion of the Haskell Foundation in order to ensure their completion.
 
+# Future Work
+
+There were several goals that were considered for this proposal, but were excluded from scope in order to keep the focus narrow. This represents future work that we would like to continue in the furtherance of development of the Haskell cryptography ecosystem.
+
+Assuming that this proposal is a success, we would then like to take the next logical step of integrating `botan` with one or more existing libraries as a backend. Candidates goals range from integrating with or providing a compatibility later as a drop-in replacement for `crypton`, to integrating with critical low-level libraries such as `tls` or `x509` directly, to integrating with more "consumer" facing libraries such as `hs-jose` or `clientsession`.
+
+These goals will be kept in mind as design factors during the implementation of this proposal, as the intended subject(s) of an potential future proposal, and efforts will be made to ensure compatibility with and prepare for integrating with the existing ecosystem.
 
 # Appendix A - Commercial Incentive Misalignment
 
