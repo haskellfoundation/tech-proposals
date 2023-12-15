@@ -2,49 +2,75 @@
 
 Adam Gundry, Matthew Pickering, Sam Derbyshire, Rodrigo Mesquita, Duncan Coutts (Well-Typed LLP)
 
--   [Abstract](#abstract)
--   [Background](#background)
-    -   [The current interface](#the-current-interface)
-    -   [Why do packages use the `Custom` build-type?](#why-do-packages-use-the-custom-build-type)
--   [Problem Statement](#problem-statement)
-    -   [How can we move away from the `Custom` build-type?](#how-can-we-move-away-from-the-custom-build-type)
-    -   [Requirements](#requirements)
-    -   [Non-requirements](#non-requirements)
--   [Prior art and related efforts](#prior-art-and-related-efforts)
-    -   [Issues with `UserHooks`](#issues-with-userhooks)
-    -   [`code-generators`](#code-generators)
--   [High-level design of `build-type: Hooks`](#high-level-design-of-build-type-hooks)
-    -   [`Hooks` from the package author's perspective](#hooks-from-the-package-authors-perspective)
-    -   [`Hooks` from the build tool author's perspective](#hooks-from-the-build-tool-authors-perspective)
-    -   [Designing for future compatibility](#designing-for-future-compatibility)
--   [Detailed design of `SetupHooks`](#detailed-design-of-setuphooks)
-    -   [Cabal configuration type hierarchy](#cabal-configuration-type-hierarchy)
-    -   [Hook phases](#hook-phases)
-    -   [Configure hooks](#configure-hooks)
-    -   [Build hooks](#build-hooks)
-    -   [Copy hooks](#copy-hooks)
-    -   [Test and benchmark hooks](#test-and-benchmark-hooks)
-    -   [Clean hooks](#clean-hooks)
-    -   [Pre-processors](#pre-processors)
--   [Open Questions](#open-questions)
-    -   [Library API and versioning](#library-api-and-versioning)
-    -   [Recompilation avoidance](#recompilation-avoidance)
--   [Examples](#examples)
--   [Alternatives](#alternatives)
-    -   [Effects available to hooks](#effects-available-to-hooks)
-    -   [Inputs and outputs available to hooks](#inputs-and-outputs-available-to-hooks)
-    -   [Fine-grained build rules](#fine-grained-build-rules)
--   [Stakeholders](#stakeholders)
--   [Success](#success)
-    -   [Testing and migration](#testing-and-migration)
-    -   [Future work](#future-work)
+- [Abstract](#abstract)
+- [Background](#background)
+  * [The current interface](#the-current-interface)
+  * [Why do packages use the `Custom` build-type?](#why-do-packages-use-the--custom--build-type-)
+- [Problem Statement](#problem-statement)
+  * [How can we move away from the `Custom` build-type?](#how-can-we-move-away-from-the--custom--build-type-)
+  * [Requirements](#requirements)
+    + [Integration with existing build systems](#integration-with-existing-build-systems)
+  * [Non-requirements](#non-requirements)
+- [Prior art and related efforts](#prior-art-and-related-efforts)
+  * [Issues with `UserHooks`](#issues-with--userhooks-)
+  * [`code-generators`](#-code-generators-)
+- [High-level design of `build-type: Hooks`](#high-level-design-of--build-type--hooks-)
+  * [`Hooks` from the package author's perspective](#-hooks--from-the-package-author-s-perspective)
+  * [`Hooks` from the build tool's perspective](#-hooks--from-the-build-tool-s-perspective)
+  * [Designing for future compatibility](#designing-for-future-compatibility)
+  * [Library API and versioning](#library-api-and-versioning)
+- [Detailed design of `SetupHooks`](#detailed-design-of--setuphooks-)
+  * [Phases](#phases)
+  * [Cabal configuration type hierarchy](#cabal-configuration-type-hierarchy)
+  * [Configuring and building](#configuring-and-building)
+  * [Configure hooks](#configure-hooks)
+    + [Phase separation](#phase-separation)
+    + [`LocalBuildConfig`](#-localbuildconfig-)
+    + [`ComponentDiff`](#-componentdiff-)
+  * [Build hooks](#build-hooks)
+    + [Post-build hooks](#post-build-hooks)
+  * [Install hooks](#install-hooks)
+- [Pre-build hooks](#pre-build-hooks)
+  * [Motivation: fine-grained rules](#motivation--fine-grained-rules)
+  * [Motivation: a simplistic first design](#motivation--a-simplistic-first-design)
+  * [Proposed design of rules](#proposed-design-of-rules)
+  * [Dependency structure](#dependency-structure)
+  * [Rule demand](#rule-demand)
+  * [Identifiers](#identifiers)
+  * [Inputs to pre-build rules](#inputs-to-pre-build-rules)
+  * [Hooked preprocessors](#hooked-preprocessors)
+- [Examples](#examples)
+    + [Generating modules](#generating-modules)
+    + [`./configure` style checks](#--configure--style-checks)
+    + [Doctests](#doctests)
+    + [Hooked programs](#hooked-programs)
+    + [Hooked preprocessors](#hooked-preprocessors-1)
+    + [executable-hash](#executable-hash)
+    + [Composing `SetupHooks`](#composing--setuphooks-)
+- [Alternatives](#alternatives)
+  * [Decoupling `Cabal-hooks`](#decoupling--cabal-hooks-)
+  * [Effects available to hooks](#effects-available-to-hooks)
+  * [Inputs and outputs available to hooks](#inputs-and-outputs-available-to-hooks)
+  * [Identifiers for fine-grained rules](#identifiers-for-fine-grained-rules)
+  * [No searching in fine-grained rules](#no-searching-in-fine-grained-rules)
+  * [Making other hooks fine-grained](#making-other-hooks-fine-grained)
+- [Stakeholders](#stakeholders)
+- [Success](#success)
+  * [Testing and migration](#testing-and-migration)
+  * [Future work](#future-work)
 
 ## Abstract
 
-Every Cabal package can supply its own build system, in the form of a `Setup.hs` program which implements a common command line interface.
-Unfortunately, this makes it difficult to implement features in Cabal which require the build tool to have complete control over the build system.
-This turned out to be a major architectural design flaw because, in practice, all packages use Cabal as their build system -- making the per-package build system abstraction an artificial limitation.
-We propose a way forward to lift this restriction, which will establish foundations for improvements in tooling based on Cabal, and make Cabal easier to maintain in the long term.
+Every Cabal package can supply its own build system, in the form of a `Setup.hs`
+program which implements a common command line interface.
+Unfortunately, this makes it difficult to implement features in Cabal which
+require the build tool to have complete control over the build system.
+This turned out to be a major architectural design flaw because, in practice,
+all packages use Cabal as their build system -- making the per-package build
+system abstraction an artificial limitation.
+We propose a way forward to lift this restriction, which will establish
+foundations for improvements in tooling based on Cabal, and make Cabal
+easier to maintain in the long term.
 
 The key obstacle to changing this design is the existence of the `Custom`
 build-type, through which a package may supply an arbitrary `Setup.hs` file
@@ -66,6 +92,7 @@ and is now being [discussed at this pull request](https://github.com/haskellfoun
 A fundamental assumption of the existing Cabal architecture is that each package
 supplies its own build system (provided by `Setup.hs`), with Cabal specifying the interface to that build
 system, for instance, the behaviour of `./Setup.hs build` or `./Setup.hs install`.
+
 Modern projects consist of many packages. However, an aggregation of
 per-package build systems makes it difficult or impossible to robustly implement
 cross-cutting features (that is, build system features that apply to multiple
@@ -229,19 +256,17 @@ The key requirements for the new mechanism are as follows:
 
  * It should provide an alternative to the `Custom` build-type for packages that
    need to augment the Cabal build process, based on the principle that the
-   build system rather than each package is in overall control of the build,
-   so it is not possible to entirely override any of the main build phases.
+   build system rather than each package is in overall control of the build.
 
  * It should support essentially all of the existing uses of the
    `Custom` build-type.
 
  * It should minimise the effort required from package maintainers.  While some
    work to migrate away from the `Custom` build-type is inherently necessary, we
-   need the migration path to be as straightforward as possible.
+   need the migration path to be straightforward.
 
- * It should permit existing build systems such as RPM/DEB distribution
-   packagers, Nix packages, etc. to continue using the `Setup.hs` interface
-   unchanged.
+ * It should integrate with existing build systems; see
+   [§ Integration with existing build systems](#integration-with-existing-build-systems).
 
  * It should make limited assumptions about how the build tool will operate, and
    in particular should not *require* use of the `Setup.hs` interface.
@@ -260,6 +285,22 @@ will have more flexibility to implement their build systems, making it easier to
 add features such as fine-grained cross-package build graphs (leading to more
 parallelism for faster builds), more accurate file change detection, etc..
 
+#### Integration with existing build systems
+
+The `Hooks` `build-type` should integrate with the following three different
+ways of building `Cabal` packages:
+
+  * Building Haskell packages with `cabal-install`. In this case, we want to
+    expose enough information to enable features such as per-module build graphs,
+    coordination of parallelism through `-jsem`, and multi-repl.
+
+  * Building Haskell packages inside other build systems using the `Setup.hs`
+    interface. This is important as we don't want to break the workflow of
+    RPM/DEB distribution packagers, Nix packages, etc.
+
+  * The Shake-like build system of the Haskell Language Server. Here, we want
+    HLS to be able to re-run actions on demand as part of an interactive
+    developer environment.
 
 ### Non-requirements
 
@@ -269,8 +310,8 @@ API. Thus we believe that it will be possible to adapt the design more easily to
 future features and requirements.
 
 For example, `Cabal` does not currently have proper support for
-cross-compilation, because it does not make a clear distinction between the host
-and target.  This means the `Custom` build-type currently leads to issues with
+cross-compilation, because it does not make a clear distinction between the build
+and host.  This means the `Custom` build-type currently leads to issues with
 cross-compilation, and in the first instance, the new design may inherit the
 same limitations.  This is a bigger cross-cutting issue that needs its own
 analysis and design.
@@ -282,7 +323,7 @@ The `Cabal` developers have long been aware of the limitations arising from
 `build-type: Custom` (see for example [#2395 Proposal for a Cabal plugin API
 (inversion of control)](https://github.com/haskell/cabal/issues/2395) and [#3065
 Lessons learned from Custom](https://github.com/haskell/cabal/issues/3065)).
-Over time there have been attempts to gradually move packages away from
+Over time, there have been attempts to gradually move packages away from
 `Custom`, in some cases by adding declarative features to `build-type: Simple`
 instead, which is preferable where possible.
 
@@ -293,14 +334,16 @@ build-systems is more straightforward and general.  We presume that any existing
 usage of `Custom` that merely augments the build process is justified and valid,
 and seek to provide an alternative build-type to which existing packages can be
 directly migrated.
-The introduction of the alternative build-type that captures existing `Custom` extensions does not preclude the addition of declarative features that subsume use cases for it.
+The introduction of the alternative build-type that captures existing `Custom`
+extensions does not preclude the addition of declarative features that subsume
+use cases for it.
 
 ### Issues with `UserHooks`
 
 As noted, the `Cabal` library already provides a customisable build system in
 the form of the `defaultMainWithHooks` function and the
 [`UserHooks` datatype](https://hackage.haskell.org/package/Cabal-3.10.1.0/docs/Distribution-Simple-UserHooks.html).
-Thus it would be possible to define a build-type based on the package author
+Thus, it would be possible to define a build-type based on the package author
 providing a value of the existing `UserHooks` datatype directly
 (rather than providing a `Setup.hs` file which just happens to call `defaultMainWithHooks` on such a value).
 
@@ -316,6 +359,10 @@ few problems (see [#3600 Hook redesign](https://github.com/haskell/cabal/issues/
 * It is too expressive, as it allows users to override entire build phases. This flexibility
   turns the building of a package into a black box, which pessimises certain parts
   of `cabal-install`.
+* It is opaque, as all the customisation is encapsulated inside the `Setup` executable.
+  This means that build tools such as `cabal-install` or `HLS` have no way to
+  inspect which customisations have been made (this means for example that `HLS`
+  is not aware of any `hookedPreProcessors` declared by the user).
 * It often isn't possible to perform the customisation you need using only pre/post hooks, as they aren't expressive enough.
   This leads to users instead overriding the main phase, manually taking some pre/post steps
   and propagating the information to/from the main build phase.
@@ -364,7 +411,7 @@ uniform mechanism.
 
 ## High-level design of `build-type: Hooks`
 
-We propose that `Cabal` is augmented with a new build-type, `Hooks`.
+We propose to augment `Cabal` with a new build-type, `Hooks`.  
 To implement a package with the `Hooks` build-type, the user needs to provide
 a `SetupHooks.hs` file which specifies the hooks using a Haskell API.
 
@@ -378,20 +425,19 @@ the complete replacement of individual build phases.
 When `build-type: Hooks` is specified in the `.cabal` file,
 the package author must supply a Haskell file named `SetupHooks.hs` that defines
 a value `setupHooks :: SetupHooks`, which is a record of user-specified
-hooks. Thus this interface is fundamentally a Haskell library interface, not
-a command line interface as with the classic `Setup.hs`.
+hooks. This means that this interface is fundamentally a Haskell library interface,
+not a command line interface (unlike `build-type: Custom`, which simply specifies
+a replacement for the the `Setup.hs` CLI with no other means of interaction).
 
 A hook is a Haskell function, with a type such as `HookInputs -> IO HookOutputs`
 where `HookInputs` and `HookOutputs` are types specific to the particular hook.
 See [§ Effects available to hooks](#effects-available-to-hooks) for discussion
 of the choice of the `IO` monad.
 
-Each hook is optional, i.e. each field of the `SetupHooks` datatype has a type
-of the form `Maybe (HookInputs -> IO HookOutputs)`.  This means that the build
-tool can statically determine that there is no hook at that particular stage.
-At each stage, it is possible to specify a component-level pre-stage and/or a
-post-stage hook, uniformly covering the various points at which authors might
-want to run custom actions or customize the build.
+Each hook is optional, e.g. each field of the `ConfigureHooks` datatype has a type
+of the form `Maybe Hook`.  This means that, when using the library interface
+to hooks, the build tool can statically determine that there is no hook at that
+particular stage, which might enable certain optimisations.
 
 See [§ Library API and versioning](#library-api-and-versioning) regarding which
 Haskell library defines the `SetupHooks` datatype and any types describing the
@@ -402,7 +448,7 @@ with a `setup-depends` field describing the build dependencies of
 `SetupHooks.hs` (just as with the `Custom` build-type).
 
 
-### `Hooks` from the build tool author's perspective
+### `Hooks` from the build tool's perspective
 
 Since the API is expressed using a Haskell library, rather than a CLI, build
 tools such as `cabal-install` have a choice of implementation techniques for how
@@ -417,7 +463,7 @@ normal build pipeline.  Then the source distribution of a package using the
 of the following form:
 
 ```haskell
-import Distribution.Simple (  defaultMainWithSetupHooks )
+import Distribution.Simple ( defaultMainWithSetupHooks )
 import SetupHooks ( setupHooks )
 
 main = defaultMainWithSetupHooks setupHooks
@@ -425,9 +471,9 @@ main = defaultMainWithSetupHooks setupHooks
 
 The build tool can compile the shim `Setup.hs` and run the traditional CLI
 commands such as `./Setup configure` and `./Setup build`.  This does not realise
-the full benefits of the new build-type, but is easy to integrate into existing
-tools, because it is consistent with how the other build-types already support
-the `Setup.hs` interface.
+the full benefits of the new build-type, but it means that the change is completely
+transparent to existing tools, as they can continue to use the `Setup` interface
+without any modifications.
 
 With `Hooks`, however, build tools will be able to use alternative
 implementation techniques for executing the hooks, rather than being forced to
@@ -448,10 +494,7 @@ go through the `Setup.hs` interface:
   existing process so that it can invoke hooks directly with minimal overhead.
 
 Crucially, hooks are independent, in the sense that each can be invoked
-separately however the build tool arranges to do so. This restriction prevents
-the hooks directly sharing state with each other: all the inputs and outputs
-must be serialised.
-
+separately however the build tool arranges to do so.
 
 ### Designing for future compatibility
 
@@ -470,6 +513,52 @@ that are unlikely to break when it is evolved in the future.  This includes:
  * hiding the underlying data constructors and providing smart constructors
    instead.
 
+### Library API and versioning
+
+It is important to be clear what future compatibility guarantees are offered by
+`Cabal` and/or build tools to packages using `Hooks`.  There is a tension here,
+because we do not want package maintainers to be over-burdened with continual
+changes to support newer versions of the hooks API, but neither do we want
+`Cabal` maintainers to be over-burdened by the costs of providing backwards
+compatibility.
+
+We propose to introduce a new library, `Cabal-hooks`. A package using the
+`Hooks` build-type must declare a dependency on the
+`Cabal-hooks` library in the `setup-depends` field of their package.
+The range of `Cabal-hooks` library versions declared in `setup-depends`
+indicates the versions of the hooks API that the package supports.
+
+The requirement for such a dependency codifies existing practice. Indeed,
+while, in theory, a package using `build-type: Custom` can implement its `Setup`
+script without depending on `Cabal`, we saw that this flexibility was unused in
+practice, as `Setup` scripts end up being defined in terms of `UserHooks`.
+This usage pattern incurs a corresponding dependency on the `Cabal` library in
+`setup-depends`, in much the same way as we propose here for `Cabal-hooks`.  
+An additional benefit of the separate `Cabal-hooks` library is that it makes it
+possible to evolve the Hooks API without requiring a version bump of the
+`Cabal` library.
+
+In practice, we expect the initial versions of `Cabal-hooks` to mostly
+re-export `Cabal` datatypes, as it is these types (such as `LocalBuildInfo`)
+that get passed back-and-forth between the build system and the hooks in our
+current design (see e.g. [§ Configure hooks](#configure-hooks)).  
+This design choice does introduce some coupling between the versions of
+`Cabal-hooks` and `Cabal` (but see [§ Decoupling `Cabal-hooks`](#decoupling--Cabal--hooks-)).
+At any rate, this design makes the situation no worse than with `Custom`
+(because a shim `Setup.hs` can still always be used to compile `SetupHooks.hs`
+using an older version of `Cabal-hooks`), but it gives more options to the build tool,
+e.g. where serialisation of hook inputs/outputs is used, the serialisation
+format can be controlled by the build tool, and is not necessarily fixed by `Cabal-hooks`.
+Indeed, we could imagine a build tool being compiled against multiple `Cabal-hooks`
+versions.  
+The version compatibility problem exists in
+`cabal-install` already: even where communication happens via the `Setup.hs`
+command line interface, there is already a need for `cabal-install` to adapt to
+the command-line flags that are supported by the version of `Cabal` in use (see
+e.g. [`filterConfigureFlags`](https://hackage.haskell.org/package/cabal-install-3.10.2.1/docs/src/Distribution.Client.Setup.html#filterConfigureFlags)).
+Once this proposal removes the need for `cabal-install` to go through the
+`Setup.hs` interface, there is a potential for a significant reduction in
+complexity here.
 
 ## Detailed design of `SetupHooks`
 
@@ -477,14 +566,16 @@ Having described `build-type: Hooks` in the previous section, the remaining part
 of the design process is to work out the specific interfaces for the individual
 hooks as expressed by the `SetupHooks` type.
 
-We want to arrive at a design by two means:
+We want to arrive at a design by the following means:
 
 * The consideration of the existing usage of `Setup.hs` scripts to guide
   what hooks should be able to do.
+* The needs of the rest of the Haskell ecosystem, in particular the Haskell
+  Language Server.
 * A high-level understanding of what the build process of a package should
   look like, taking into account concerns such as parallelisability.
 
-These two viewpoints can inform each other about the precise details for the design.
+These viewpoints can inform each other about the precise details for the design.
 
 As part of the design process we have been developing a [prototype
 implementation of this design](https://github.com/mpickering/cabal/tree/wip/setup-hooks)
@@ -493,6 +584,43 @@ in the `Cabal` library.
 This section unavoidably relies on a deeper understanding of the `Cabal` build
 system than the previous sections.
 
+### Phases
+
+The `Cabal` build process defines various phases that package authors should
+be allowed to customise in some way:
+
+ * The *configure phase* is when decisions are made about how to perform the
+   subsequent phases (e.g. which tools and options to use).  This
+   may involve running arbitrary code to detect information about the host
+   system.
+
+ * The *build phase* is when the project is compiled (including for the REPL)
+   and build artifacts are generated (including libraries, executables and other
+   artifacts such as Haddock documentation).
+
+ * The *install phase* is when build artifacts are moved from the build directory
+   to the final installed location or installation image (e.g. for subsequent packaging).
+
+We propose to extend these three phases, with the following high-level structure
+for `SetupHooks`:
+
+```haskell
+data SetupHooks = SetupHooks
+  { configureHooks :: ConfigureHooks
+  , buildHooks     :: BuildHooks
+  , installHooks   :: InstallHooks
+  }
+```
+
+See [§ Configure hooks](#configure-hooks), [§ Build hooks](#build-hooks)
+and [§ Install hooks](#install-hooks).
+
+Unlike the old `UserHooks` datatype, there is deliberately no way for the
+package to remove or replace existing phases wholesale (such as replacing the
+`buildHook`), and it is not possible to change the behaviour of operations
+such as tests, benchmarks and cleanup.  Nor is it possible to add entirely
+new phases, because which phases are available is
+determined by the overall design of the build system, not the individual package.
 
 ### Cabal configuration type hierarchy
 
@@ -512,50 +640,7 @@ the precise design of the hooks.
 * `ConfigFlags`/`BuildFlags`/`HaddockFlags`: flags to `./Setup configure`, `./Setup build`, `./Setup haddock`, etc..
 * `TargetInfo`: all the information necessary to build a specific target (combination of a `Component` and `ComponentLocalBuildInfo`).
 
-
-### Hook phases
-
-The `Cabal` build process defines various phases, which correspond to the fields
-of the `SetupHooks` data type:
-
-```haskell
-data SetupHooks = SetupHooks
-  { configureHooks :: ConfigureHooks
-  , buildHooks     :: BuildHooks
-  , copyHooks      :: CopyHooks
-  , cleanHooks     :: CleanHooks
-  , testHooks      :: TestHooks
-  , benchmarkHooks :: BenchmarkHooks
-  , hookedPreProcessors :: [PPSuffixHandler]
-  }
-```
-
-These phases are as follows:
-
- * The *configure phase* is when decisions are made about how to build the
-   subsequent phases (e.g. which tools and options to use).  This
-   may involve running arbitrary code to detect information about the host
-   system.  See [§ Configure hooks](#configure-hooks).
-
- * The *build phase* is when the project is compiled (including for the REPL)
-   and build artifacts are generated (including libraries, executables and other
-   artifacts such as Haddock documentation).  See [§ Build hooks](#build-hooks).
-
- * The *copy phase* is when build artifacts are moved from the build directory
-   to the final installed location.  See [§ Copy hooks](#copy-hooks).
-
- * The *test phase* and *benchmark phase* are when test or benchmark components
-   for the package are executed.  See [§ Test and benchmark hooks](#test-and-benchmark-hooks).
-
- * The *clean phase* is when files created during the build are deleted.
-   See [§ Clean hooks](#clean-hooks).
-
-See [§ Pre-processors](#pre-processors) for discussion of `hookedPreProcessors`.
-
-We augment these phases uniformly with pre-hooks that execute before the main
-`Cabal` build action, and post-hooks that execute afterwards.  Unlike the old
-`UserHooks` datatype, there is deliberately no way for the package to remove or
-replace the normal build action.
+### Configuring and building
 
 All decisions about *how to build* a project should be made in the configuration
 phase.  Hooks during the build phase should not (re)calculate options, but
@@ -568,17 +653,11 @@ See [§ Phase separation](#phase-separation).
 Configuration happens at two levels:
 
  * global configuration covers the entire package,
-
  * local configuration covers a single component.
 
 Once the global package configuration is done, all hooks should work on a
 per-component level. This avoids introducing additional synchronisation points
 in a build that would limit the amount of available parallelism.
-
-Hooks are not able to add entirely new phases, because which phases are
-available is determined by the overall design of the build system, not the
-individual package.
-
 
 ### Configure hooks
 
@@ -588,7 +667,6 @@ We propose to add the following configure hooks:
 type PreConfPackageHook    = PreConfPackageInputs -> IO PreConfPackageOutputs
 type PostConfPackageHook   = PostConfPackageInputs -> IO ()
 type PreConfComponentHook  = PreConfComponentInputs -> IO PreConfComponentOutputs
-type PostConfComponentHook = PostConfComponentInputs -> IO ()
 
 data PreConfPackageInputs
   = PreConfPackageInputs
@@ -596,11 +674,13 @@ data PreConfPackageInputs
   , localBuildConfig :: LocalBuildConfig
   , compiler         :: Compiler
   , platform         :: Platform
+  , programDb        :: ProgramDb
   }
 
 data PreConfPackageOutputs
   = PreConfPackageOutputs
-  { localBuildConfig :: LocalBuildConfig }
+  { localBuildConfig :: LocalBuildConfig
+  , configuredProgs :: ConfiguredProgs }
 
 data PostConfPackageInputs
   = PostConfPackageInputs
@@ -619,18 +699,11 @@ data PreConfComponentOutputs
   = PreConfComponentOutputs
   { componentDiff :: ComponentDiff }
 
-data PostConfComponentInputs
-  = PostConfComponentInputs
-  { localBuildInfo :: LocalBuildInfo
-  , component :: Component
-  }
-
 data ConfigureHooks
   = ConfigureHooks
   { preConfPackageHook    :: Maybe PreConfPackageHook
   , postConfPackageHook   :: Maybe PostConfPackageHook
   , preConfComponentHook  :: Maybe PreConfComponentHook
-  , postConfComponentHook :: Maybe PostConfComponentHook
   }
 ```
 
@@ -649,7 +722,9 @@ From the build tool's perspective, the global configuration phase goes as follow
   before doing any per-component configuration.
 
 - Run the `postConfPackageHook`, which can inspect but not modify the result of
-  the global configuration.
+  the global configuration. This can be used to propagate custom package-wide
+  logic to the subsequent per-component configure hook (and is used for
+  example to re-implement the `Configure` `build-type`).
 
 After the global configuration has completed, individual components can be
 configured independently, as follows:
@@ -659,10 +734,6 @@ configured independently, as follows:
 
 - Use the modified `Component` to perform per-component configuration and create
   the `ComponentLocalBuildInfo`.
-
-- Run the `postConfComponentHook`, which can inspect but not modify the
-  per-component configuration.
-
 
 #### Phase separation
 
@@ -692,27 +763,27 @@ of configuration then it would be error-prone to ensure that they suitably updat
 both the options in question as well as the generated configuration.
 For example, both `PackageDescription` and `ComponentLocalBuildInfo` contain
 a list of exposed modules for the library.
-This is why the "post" configuration hooks (and any hooks after that)
-can only run an `IO` action; they can't return any modifications that would affect the `PackageDescription`.
-
+This is why the "post" configuration hook (and any hooks subsequent to the
+configure phase) can only run an `IO` action; they can't return any modifications
+that would affect the `PackageDescription`.
 
 #### `LocalBuildConfig`
 
-There are parts of the `LocalBuildInfo` which must be decided at a global (per-package) level.
-For instance, whether to build dynamic libraries.
-On the other hand, there are also things we want to decide on a local (per-component) level,
-such as specific GHC options with which to compile the component.
+There are parts of the `LocalBuildInfo` which must be decided at a global
+(per-package) level; for instance, whether to build dynamic libraries.
+On the other hand, there are also things we want to decide on a local
+(per-component) level, such as specific GHC options with which to compile the
+component.
 
 Moreover, there are parts of the `LocalBuildInfo` which hooks cannot modify.
 For example, things such as package dependencies can't be modified because they are
 determined externally by the overall build plan (e.g. from the dependency solver).
-Thus the hooks interface should prevent the modification of these
+Thus, the hooks interface should prevent the modification of these
 parts of `LocalBuildInfo`.
 
 We propose to achieve this by defining a new type `LocalBuildConfig` which
 contains only the parts of the existing `LocalBuildInfo` datatype that can be
 modified by `preConfPackageHook`.
-
 
 #### `ComponentDiff`
 
@@ -732,23 +803,510 @@ The diff is represented by a `Component`; not all fields of a `Component` are
 allowed to be modified, and when the diff is applied it is dynamically checked
 that the hook has not modified any fields which it shouldn't.
 
-An alternative design would be to define a custom diff datatype which statically
-distinguishes which fields are allowed to be modified. This would be more
-difficult to maintain, as it requires `Cabal` developers to keep the `Component`
-and `ComponentDiff` types up-to-date.  However if we end up with a design in
-which `Cabal`'s version of the `Component` type is necessarily separate from the
-type in the hooks API, we may want to reconsider this.
+Some alternative designs:
 
+  1. Specify a Haskell function `Component -> Component` which can modify
+     the component at will.
+  2. Define a custom `ComponentDiff` datatype which contains only the fields
+     of a `Component` which we allow hooks to modify.
+
+The benefit of (2) is that it trims down the amount of internal details exposed
+from `Cabal`,making it less likely that an internal change in Cabal would end up
+breaking the `Hooks` defined by package authors. However, one would need to
+ensure this interface is general enough in order to avoid locking out Hooks
+authors, e.g. if `Cabal` adds a new field to `Component` without updating the
+corresponding `ComponentDiff` type in order to make it modifiable by hook authors.  
+If we end up with a design in which `Cabal`'s version of the `Component` type
+is necessarily separate from the type in the hooks API, we may want to reconsider
+this alternative.
 
 ### Build hooks
 
-The build hooks are intended to perform additional steps before or after
-the normal build phase for a component. These steps cannot change
-the configuration of the package; they can only perform side-effects.
-The intention is that hooks should separate any cheap configuration
-from expensive building.
+The design of the pre-build hooks has generated significant discussion during review.
+There are several trade-offs. The initial proposal was essentially a port of the
+build hooks in the old `UserHooks`, but updated to the per-component world.
+This included monolithic pre and post hooks for each component, plus the existing
+"hooked pre-processors" abstraction. This had the advantage that it would be easy
+for package authors to port their `Setup.hs` scripts to the new design, and it was
+a relatively minimal change in the Cabal codebase.  
+Many Cabal contributors share a long term goal to move the Cabal design towards
+one based on a build graph with fine-grained dependencies. From this perspective,
+the critique was that the initial proposal was too conservative a change, and that
+we should take this opportunity of making a significant API change to establish a
+new API that would not hold back the move towards finer-grained dependencies.
+Another critique was that the original `UserHooks` design was somewhat ad-hoc,
+since it used both monolithic hooks and hooked pre-processors to provide
+finer-grained dependencies for a modest subset of use cases.  
+On the other hand, there is a very large design space for finer-grained
+dependencies, and so picking a point in the design space is not simple.
+Another disadvantage is that it will of course be more work for package authors
+to port their existing `Setup.hs` scripts, which currently use monolithic hooks.
 
-One crucial observation that factors into the design of build hooks is that
+The proposed design for pre-build hooks tries to balance these trade-offs.
+Instead of an ad-hoc combination of monolithic hooks and hooked pre-processors,
+we use a single general system of rules, but we take a relatively conservative
+approach to the expressive power of the rules. In particular, the style of the
+rules is relatively low level. For example it does not include "rule patterns"
+such as generating a `*.hs` from a `*.y`. Instead, each rule specifies the
+individual files involved as inputs and outputs. It should nevertheless be
+possible to build higher level patterns on top, using Haskell's usual powers of
+abstraction to generate the lower level rules. Crucially, the design allows the
+rules to be used across an IPC interface, which is necessary for build tools
+like `cabal-install` or HLS to be able to interrogate and invoke them.  
+
+The full details of the design of pre-build hooks are provided in
+[§ Pre-build hooks](#pre-build-hooks).
+
+On top of pre-build hooks, we also propose a limited notion of post-build hooks,
+which accomodates package authors which need to perform an `IO` action in order
+to modify executables after they are built, as described in
+[§ Post-build hooks](#post-build-hooks).
+
+To summarise, we propose two different kinds of build hooks:
+
+```haskell
+-- | Build-time hooks.
+data BuildHooks
+  = BuildHooks
+  { preBuildComponentRules :: Maybe PreBuildComponentRules
+  , postBuildComponentHook :: Maybe PostBuildComponentHook }
+```
+
+Build hooks cannot change the configuration of the package.  
+There are deliberately no package-level build hooks, only component-level hooks.
+This avoids introducing unnecessary synchronisation points when multiple
+packages/components are being built in parallel.
+
+#### Post-build hooks
+
+Separately from the pre-build rules, we also propose to introduce post-build
+hooks. These cover a simple use case: namely to perform an IO action after an
+executable has been built.
+
+This functionality gives package authors a way to modify an executable after
+it has been built, which is useful if one wants to:
+
+  - inject data into an executable after it has been built
+    (see for example [§ executable-hash](#executable-hash)),
+  - strip an executable with an external tool,
+  - perform code signing on an executable, e.g. using `xattr`.
+
+Post-build hooks are run after the normal build phase completes. This means that
+a tool such as HLS would never run them, as in a sense HLS never finishes
+building. Note however that, were HLS to support running test-suites, it would
+run the post-build hooks for the testsuite right after building it, before
+running it.
+
+We propose the following simple API for post-build hooks:
+
+```haskell
+data PostBuildComponentInputs
+  = PostBuildComponentInputs
+  { buildFlags :: BuildFlags
+  , localBuildInfo :: LocalBuildInfo
+  , targetInfo :: TargetInfo
+  } deriving (Generic, Show)
+
+type PostBuildComponentHook = PostBuildComponentInputs -> IO ()
+```
+
+Note that this is a single monolithic step that would simply be re-run
+any time the `build` action is re-run.
+
+### Install hooks
+
+The `install` hooks run allows package authors to run an extra `IO` action
+when copying/installing a package:
+
+```haskell
+data InstallComponentInputs
+  = InstallComponentInputs
+  { localBuildInfo :: LocalBuildInfo
+  , copyFlags      :: CopyFlags
+  , targetInfo     :: TargetInfo
+  }
+
+type InstallComponentHook = InstallComponentInputs -> IO ()
+
+data InstallHooks
+  = InstallHooks
+  { installComponentHook :: Maybe InstallComponentHook
+  }
+```
+
+The install hooks can be used to install files per-component.
+The main use case for install hooks is when set of things you want to install is
+not fixed and predetermined. One example is Agda, which wants to run the built
+`Agda` executable on the associated standard library `.agda` modules in order
+to generate `.agdai` interface files for them. These should then be installed
+alongside the `Agda` executable.
+This allows users to obtain a functional Agda compiler by using the single
+invocation `cabal install Agda`. This also means that we can use
+`build-tool-depends: Agda` in other projects.
+
+We could imagine a more declarative way of specifying this being introduced in
+the future, in which case packages will be free to migrate to it gradually.
+There is not necessarily a problem with having some overlap between hooks and
+declarative features.
+
+An alternative approach would be to regard as illegitimate any use cases which
+treat `Cabal` as a packaging and distribution mechanism for executables, and on
+that basis, cease to provide install hooks.  We do not follow this approach because
+it would significantly inconvenience maintainers of packages that rely on this
+behaviour (e.g. Agda and Darcs), for a relatively small reduction in complexity
+in `Cabal`.
+
+It is important that these install hooks are consistently run both when copying
+and when installing, as this fixes the inconsistency noted in
+[Cabal issue #709](https://github.com/haskell/cabal/issues/709).
+There is no separate notion of an "copy hook", because "copy" and "install"
+are not distinct build phases.
+
+## Pre-build hooks
+
+The pre-build hooks consist of a collection of fine-grained build rules.
+These are run before building a particular component of a package.
+
+### Motivation: fine-grained rules
+
+Suppose that Cabal did not have built-in support for `happy`, then a
+package making use of it might like to write a rule like this:
+
+```
+lib:my-component:module:Foo.Bar : src:blah/foo/bar.y
+    ${happy:exe:happy} ${input[0]} -o ${output[0]}
+```
+
+The key components of such a rule description are:
+
+  - The input of the rule (in this case, the source file `blah/foo/bar.y`).
+  - The output of the rule (the Haskell module `Foo.Bar`, inside a particular
+    component of the package).
+  - The action to run (in this case running the executable `happy`).
+    Note that it is the build system that decides where inputs/outputs are
+    located (in this case, the rule refers to them using `${input}` and
+    `${output}`).
+
+In particular, such a design fits the needs of the Haskell Language Server,
+which needs to be able to:
+
+  1. Query the package for all its pre-build rules.
+  2. Find out all the rules that have become stale and need to be re-run.
+  3. Execute individual rules.
+
+However, the textual description of rules presented above suffers from some
+limitations that would make migrating existing packages with `Custom` build-type
+difficult. In particular, one often wants to allow rules to depend on each other
+in a more dynamic manner.  
+For example, consider how one might want to query an external executable in
+order to determine the dependency structure; say by running
+[`ghc -M`](https://downloads.haskell.org/ghc/latest/docs/users_guide/separate_compilation.html#makefile-dependencies)
+on a root Haskell module in order to compute a build graph.
+
+### Motivation: a simplistic first design
+
+To explain the design we have arrived at for fine-grained pre-build rules, let
+us first consider what a first draft design, which accommodates both the design
+of HLS as well as the existing `Custom` setup scripts, might look like:
+
+```haskell
+type TentativeRules env = env -> IO [TentativeRule]
+data TentativeRule = TentativeRule
+  { dependencies :: [Dependency]
+  , results :: [Result]
+  , action :: [ResolvedLocation]
+               -- ^ locations of __dependencies__ (determined by the build system)
+           -> [ResolvedLocation]
+              -- ^ locations for __results__ (chosen by the build system)
+           -> IO ()
+  }
+```
+
+That is, rules are specified by a function that takes in an environment
+(which in practice consists of information known to `Cabal` after configuring,
+e.g. `LocalBuildInfo`, `ComponentLocalBuildInfo`).
+This function returns an `IO` action that computes a list of rules. Each rule
+declares its inputs and outputs, and from this information arises the dependency
+structure between rules.  
+To run a rule, the build system must determine specific locations for all
+these inputs and outputs, and pass them to the `action` in order to
+execute the rule. For example, the build system would search for `blah/foo/bar.y`
+in the source directories of the project, and pass an absolute path to the
+file it found to the `action`.
+
+### Proposed design of rules
+
+There are several shortcomings with the above simplistic design:
+
+  1. it does not fit well with the proposed IPC interface for hooks:
+     namely, the build tool should be able to query the separate hooks
+     executable to obtain all the hooks that a package with `Hooks` `build-type`
+     provides. Doing so with the design proposed above would require a mechanism for
+     serialising and deserialising the `IO` actions that execute the rules, which in
+     practice would mean providing a DSL for `IO` actions that can be serialised,
+
+  2. it lacks information that would allow us to determine when the rules need
+     to be recomputed:
+
+       a. if the rules were computed by invoking `ghc -M` (or similar), we would
+          need to recompute them if the user adds a new file that would
+          have been found by that call to `ghc -M`.
+
+       b. if the `env` environment changed, we might or might not need to recompute
+          the rules. We should have a mechanism for rules to declare what part
+          of the environment they depend on, so that we don't need to pessimistically
+          rerun the computation anew each time.
+
+We propose to fix (1) by adding an extra layer of indirection: instead of a
+`Rule` directly storing an `IO` action, it stores a reference to an action.
+We can then separately query the external hooks executable with this reference
+in order to run the action.
+
+We fix (2) by adding `monitoredValue` and `monitoredDirs` fields to `Rule`.
+
+We thus propose:
+
+```haskell
+newtype Rules env =
+  Rules { runRules :: env -> ActionsM ( IO [Rule] ) }
+
+data Rule = Rule
+  { dependencies :: ![ Dependency ]
+     -- ^ Dependencies of this rule.
+     --
+     -- When the build system executes the action associated to this rule,
+     -- it will resolve these dependencies and pass them as an argument
+     -- to the action, in the form of a @['ResolvedDependency']@.
+  , results :: ![ Result ]
+     -- ^ Results of this rule.
+  , actionId :: !ActionId
+     -- ^ To run this rule, which t'Action' should we execute?
+     --
+     -- The t'Action' will receive exactly as many 'ResolvedLocation'
+     -- arguments as there are 'Dependency' values stored in the
+     -- 'dependencies' field.
+
+  , monitoredValue :: !( Maybe ByteString )
+     -- ^ A monitored value.
+     --
+     -- The rule is considered out-of-date when the environment passed to
+     -- compute this rule changes and this value also changes.
+     --
+     -- A value of @Nothing@ means: always consider the rule to be out-of-date.
+     --
+     -- A value of @Just _@ means: consider the rule to be out-of-date if,
+     -- after re-computing rules from the environment, the stored value
+     -- has changed.
+  , monitoredDirs :: ![ Location ]
+     -- ^ Monitored directories; if the contents of these directories change,
+     -- the rule is considered out-of-date.
+  }
+
+newtype Action =
+  Action
+    { action
+      :: [ ResolvedLocation ]
+           -- ^ locations at which the __dependencies__ of this action
+           -- were found
+      -> [ ResolvedLocation ]
+           -- ^ locations in which the ___results__ of this action
+           -- should be put
+      -> IO () }
+```
+
+The specific monadic type of rules, namely
+
+```haskell
+env -> ActionsM ( IO [Rule] )
+```
+
+is meant to address concerns surrounding generation of `ActionId`s, as is
+explained in [§ Identifiers for fine-grained rules](#identifiers-for-fine-grained-rules).
+In practice, we can think of the rules as being specified by a Haskell
+function with the following type:
+
+```haskell
+env -> ( Map ActionId Action, IO [Rule] )
+```
+
+### Dependency structure
+
+Rule dependencies and results are declared using the following datatypes:
+
+```haskell
+data Dependency
+  -- | Declare a dependency on a file from the current project that should
+  -- be found by looking at project search paths.
+  --
+  -- This file might exist already, or it might be the output of another rule.
+  = ProjectSearchDirFile
+      !Location
+        -- ^ where to go looking for the file
+      !FilePath
+        -- ^ path of the file, relative to a Cabal search directory
+type Result = ( Location, FilePath )
+data Location
+  -- | A source file:
+  --
+  -- - for a rule dependency, we will go looking for it in
+  --   the source directories and in autogen modules directories;
+  -- - for a rule output, the file should be put in an autogen module directory.
+  = SrcFile
+  -- | A build-file, that belongs to some build directory.
+  | BuildFile
+  -- | A temporary file.
+  | TmpFile
+```
+
+To illustrate, a rule could declare a dependency on `Parser.y` (using the
+`dependencies` field). The build-system will look through appropriate
+search paths to resolve this dependency, and pass the location in which the file
+was found on disk as one of the elements of the list passed as the first argument
+to the `action` stored in the `Action` that the rule refers to through its
+`ActionId`. (Although see [§ No searching in fine-grained rules](#no-searching-in-fine-grained-rules)
+for an alternative in which searching is performed when computing the rules
+themselves.)
+
+Note that we do not allow a rule to directly depend on another rule, as this
+can easily introduce bugs. For example, suppose that `Rule {ruleId = 1}`
+outputs `A.y` and `Rule {ruleId = 2}` depends on `A.y` in order to produce
+`A.hs`. It is much more direct and robust for rule 2 to directly declare its
+dependency on `A.y`, rather than on (the output of) rule 1, as the latter is
+prone to breakage if one refactors the code and changes which rule generates
+`A.y`.
+
+### Rule demand
+
+The general flow is that we can find, by traversing the `[Rule]`
+returned from querying all pre-build rules, what all the dependencies of
+rules are. Whenever any of these changes, we must then:
+
+  1. Re-query the pre-build rules to obtain all up-to-date rules. This step
+     is necessary because the dependency structure might have changed.
+  2. Find out all the rules that are now stale and need to be re-run.
+  3. Re-run all demanded stale rules by calling out to the separate hooks
+     executable, passing the `ActionId` and additional action arguments to
+     that executable in order to run the `Action` associated to each
+     demanded stale rule.
+
+A rule is considered **demanded** if:
+
+  - it generates a Haskell module that is declared to be an autogenerated
+    module of the component we are building, or
+  - another rule that is itself demanded depends on the output of the rule.
+
+The rules as a whole are considered **out-of-date** precisely when any of the
+following conditions apply:
+
+<dl>
+  <dt>O1</dt>
+  <dd>a file dependency of a rule has changed in some way,</dd>
+
+  <dt>O2</dt>
+  <dd>the environment passed to the computation of rules has changed,</dd>
+
+  <dt>O3</dt>
+  <dd>there has been a relevant change in a file or directory monitored
+      by a rule.</dd>
+</dl>
+
+If the rules are out-of-date, we re-run the computation that computes
+all rules. Once this is done, we compute which rules are stale.
+
+A rule is considered **stale** if, after re-running the computation of all
+of the rules, any of following conditions apply:
+
+<dl>
+  <dt>S1</dt>
+  <dd>a dependency of the rule has been modified/created/deleted,
+      or a (transitive) rule dependency of the rule is itself stale;</dd>
+
+  <dt>S2</dt>
+  <dd>the monitor value is stale, i.e. either:
+     <ol>
+      <li>the <code>monitoredValue</code> of the rule changed, or</li>
+      <li>the rule declares <code>monitoredValue = Nothing</code>.</li>
+     </ol>
+  </dd>
+</dl>
+
+A stale rule becomes no longer stale once we run its associated action; the
+build system is responsible for re-running the actions associated with
+each demanded stale rule, in dependency order.
+
+Justification:
+
+  - (O1)/(S1) are clear. If we change a file that a rule depends on,
+    the rule needs to be re-run.  
+    Because the dependency structure might also change, we need to recompute
+    all the rules first, before then re-running the ones that have been staled.
+  - (O2) is also clear: if we change the environment, we need to re-compute
+    the rules (as the rules are given by specifying a function from an
+    environment).  
+    Note that this covers the event of the package configuration changing
+    (e.g. after `cabal configure` has been re-run).
+  - (S2) is an optimisation that ensures we don't pessimistically re-run a rule
+    every time we change the environment, but only when the monitored value changes.
+  - (O3) covers the use case in which we invoke an external tool (such as
+    `ghc -M`) which performs a search in order to compute a dependency graph.
+    We want to ensure that, if the user adds a new module, we re-run this
+    dependency computation.  
+    We don't want to rely on the user necessarily re-configuring the package,
+    especially as the package description might not necessarily have changed
+    (even though, in common cases, one expects that adding a new source file
+    would correspond to a new module declared in the `.cabal` file).
+
+### Identifiers
+
+Note that [§ Rule demand](#rule-demand) requires a notion of persistence across
+invocations, as is necessary to compute staleness of individual rules. We can't
+simply use the index of the rule in the returned `[Rule]`, as this might vary
+if new rules are added. Instead, we propose that a rule be uniquely identified
+by the set of outputs that it produces. This gives the necessary way to match
+up rules output by two different executions of the `IO` action that computes
+the set of pre-build rules.
+
+The question of `ActionId` is somewhat different. With the above design, actions
+are uniquely identified by `ActionId`s, but requiring users to manually generate
+these `ActionId`s is unergonomic and potentially error-prone.  
+In particular, one might want to combine the `Rules` declared by two different
+libraries, as described in [§ Composing `SetupHooks`](#composing--setuphooks-).  
+To avoid having to know that e.g. another package uses `ActionId 17`
+(so as to avoid clashing with it), the implementation is free to provide a
+monadic API that handles creation of fresh `ActionId`s in order to
+ensure that these identifiers are correct by construction.  
+
+We thus propose the following API for hook authors:
+
+```haskell
+newtype ActionId -- in practice a newtype around 'Int', but this is crucially
+                 -- not exposed in the API in order to prevent users from
+                 -- manually constructing these values
+
+newtype ActionsM a -- in practice, something like 'State (Map ActionId Action) a',
+                   -- but this is an implementation detail
+  deriving (Functor, Applicative, Monad)
+
+-- | Register an action. Returns a unique identifier for that action.
+registerAction :: Action -> ActionsM ActionId
+
+newtype Rules env =
+  Rules { runRules :: env -> ActionsM ( IO [Rule] ) }
+```
+
+This frees the package author from the responsibility of handling identifiers
+manually.
+
+Note that having `ActionId`s vary across invocations of the external hooks
+executable is not problematic: these depend purely on the input environment,
+and every time this input environment changes we recompute the rules themselves.
+So there is no risk that a `Rule` refers to an "outdated" `ActionId`, as long
+as one makes sure that every time the environment changes we recompute the set
+of rules before running any actions.
+
+### Inputs to pre-build rules
+
+One important observation that factors into the design of build hooks is that
 many different Cabal phases can be thought of as "building something".
 Indeed, preparing an interactive session or generating documentation
 share many commonalities with a normal build.
@@ -767,20 +1325,14 @@ data BuildingWhat
   | BuildHaddock  HaddockFlags
   | BuildHscolour HscolourFlags
 
-data BuildComponentInputs
-  = BuildComponentInputs
-  { buildingWhat   :: BuildingWhat
+data PreBuildComponentInputs
+  = PreBuildComponentInputs
+  { buildingWhat :: BuildingWhat
   , localBuildInfo :: LocalBuildInfo
-  , targetInfo     :: TargetInfo
-  }
+  , targetInfo :: TargetInfo
+  } deriving (Generic, Show)
 
-type BuildComponentHook = BuildComponentInputs -> IO ()
-
-data BuildHooks
-  = BuildHooks
-  { preBuildComponentHook  :: Maybe BuildComponentHook
-  , postBuildComponentHook :: Maybe BuildComponentHook
-  }
+type PreBuildComponentRules = Rules PreBuildComponentInputs
 ```
 
 This design ensures that the build hooks are consistently run in all
@@ -789,291 +1341,34 @@ that one would update the `haddock` and `repl` hooks to mirror the `build` hooks
 (which one can easily forget to do, and end up with an unusable `repl`, for example, see `singletons-base`
 which fails to update the `replHook`).
 
-The build tool executes the build phase as follows:
+Note also the interaction with the `monitoredValue` field of `Rule`: when running
+`cabal build && cabal haddock`, we might (or might not) want to re-run the build
+hooks. The way hooks authors can choose which behaviour they want is to output
+a `monitoredValue` that changes (or does not change, respectively) when the
+`BuildingWhat` parameter changes, say from `BuildNormal _` to `BuildHaddock _`.
 
-- Run the `preBuildComponentHook`, giving it access to the specific information
-  about the component being built.  This cannot modify any configuration but may
-  have side effects.
-
-- Build the component.
-
-- Run the `postBuildComponentHook`.
-
-A typical use case for the `preBuildComponentHook` is generating source code for
-modules.
-
-The `postBuildComponentHook` can be used to do further work after building the
-component. For example, in Agda, once the `agda` executable is built a
-post-build hook could run it to compile the builtin libraries and generate
-`.agdai` interface files for them.
-
-There are deliberately no package-level pre-build or post-build hooks, only
-component-level hooks. This avoids introducing unnecessary synchronisation
-points when multiple packages/components are being built in parallel.
-
-
-### Copy hooks
-
-The `copy` hooks run before and after the copy phase, which moves build artifacts
-from the build directory into the install directory.
-
-```haskell
-data CopyComponentInputs
-  = CopyComponentInputs
-  { localBuildInfo :: LocalBuildInfo
-  , copyFlags      :: CopyFlags
-  , targetInfo     :: TargetInfo
-  }
-
-type CopyComponentHook = CopyComponentInputs -> IO ()
-
-data CopyHooks
-  = CopyHooks
-  { preCopyComponentHook  :: Maybe CopyComponentHook
-  , postCopyComponentHook :: Maybe CopyComponentHook
-  }
-```
-
-The copy hooks can be used to copy files per-component.
-The main use case for copy hooks is when set of things you want to install is
-not fixed and predetermined. For example, in the Agda
-example, if `postBuildComponentHook` has generated `.agdai` interface files then
-`preCopyComponentHook` can be used to copy over the generated files when
-installing the compiler.
-
-We could imagine a more declarative way of specifying this being introduced in
-the future, in which case packages will be free to migrate to it gradually.
-There is not necessarily a problem with having some overlap between hooks and
-declarative features.
-
-An alternative approach would be to regard as illegitimate any use cases which
-treat `Cabal` as a packaging and distribution mechanism for executables, and on
-that basis, cease to provide copy hooks.  We do not follow this approach because
-it would significantly inconvenience maintainers of packages that rely on this
-behaviour (e.g. Agda and Darcs), for a relatively small reduction in complexity
-in `Cabal`.
-
-It is important that these copy hooks are also run when installing, as this
-fixes the inconsistency noted in [Cabal issue #709](https://github.com/haskell/cabal/issues/709).
-There is no separate notion of an "install hook", because "copy" and "install"
-are not distinct build phases.
-
-
-### Test and benchmark hooks
-
-Test and benchmark hooks are executed before or after the tests or benchmarks
-are compiled and run.  The main use cases for pre-test or pre-benchmark hooks
-are generating modules for use in tests or benchmarks; while technically this
-could be done in an earlier phase, if the generation step is expensive it makes
-sense to defer running it until the user actually requests tests or benchmarks.
-
-Another possible use cases is doctests, where:
-
- * the package author wants `cabal test` to run doctests (so an external `cabal
-   doctest` command is not enough), e.g. because they use a different build tool
-   and need `./Setup test` to include doctests; and
-
- * the `code-generators` feature is not suitable (e.g. because the package
-   includes multiple library components with incompatible GHC options).
-
-There are deliberately no package-level test or benchmark hooks, only
-component-level hooks. This is consistent with build hooks, and avoids
-introducing unnecessary synchronisation points if multiple packages are being
-tested in parallel.
-
-```haskell
-data TestComponentInputs
-  = TestComponentInputs
-  { additionalCommandLineArgs :: [String]
-  , localBuildInfo :: LocalBuildInfo
-  , testFlags :: TestFlags
-  , testSuite :: TestSuite
-  , componentLocalBuildInfo :: ComponentLocalBuildInfo
-  }
-
-data BenchmarkComponentInputs
-  = BenchmarkComponentInputs
-  { additionalCommandLineArgs :: [String]
-  , localBuildInfo :: LocalBuildInfo
-  , benchmarkFlags :: BenchmarkFlags
-  , benchmark :: Benchmark
-  , componentLocalBuildInfo :: ComponentLocalBuildInfo
-  }
-
-type TestComponentHook      = TestComponentInputs      -> IO ()
-type BenchmarkComponentHook = BenchmarkComponentInputs -> IO ()
-
-data TestHooks
-  = TestHooks
-  { preTestComponentHook  :: Maybe TestComponentHook
-  , postTestComponentHook :: Maybe TestComponentHook
-  }
-
-data BenchmarkHooks
-  = BenchmarkHooks
-  { preBenchComponentHook  :: Maybe BenchmarkComponentHook
-  , postBenchComponentHook :: Maybe BenchmarkComponentHook
-  }
-```
-
-
-### Clean hooks
-
-Clean hooks are useful if an earlier hook has generated some additional files
-that need to be cleaned up when the user runs the build system's clean action.
-For example, the
-`Setup.hs` files [`lhs2tex-1.25`](https://hackage.haskell.org/package/lhs2tex-1.25/src/Setup.hs)
-and [`binembed-0.1.0.2`](https://hackage.haskell.org/package/binembed-0.1.0.2/docs/src/Distribution-Simple-BinEmbed.html#binembedClean)
-implement versions of this.
-
-`cabal clean` does not currently execute `./Setup.hs clean`, which appears to be a bug
-(see [#6112](https://github.com/haskell/cabal/issues/6112), [#7877](https://github.com/haskell/cabal/issues/7877)).
-In the new design we can ensure that each hook is executed before and after the
-corresponding build phase, and hence avoid such bugs.
-
-```haskell
-data CleanComponentInputs
-  = CleanComponentInputs
-  { packageDescription :: PackageDescription
-  , component :: Component
-  , cleanFlags :: CleanFlags
-  } deriving (Generic, Show)
-
-type CleanComponentHook = CleanComponentInputs -> IO ()
-
-data CleanHooks
-  = CleanHooks
-  { cleanComponentHook :: Maybe CleanComponentHook
-  }
-```
-
-
-### Pre-processors
+### Hooked preprocessors
 
 `UserHooks` includes `hookedPreProcessors`, which makes it possible to associate
 a file extension with a preprocessing operation that turns files with that
-extension into Haskell source modules.  Cabal will then execute such pre-processors
+extension into Haskell source modules. Cabal will then execute such pre-processors
 on all matching files before building, and re-run them as needed when the input files change.
-This is similar to Cabal's built-in support for `alex`, `happy`, etc..  For example,
-[`binembed`](https://hackage.haskell.org/package/binembed-0.1.0.3/docs/src/Distribution-Simple-BinEmbed.html#withBinEmbed)
-defines a preprocessor that turns `M.binembed` into `M.hs` by running the
-`binembed` executable.
+This is similar to Cabal's built-in support for `alex`, `happy`, etc..
 
-A key restriction of `hookedPreProcessors` is that it assumes one input file
-will turn into one Haskell module (see [#6232 Extended preprocessors
-support](https://github.com/haskell/cabal/issues/6232)).
+The framework of fine-grained pre-build rules subsumes this feature.
+This presents some significant advantages:
 
-Packages requiring pre-processors could define a pre-build hook that searches
-for files with their custom extension and produces the corresponding Haskell
-file.  However this would require duplicating logic present in `Cabal`, and lead
-to worse recompilation behaviour.  Thus we propose to retain
-`hookedPreProcessors` essentially unchanged in the `SetupHooks` design.
-
-
-
-## Open Questions
-
-### Library API and versioning
-
-There are a few options for where the `SetupHooks` datatype and any types
-describing the inputs and outputs of particular hooks will be defined:
-
- * They could all be defined in `Cabal` itself, just like for
-   `UserHooks`. (Potentially, a `Cabal-hooks` library could re-export just the
-   definitions that are relevant for programs using the hooks API.)
-
- * They could be defined in a new `Cabal-hooks` library, with `Cabal` depending
-   on it and reusing the same types. This has the advantage of more clearly
-   defining the subset of the `Cabal` library that is exposed via the hooks API,
-   which is helpful for modularity. However it is likely to involve moving quite
-   a lot of code to the new library.
-
- * Separate hook input/output data types could be defined in a `Cabal-hooks`
-   library, then `Cabal` could contain code for translating values of those
-   datatypes into its internal representations (and vice versa).  This would
-   require significant duplication of datatypes, but might provide more options
-   for evolving the `Cabal` and `Cabal-hooks` datatypes independently.
-
-A related question is whether the hooks API should be versioned separately from
-`Cabal` itself.  Version compatibility concerns may arise because the build tool
-and `SetupHooks.hs` may use different versions of the `Cabal` library. The
-impact depends on how the build tool is using `SetupHooks.hs`:
-
- - If the build tool is compiling a shim `Setup.hs`, it can in principle pick a
-   compatible version of `Cabal` even if the build tool itself uses a different
-   version, provided various constraints are satisfied (both those from the
-   `setup-depends` of the package itself, and those arising from the build tool,
-   e.g. [`cabal-install`](https://github.com/haskell/cabal/blob/c97092f5af484dfd5c1a465e0754114571264447/cabal-install/src/Distribution/Client/ProjectPlanning.hs#L1419-L1454)).
-
- - If the build tool is serialising data structures from its version of
-   `Cabal[-hooks]` to the version against which the "hooks executable" including
-   `SetupHooks.hs` is built, then the serialisation formats need to be
-   compatible.  We could imagine using a serialisation format that is versioned
-   and has some support for migrations (cf. `safecopy`) but this would lead to
-   additional complexity.
-
- - If the build tool is dynamically loading `SetupHooks.hs`, ABI compatibility
-   means both will need to use exactly the same `Cabal[-hooks]` library.
-
-It is important to be clear what future compatibility guarantees (if any) are
-offered by `Cabal` and/or build tools to packages using `Hooks`.  There is a
-tension here, because we do not want package maintainers to be over-burdened
-with continual changes to support newer `Cabal` versions, but neither do we want
-`Cabal` maintainers to be over-burdened by the costs of providing backwards
-compatibility.
-
-Since `Hooks` allows the build system to be extended, arguably packages using
-this feature necessarily depend on the version of the build system (and hence
-the `Cabal` version). Thus it may be reasonable to expect package authors to
-declare the range of `Cabal` versions for which their package works (in
-`setup-depends`) and require it to be updated to support newer versions of build
-tools.
-
-While there are still questions to be resolved here about the compatibility
-guarantees that can be offered by build tools, the `Hooks` build-type makes the
-situation no worse than with `Custom` (because a shim `Setup.hs` can still
-always be used to compile `SetupHooks.hs` using an older `Cabal`), but gives
-significantly more options to the build tool.  Where serialisation of hook
-inputs/outputs is used, the serialisation format can be controlled by the build
-tool, and is not necessarily fixed by `Cabal`.  Indeed, we could imagine a build
-tool being compiled against multiple `Cabal` versions.
-
-Note that the version compatibility problem exists in `cabal-install` already:
-even where communication happens via the `Setup.hs` command line interface,
-there is already a need for `cabal-install` to adapt to the command-line flags
-that are supported by the version of `Cabal` in use (see
-e.g. [`filterConfigureFlags`](https://hackage.haskell.org/package/cabal-install-3.10.2.1/docs/src/Distribution.Client.Setup.html#filterConfigureFlags)).
-Once this proposal removes the need for `cabal-install` to go through the
-`Setup.hs` interface, there is a potential for significant reduction in
-complexity here.
-
-
-### Recompilation avoidance
-
-We could imagine allowing hooks to return dependency information to support
-Cabal's recompilation checker in deciding whether it needs to rerun the hooks or
-not. This is particularly relevant when building documentation, as ideally one
-doesn't want to have to run the hooks twice in the workflow `cabal build &&
-cabal haddock`.
-
-A natural way to do this that fits with Cabal's current design would be to have
-a hook that returns the files consulted by each phase, then rerun the phase only
-if those files change.  For example, alongside
-```haskell
-preConfPackageHook :: Maybe (PreConfPackageInputs -> IO PreConfPackageOutputs)
-```
-we could have
-```haskell
-confPackageRecompile :: Maybe (PreConfPackageInputs -> IO Dependencies)
-```
-where `Dependencies` is some representation of possible dependencies
-(e.g. files, file path globs, environment variables, etc.) that may be consulted
-by `preConfPackageHook` and should cause recompilation if they change.
-
-`UserHooks` does not currently support this, and it is not clear that there is
-much demand for it to do so.  Thus it may be sufficient to simply rerun hooks
-pessimistically.
-
+  - It lifts a key restriction of `hookedPreProcessors`,
+    namely that it assumes one input file will turn into one Haskell module
+    (see [#6232 Extended preprocessors support](https://github.com/haskell/cabal/issues/6232)).
+  - It ensures that external tools such as HLS have visibility into the custom
+    preprocessors used by the package. In particular, HLS will be able to
+    re-run hooked preprocessors on demand when the relevant source files change.
+  - It naturally takes into account the correct dependency structure, obviating
+    the need for hacky workarounds such as the `ppOrdering` field of `PreProcessor`
+    which allowed one to re-order the modules in order to take into account
+    dependency information. This workaround doesn't compose well, and it
+    unnecessarily serialises the build graph.
 
 ## Examples
 
@@ -1086,14 +1381,16 @@ undertook previously, and experimental patches we have created while testing the
 
 One of the main uses of `Setup.hs` scripts is to generate modules.
 
-To achieve this with `SetupHooks`, in the per-component configure hook
-`preConfComponentHook`, the package should declare that it will generate certain modules.
+To achieve this with `SetupHooks`:
 
-These modules can be generated either in this configure hook itself,
-or in the (per-component) pre-build hook. It depends on what kinds of modules
-are being generated and how they are being generated as to which method is suitable.
-One reason to choose to generate in the pre-build phase might be that the entire
-configuration information is available at that point.
+  - The per-component configure hook, `preConfComponentHook`, should declare
+    that it will generate these modules, by adding onto the `autogenModules`
+    field of that component.
+  - Fine-grained pre-build rules are provided, which specify how to generate
+    the source code for these modules. This can for example take the form of
+    an individual preprocessor rule for each module which can be re-run on demand,
+    or a single monolithic rule that generates all the sources ex-nihilo and
+    which never needs to be re-run.
 
 #### `./configure` style checks
 
@@ -1135,12 +1432,65 @@ other than `cabal-install`.  This will require the use of either
 
 #### Hooked programs
 
-The `hookedPrograms :: [Program]` field of `UserHooks` allows the custom
+The `hookedPrograms :: [Program]` field of `UserHooks` allows a custom
 `Setup.hs` file to specify new programs to be detected in the configure phase.
-In the `SetupHooks` design this use case is supported by having the
-`LocalBuildConfig` returned by the package-level pre-configure hook contain a
-field `withPrograms :: ProgramDb`, which can be extended by the hook.
 
+In the `SetupHooks` design, this use case is supported by returning from the
+package-level pre-configure hook a collection of configured programs. Recall:
+
+```haskell
+type PreConfPackageHook = PreConfPackageInputs -> IO PreConfPackageOutputs
+
+data PreConfPackageInputs
+  = PreConfPackageInputs
+  { ..
+  , programDb :: ProgramDb
+  }
+
+data PreConfPackageOutputs
+  = PreConfPackageOutputs
+  { ..
+  , configuredProgs :: ConfiguredProgs }
+```
+
+The configured programs returned by the package-wide pre-configure hook will
+then be used to extend `Cabal`'s `ProgramDb`, which will then get stored in
+`Cabal`'s `LocalBuildInfo` datatype and passed to subsequent hooks.  
+
+Note that we require hook authors configure the programs themselves (using
+functions provided by the hooks API). This is justified by the fact that
+arbitrary unconfigured programs cannot be straightforwardly serialised:
+
+```haskell
+type UnconfiguredProgram = (Program, Maybe FilePath, [ProgArg])
+data Program = Program
+  { programName :: String
+  , programFindLocation
+      :: Verbosity
+      -> ProgramSearchPath
+      -> IO (Maybe (FilePath, [FilePath]))
+  , programFindVersion :: Verbosity -> FilePath -> IO (Maybe Version)
+  , ...
+  }
+```
+
+#### Hooked preprocessors
+
+[`binembed`](https://hackage.haskell.org/package/binembed-0.1.0.3/docs/src/Distribution-Simple-BinEmbed.html#withBinEmbed)
+defines a preprocessor that turns `M.binembed` into `M.hs` by running the
+`binembed` executable. This can be implemented as a fine-grained pre-build rule;
+as explained previously, these subsume the previous notion of `hookedPreProcessors`.
+
+#### executable-hash
+
+The [`executable-hash`](https://hackage.haskell.org/package/executable-hash-0.2.0.4)
+package supplies a function `injectExecutableHash :: FilePath -> IO ()`
+that can be run once an executable has been built, in order to inject
+information into that executable.
+
+Package authors wanting to make use of this functionality require some form of
+post-build hook, which is why we provide a `postBuildComponentHook` to cover
+this use-case and allow such packages to migrate away from `build-type: Custom`.
 
 #### Composing `SetupHooks`
 
@@ -1169,12 +1519,55 @@ setupHooks :: SetupHooks
 setupHooks = doctestsSetupHooks "doctests" <> termonadSetupHooks
 ```
 
-In general the monoid is non-commutative, because for the
-pre-configure hooks the output of the first hook will be fed as an input to the
+In general the monoid is non-commutative; for example, for the
+pre-configure hooks, the output of the first hook will be fed as an input to the
 second.
 
 
 ## Alternatives
+
+### Decoupling `Cabal-hooks`
+
+Instead of `Cabal-hooks` re-exporting datatypes from `Cabal`, one could imagine
+defining datatypes in `Cabal-hooks` instead; then `Cabal-hooks` would not depend
+on `Cabal`.  
+This would completely encapsulate the Hooks API, which would no longer be tied
+to a particular `Cabal` version.  
+Here are two conceivable ways in which this change might then impact `Cabal`:
+
+  1. `Cabal` itself depends on `Cabal-hooks`. This is attractive from a
+     modularity perspective, as it clearly defines the subset of the `Cabal`
+     library that is exposed via the hooks API.
+     However, it is not clear in advance how datatypes such as `LocalBuildInfo`
+     should be split up without hampering the needs of hooks authors, and would
+     likely involve moving quite a lot of code from `Cabal` to `Cabal-hooks`.
+
+  2. `Cabal` does not depend on `Cabal-hooks`. Instead, `Cabal-hooks` would
+     define entirely separate hook input/output data types. Some other library
+     would then contain code for translating values of those datatypes into
+     the internal representation in `Cabal` (and vice versa).
+     This would require significant duplication of datatypes (and an associated
+     maintenance burden for keeping them in sync), but it might provide more
+     options for evolving the `Cabal` and `Cabal-hooks` datatypes independently.
+
+The benefit of decoupling the version of the hooks API from the version of the
+`Cabal` library depends on how the build tool is using `SetupHooks.hs`:
+
+ - If the build tool is compiling a shim `Setup.hs`, it can in principle pick a
+   compatible version of `Cabal` even if the build tool itself uses a different
+   version, provided various constraints are satisfied (both those from the
+   `setup-depends` of the package itself, and those arising from the build tool,
+   e.g. [`cabal-install`](https://github.com/haskell/cabal/blob/c97092f5af484dfd5c1a465e0754114571264447/cabal-install/src/Distribution/Client/ProjectPlanning.hs#L1419-L1454)).
+
+ - If the build tool is serialising data structures from its version of
+   `Cabal[-hooks]` to the version against which the "hooks executable" including
+   `SetupHooks.hs` is built, then the serialisation formats need to be
+   compatible.  We could imagine using a serialisation format that is versioned
+   and has some support for migrations (cf. `safecopy`) but this would lead to
+   additional complexity.
+
+ - If the build tool is dynamically loading `SetupHooks.hs`, ABI compatibility
+   means both will need to use exactly the same `Cabal[-hooks]` library.
 
 ### Effects available to hooks
 
@@ -1189,7 +1582,7 @@ In general, the space of possible effects needed to augment the build system is
 unbounded (e.g. imagine a package that needs to generate code by parsing some
 binary file format, with a parser implemented using the FFI).
 
-Thus using a DSL would risk needing frequent updates to support additional use
+Thus, using a DSL would risk needing frequent updates to support additional use
 cases for custom setup scripts that were not previously considered. Moreover, it
 would increase the migration burden by requiring `Setup.hs` files to be
 significantly rewritten to use the DSL instead of IO.
@@ -1197,7 +1590,6 @@ significantly rewritten to use the DSL instead of IO.
 Thus we believe the best approach is for hooks to have access to arbitrary IO,
 but to encourage package authors to use declarative features instead of hooks
 where suitable features exist.
-
 
 ### Inputs and outputs available to hooks
 
@@ -1215,7 +1607,7 @@ possible approaches:
 
 The maximal approach requires the build tool more closely match `Cabal`'s
 (current) design, which may reduce flexibility to change `Cabal` in the future.
-From a backwards compatibility perspective it would be easier to start with a
+From a backwards compatibility perspective, it would be easier to start with a
 minimal approach and later add new fields, rather than removing existing fields.
 
 However, the maximal approach should reduce the likelihood of situations where
@@ -1232,58 +1624,63 @@ by widely used versions of `cabal-install` so they can be adopted by packages
 that need them.  Thus the minimal approach risks further extending the migration
 window during which `Custom` will need to be supported.
 
-Ultimately, we take the view that once the build system supports a hooks
-mechanism at all (e.g. for cases like pre-configure, where it is clearly
-needed), there is little cost to uniformly extending the mechanism to cover all
-the major build phases.
+### Identifiers for fine-grained rules
 
+Instead of using a monadic API to guarantee correctness of `ActionId`s, we could
+imagine letting users manually create their own `ActionId`s, perhaps with
+an existential type such as:
 
-### Fine-grained build rules
-
-The hooks proposed here are still comparatively coarse-grained. While they allow
-packages to execute custom code before or after the Cabal build, they do not
-allow the expression of declarative build rules that describe dependencies at
-the level of individual files.
-
-For example, suppose Cabal did not have built-in support for `happy`, then a
-package making use of it might like to write a rule like this:
-
-```
-lib:my-component:module:Foo.Bar : src:blah/foo/bar.y
-    ${happy:exe:happy} -o ${output} ${input[0]}
+```haskell
+data ActionId where
+  ActionId :: (Typeable a, Ord a, Read a, Show a) => a -> ActionId
 ```
 
-The build tool would then be given such a description, and could combine it with
-its own rules to create a fine-grained build dependency graph, which could lead
-to advantages including better parallelism and more precise recompilation
-detection.
+This design means that each hook author would be able to use a type that is
+specific to them to identify `Action`s, ensuring the `ActionId`s can't clash
+with those defined elsewhere.
 
-This is an appealing goal; however, attaining it would require significant work:
+This would allow getting rid of the monadic API for creation of fresh `ActionId`,
+but would require additional thought about how we would deserialise such
+`ActionId`s as required by IPC with the external hooks executable.  
+This design would arguably be less robust to internal refactorings, as we end
+up in a situation in which `ActionId`s are aware of their own names.
 
- * There is a large design space of possible declarative systems for expressing
-   build rules, and the trade-offs are complex, so it is not clear we would
-   reach consensus about a design in the short term.
+### No searching in fine-grained rules
 
- * Migrating existing custom `Setup.hs` scripts would be significantly more
-   difficult, because of the need to rewrite existing imperative logic.
+As noted in [Pre-build hooks](#pre-build-hooks), rules are described at a
+low-level with explicit inputs and outputs. For example, this framework does
+not include "rule patterns" (generating `*.hs` from `*.y`).  
+However, filepaths are not specified entirely explicitly: for example,
+inputs are declared relative to a search path, and the build system will
+perform the search and then pass the resolved locations of these dependencies.
 
- * The current implementation of the Cabal build system is not designed in a way
-   that would be able to take advantage of such fine-grained rules, and
-   refactoring it to do so would be a major undertaking.
+An alternative design would be to perform all file searching logic inside
+the pre-build hooks, in the computation of the rules. The `Cabal` library would
+provide a convenient interface to do file searching that could be used by
+hook authors. This would simplify the design by making it more uniform, and
+it would eliminate all searching from the semantics of the rules. That is, the
+rules framework would not itself contain any notion of searching; any necessary
+searching would be implemented on top. In particular, rules would no longer need
+separate datatypes for unresolved and resolved dependencies.  
+This is the approach taken by the `ninja` build system, which is designed around
+a low-level syntax of rules being generated by a higher-level framework.  
 
-Since packages using the custom build-type are relatively uncommon, we do not
-believe this work is currently justified.
-Thus we do not propose such a design at present.  However, the proposed design
-is a step towards making fine-grained rules expressible in the future:
+One possible drawback of such a design is that it risks baking into the hooks
+API assumptions that `Cabal` and `cabal-install` currently make about the
+directory structure of dependencies and outputs: the library interface for
+searching would be provided by `Cabal` for use by hook authors, but one would
+want to account for the needs of other build systems which might use a
+completely way of organising files inputs and outputs.
 
- * It establishes the principle that the build system, not the individual
-   package, has control of the overall build process.
+### Making other hooks fine-grained
 
- * The hooks proposed here can be extended or adapted in the future.  Thus it
-   would be possible to add hooks in the future that express declarative build
-   rules in a suitable DSL, and packages could gradually opt in to the
-   declarative approach.
-
+Note that we do not currently propose to use the same design of fine-grained
+rules for other hooks, e.g. the hooks into the configure phase or the install
+hooks.  
+The downside of this choice is that we do not track fine-grained dependency
+information that would let us know when to re-run these hooks.
+However, it is not clear that there is much demand for it to do so. Thus it may
+be sufficient to simply re-run these hooks pessimistically every time.
 
 ## Stakeholders
 
@@ -1299,7 +1696,7 @@ Thus we would appreciate input on the proposal from developers of build systems.
 
 We would also appreciate input from authors of packages with custom `Setup.hs`
 scripts which might be impacted by this proposal, to clarify their needs.  For
-example, we have argued that `Cabal` should provide copy hooks so that packages
+example, we have argued that `Cabal` should provide install hooks so that packages
 currently using them as a distribution mechanism are able to continue doing so,
 but we could reconsider this the impact on packages was considered acceptable.
 
