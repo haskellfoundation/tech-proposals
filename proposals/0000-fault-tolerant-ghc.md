@@ -265,6 +265,10 @@ After this, it should be possible to see an error from a module and also an erro
 
 MPJ: very speculative, basically trying to generalize the “-fdefer-” approach, maybe do it by default? I’m not sure how useful this is, the main slightly crazy use-case I can think of is running TH using the partial code, which might actually just be fine?
 
+#### Step 4: use partial modules to simplify recursive module handling
+
+MPJ: very speculative, but it seems that you could use a partial interface files instead of hs-boot files. You would still need to know which module to compile first in order to break the cycle, or else you would need to run the process to fixpoint.
+
 ## Drawbacks and risks
 
 ### GHC development complexity
