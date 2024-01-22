@@ -24,28 +24,18 @@ Talk proposals will not be distributed to attendees, but authors of talk proposa
 
 ## Proposal 2: JFP Submission of Accepted Papers
 
-The steering committee proposes to cease publishing the proceedings of the Haskell Symposium as an archival ACM publication.   Instead, **authors of accepted research papers and functional pearls will have the option of submitting their papers to an expedited review process for inclusion in the Journal of Functional Programming**. This provides a better-regarded publication venue for work presented at the Haskell Symposium, encouraging submission of high quality work to the Symposium.
+The steering committee proposes that authors of accepted papers may pursue publication in the Journal of Functional Programming, with an expedited process, instead of in the proceedings of the Haskell Symposium.  This provides a better-ranked publication venue for work presented at the Haskell Symposium, encouraging presentation of high quality work at the Symposium.
 
 ### For authors
 
-Under this proposal, authors will still submit papers to the Haskell Symposium, and receive reviews from the PC, on the usual schedule.    
+Under this proposal, authors will still submit papers to the Haskell Symposium, and receive reviews from the PC, on the usual schedule.  At the time of submission, authors may indicate that they would prefer their papers be considered for JFP, rather than included the proceedings of the Haskell Symposium.  Authors of accepted papers may change this decision on the basis of the reviews.
 
-Authors of accepted papers will present their papers at the Symposium.  
+Authors of accepted papers will present their papers at the Symposium, whether or not they are intended for JFP.  Authors of papers intended for JFP may also provide links to materials to be included in the program.
 
-JFP will accept the HS reviews as the first round of reviewing for JFP, provided the reviews meet the standards of the journal.  Authors of accepted papers will then be given the option to revise their papers for submission to the Journal of Functional Programming.  To assure that these appear in a timely fashion, the deadline for revision will likely be around the time of the Symposium itself.  Revised paper will be reviewed by JFP, most likely by the original reviewers.
+JFP will accept the HS reviews as the first round of reviewing for JFP, provided the reviews meet the standards of the journal.  Authors of accepted papers will then be given the option to revise their papers for submission to JFP.  To assure that these appear in a timely fashion, and to give authors the chance to include feedback from the Symposium, the deadline for revision will shorty after the Symposium itself.  Revised papers will be reviewed by JFP, most likely by the original reviewers.
 
 The final decision of the JFP editors is, of course, independent of the decision of the Haskell Symposium PC.
 
 ### For PC members
 
-Under this proposal, reviews of (accepted) papers should meet JFP's review standards.  Haskell Symposium reviewers should also be prepared to review paper revisions for JFP.
-
-### For the community
-
-A consequence of moving away from an archival proceedings is that ACM SIGPLAN may ask us to change the title of the meeting to something more like "Haskell Workshop", to line up with other language workshops held around ICFP.
-
-## Stakeholders
-
-The primary stakeholders are future authors and participants in the Haskell Symposium.    
-
-In particular, we invite feedback on whether the JFP submission process would make authors more (or less) likely to consider the Haskell Symposium as a venue for presenting work in the future.
+Under this proposal, reviews of (accepted) papers should meet JFP's review standards.  Haskell Symposium reviewers should also be prepared to review paper revisions for JFP.
