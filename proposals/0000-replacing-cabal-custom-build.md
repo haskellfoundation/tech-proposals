@@ -5,59 +5,66 @@ Adam Gundry, Matthew Pickering, Sam Derbyshire, Rodrigo Mesquita, Duncan Coutts 
 - [Abstract](#abstract)
 - [Background](#background)
   * [The current interface](#the-current-interface)
-  * [Why do packages use the `Custom` build-type?](#why-do-packages-use-the--custom--build-type-)
-- [Problem Statement](#problem-statement)
-  * [How can we move away from the `Custom` build-type?](#how-can-we-move-away-from-the--custom--build-type-)
+  * [Why do packages use the `Custom` build-type?](#why-do-packages-use-the-custom-build-type)
++ [Problem Statement](#problem-statement)
+  * [How can we move away from the `Custom` build-type?](#how-can-we-move-away-from-the-custom-build-type)
   * [Requirements](#requirements)
     + [Integration with existing build systems](#integration-with-existing-build-systems)
   * [Non-requirements](#non-requirements)
 - [Prior art and related efforts](#prior-art-and-related-efforts)
-  * [Issues with `UserHooks`](#issues-with--userhooks-)
-  * [`code-generators`](#-code-generators-)
-- [High-level design of `build-type: Hooks`](#high-level-design-of--build-type--hooks-)
-  * [`Hooks` from the package author's perspective](#-hooks--from-the-package-author-s-perspective)
-  * [`Hooks` from the build tool's perspective](#-hooks--from-the-build-tool-s-perspective)
+  * [Issues with `UserHooks`](#issues-with-userhooks)
+  * [`code-generators`](#code-generators)
+- [High-level design of `build-type: Hooks`](#high-level-design-of-build-type-hooks)
+  * [`Hooks` from the package author's perspective](#hooks-from-the-package-author-s-perspective)
+  * [`Hooks` from the build tool's perspective](#hooks-from-the-build-tool-s-perspective)
   * [Designing for future compatibility](#designing-for-future-compatibility)
   * [Library API and versioning](#library-api-and-versioning)
-- [Detailed design of `SetupHooks`](#detailed-design-of--setuphooks-)
+- [Detailed design of `SetupHooks`](#detailed-design-of-setuphooks)
   * [Phases](#phases)
   * [Cabal configuration type hierarchy](#cabal-configuration-type-hierarchy)
   * [Configuring and building](#configuring-and-building)
   * [Configure hooks](#configure-hooks)
     + [Phase separation](#phase-separation)
-    + [`LocalBuildConfig`](#-localbuildconfig-)
-    + [`ComponentDiff`](#-componentdiff-)
+    + [`LocalBuildConfig`](#localbuildconfig)
+    + [`ComponentDiff`](#componentdiff)
   * [Build hooks](#build-hooks)
     + [Post-build hooks](#post-build-hooks)
   * [Install hooks](#install-hooks)
 - [Pre-build hooks](#pre-build-hooks)
-  * [Motivation: fine-grained rules](#motivation--fine-grained-rules)
-  * [Motivation: a simplistic first design](#motivation--a-simplistic-first-design)
+  * [Motivation: fine-grained rules](#motivation-fine-grained-rules)
+  * [Motivation: a simplistic first design](#motivation-a-simplistic-first-design)
   * [Proposed design of rules](#proposed-design-of-rules)
   * [Dependency structure](#dependency-structure)
+    + [File dependencies](#file-dependencies)
+    + [Dynamic dependencies](#dynamic-dependencies)
   * [Rule demand](#rule-demand)
   * [Identifiers](#identifiers)
+  * [Rule monitors](#rule-monitors)
+  * [API overview](#api-overview)
   * [Inputs to pre-build rules](#inputs-to-pre-build-rules)
   * [Hooked preprocessors](#hooked-preprocessors)
 - [Examples](#examples)
-    + [Generating modules](#generating-modules)
-    + [`./configure` style checks](#--configure--style-checks)
-    + [Doctests](#doctests)
-    + [Hooked programs](#hooked-programs)
-    + [Hooked preprocessors](#hooked-preprocessors-1)
-    + [executable-hash](#executable-hash)
-    + [Composing `SetupHooks`](#composing--setuphooks-)
+  * [Generating modules](#generating-modules)
+  * [`./configure` style checks](#-configure-style-checks)
+  * [Doctests](#doctests)
+  * [Hooked programs](#hooked-programs)
+  * [Hooked preprocessors](#hooked-preprocessors-1)
+  * [executable-hash](#executable-hash)
+  * [Composing `SetupHooks`](#composing-setuphooks)
 - [Alternatives](#alternatives)
-  * [Decoupling `Cabal-hooks`](#decoupling--cabal-hooks-)
+  * [Decoupling `Cabal-hooks`](#decoupling-Cabal-hooks)
   * [Effects available to hooks](#effects-available-to-hooks)
   * [Inputs and outputs available to hooks](#inputs-and-outputs-available-to-hooks)
   * [Identifiers for fine-grained rules](#identifiers-for-fine-grained-rules)
-  * [No searching in fine-grained rules](#no-searching-in-fine-grained-rules)
+  * [Rules only depend on files](#rules-only-depend-on-files)
+  * [Let the build tool control all searching](#let-the-build-tool-control-all-searching)
   * [Making other hooks fine-grained](#making-other-hooks-fine-grained)
 - [Stakeholders](#stakeholders)
 - [Success](#success)
   * [Testing and migration](#testing-and-migration)
-  * [Future work](#future-work)
+- [Future work](#future-work)
+  * [Hooks integration](#hooks-integration)
+- [References](#references)
 
 ## Abstract
 
@@ -496,6 +503,10 @@ go through the `Setup.hs` interface:
 Crucially, hooks are independent, in the sense that each can be invoked
 separately however the build tool arranges to do so.
 
+See [§ Hooks integration](#hooks-integration) for further details concerning
+proposed future work integrating the proposed `Hooks` build-type with build
+tools such as `cabal-install` or `HLS`.
+
 ### Designing for future compatibility
 
 The design strategy for the hooks API should encourage clients to use it in ways
@@ -543,7 +554,7 @@ re-export `Cabal` datatypes, as it is these types (such as `LocalBuildInfo`)
 that get passed back-and-forth between the build system and the hooks in our
 current design (see e.g. [§ Configure hooks](#configure-hooks)).  
 This design choice does introduce some coupling between the versions of
-`Cabal-hooks` and `Cabal` (but see [§ Decoupling `Cabal-hooks`](#decoupling--Cabal--hooks-)).
+`Cabal-hooks` and `Cabal` (but see [§ Decoupling `Cabal-hooks`](#decoupling-Cabal-hooks)).
 At any rate, this design makes the situation no worse than with `Custom`
 (because a shim `Setup.hs` can still always be used to compile `SetupHooks.hs`
 using an older version of `Cabal-hooks`), but it gives more options to the build tool,
@@ -674,13 +685,13 @@ data PreConfPackageInputs
   , localBuildConfig :: LocalBuildConfig
   , compiler         :: Compiler
   , platform         :: Platform
-  , programDb        :: ProgramDb
   }
 
 data PreConfPackageOutputs
   = PreConfPackageOutputs
-  { localBuildConfig :: LocalBuildConfig
-  , configuredProgs :: ConfiguredProgs }
+  { buildOptions         :: BuildOptions
+  , extraConfiguredProgs :: ConfiguredProgs
+  }
 
 data PostConfPackageInputs
   = PostConfPackageInputs
@@ -713,8 +724,10 @@ From the build tool's perspective, the global configuration phase goes as follow
   producing a `LocalBuildConfig`.
 
 - Run the `preConfPackageHook`, which has the opportunity to modify the
-  initially decided global configuration (producing a new `LocalBuildConfig`). After
-  this point, the `LocalBuildConfig` can no longer be modified.
+  initially decided global configuration (with a `BuildOptions` that overrides
+  those stored in the passed in `LocalBuildConfig`, and `ConfiguredProgs` that
+  get added to the `ProgramDb`).  
+  After this point, the `LocalBuildConfig` can no longer be modified.
 
 - Use the `LocalBuildConfig` in order to perform the global package
   configuration. This produces a `PackageBuildDescr` containing the information
@@ -852,7 +865,8 @@ individual files involved as inputs and outputs. It should nevertheless be
 possible to build higher level patterns on top, using Haskell's usual powers of
 abstraction to generate the lower level rules. Crucially, the design allows the
 rules to be used across an IPC interface, which is necessary for build tools
-like `cabal-install` or HLS to be able to interrogate and invoke them.  
+like `cabal-install` or HLS to be able to interrogate and invoke them
+(see e.g. the future work discussed in [§ Hooks integration](#hooks-integration)).  
 
 The full details of the design of pre-build hooks are provided in
 [§ Pre-build hooks](#pre-build-hooks).
@@ -879,8 +893,7 @@ packages/components are being built in parallel.
 
 #### Post-build hooks
 
-Separately from the pre-build rules, we also propose to introduce post-build
-hooks. These cover a simple use case: namely to perform an IO action after an
+Post-build hooks cover a simple use case: performing an IO action after an
 executable has been built.
 
 This functionality gives package authors a way to modify an executable after
@@ -905,7 +918,7 @@ data PostBuildComponentInputs
   { buildFlags :: BuildFlags
   , localBuildInfo :: LocalBuildInfo
   , targetInfo :: TargetInfo
-  } deriving (Generic, Show)
+  }
 
 type PostBuildComponentHook = PostBuildComponentInputs -> IO ()
 ```
@@ -952,9 +965,9 @@ declarative features.
 An alternative approach would be to regard as illegitimate any use cases which
 treat `Cabal` as a packaging and distribution mechanism for executables, and on
 that basis, cease to provide install hooks.  We do not follow this approach because
-it would significantly inconvenience maintainers of packages that rely on this
-behaviour (e.g. Agda and Darcs), for a relatively small reduction in complexity
-in `Cabal`.
+it would block maintainers of packages that rely on this behaviour
+(e.g. Agda and Darcs) from migrating, for a relatively small reduction in
+complexity in `Cabal`.
 
 It is important that these install hooks are consistently run both when copying
 and when installing, as this fixes the inconsistency noted in
@@ -987,21 +1000,13 @@ The key components of such a rule description are:
     located (in this case, the rule refers to them using `${input}` and
     `${output}`).
 
-In particular, such a design fits the needs of the Haskell Language Server,
-which needs to be able to:
-
-  1. Query the package for all its pre-build rules.
-  2. Find out all the rules that have become stale and need to be re-run.
-  3. Execute individual rules.
-
-However, the textual description of rules presented above suffers from some
+Unfortunately, the textual description of rules presented above suffers from some
 limitations that would make migrating existing packages with `Custom` build-type
 difficult. In particular, one often wants to allow rules to depend on each other
-in a more dynamic manner.  
-For example, consider how one might want to query an external executable in
-order to determine the dependency structure; say by running
+in a more dynamic manner, for example if one needs to query an external
+executable in order to determine the dependency structure; say by running
 [`ghc -M`](https://downloads.haskell.org/ghc/latest/docs/users_guide/separate_compilation.html#makefile-dependencies)
-on a root Haskell module in order to compute a build graph.
+on a root Haskell module in order to compute a build graph (or `gcc -M`, etc).
 
 ### Motivation: a simplistic first design
 
@@ -1012,182 +1017,308 @@ of HLS as well as the existing `Custom` setup scripts, might look like:
 ```haskell
 type TentativeRules env = env -> IO [TentativeRule]
 data TentativeRule = TentativeRule
-  { dependencies :: [Dependency]
-  , results :: [Result]
-  , action :: [ResolvedLocation]
-               -- ^ locations of __dependencies__ (determined by the build system)
-           -> [ResolvedLocation]
-              -- ^ locations for __results__ (chosen by the build system)
-           -> IO ()
+  { dependencies :: [FilePath]
+  , results :: NonEmpty FilePath
+  , action :: IO ()
   }
 ```
 
 That is, rules are specified by a function that takes in an environment
 (which in practice consists of information known to `Cabal` after configuring,
-e.g. `LocalBuildInfo`, `ComponentLocalBuildInfo`).
-This function returns an `IO` action that computes a list of rules. Each rule
-declares its inputs and outputs, and from this information arises the dependency
-structure between rules.  
-To run a rule, the build system must determine specific locations for all
-these inputs and outputs, and pass them to the `action` in order to
-execute the rule. For example, the build system would search for `blah/foo/bar.y`
-in the source directories of the project, and pass an absolute path to the
-file it found to the `action`.
+e.g. `LocalBuildInfo`, `ComponentLocalBuildInfo`) and returns an `IO` action
+that computes a list of rules.  
 
 ### Proposed design of rules
 
 There are several shortcomings with the above simplistic design:
 
-  1. it does not fit well with the proposed IPC interface for hooks:
-     namely, the build tool should be able to query the separate hooks
-     executable to obtain all the hooks that a package with `Hooks` `build-type`
-     provides. Doing so with the design proposed above would require a mechanism for
-     serialising and deserialising the `IO` actions that execute the rules, which in
-     practice would mean providing a DSL for `IO` actions that can be serialised,
+  1. It does not support an IPC interface that would allow integration
+     with other build tools (see [§ Hooks integration](#hooks-integration)).
+     Broadly, we expect the build tool to be able to query the separate hooks
+     executable in order to obtain all the hooks that a package with `Hooks`
+     `build-type` provides, as we have no way of serialising and deserialising
+     arbitrary `IO` actions.
 
-  2. it lacks information that would allow us to determine when the rules need
+  2. It lacks information that would allow us to determine when the rules need
      to be recomputed:
 
        a. if the rules were computed by invoking `ghc -M` (or similar), we would
           need to recompute them if the user adds a new file that would
           have been found by that call to `ghc -M`.
 
-       b. if the `env` environment changed, we might or might not need to recompute
-          the rules. We should have a mechanism for rules to declare what part
-          of the environment they depend on, so that we don't need to pessimistically
-          rerun the computation anew each time.
+       b. if the `env` environment changed, we might or might not need to re-run
+          individual rules. We need a mechanism to match up old rules (from a
+          previous computation) with new rules, and determine whether the rules
+          have changed (and thus need to be re-run) or not.
 
-We propose to fix (1) by adding an extra layer of indirection: instead of a
-`Rule` directly storing an `IO` action, it stores a reference to an action.
-We can then separately query the external hooks executable with this reference
-in order to run the action.
+  3. The dependency structure is overly reliant on filepaths, see
+     [§ Dependency structure](#dependency-structure).
 
-We fix (2) by adding `monitoredValue` and `monitoredDirs` fields to `Rule`.
+We propose to fix (1) by using static pointers, taking inspiration from
+[Cloud Haskell](#cloud-haskell).
+
+We fix (2) by (a) adding monitoring of files and directories (see
+[§ Rule monitors](#rule-monitors)), and (b) by attaching a unique `RuleId`
+identifier to each rule, together with a `Eq Rule` instance.
+
+We fix (3) by requiring that rules that consume the output of another rule
+directly refer to that rule, rather than indirectly depending on the same
+filepath that that rule outputs.
 
 We thus propose:
 
 ```haskell
-newtype Rules env =
-  Rules { runRules :: env -> ActionsM ( IO [Rule] ) }
+data Rule
+  = Rule
+    { ruleAction :: !RuleCommands
+    -- ^ To run this rule, which t'Command's should we execute?
+    , staticDependencies :: ![Dependency]
+    -- ^ Static dependencies of this rule.
+    , results :: !(NE.NonEmpty Location)
+    -- ^ Results of this rule; see t'Result'.
+    }
+  deriving (Eq, Binary)
 
-data Rule = Rule
-  { dependencies :: ![ Dependency ]
-     -- ^ Dependencies of this rule.
-     --
-     -- When the build system executes the action associated to this rule,
-     -- it will resolve these dependencies and pass them as an argument
-     -- to the action, in the form of a @['ResolvedDependency']@.
-  , results :: ![ Result ]
-     -- ^ Results of this rule.
-  , actionId :: !ActionId
-     -- ^ To run this rule, which t'Action' should we execute?
-     --
-     -- The t'Action' will receive exactly as many 'ResolvedLocation'
-     -- arguments as there are 'Dependency' values stored in the
-     -- 'dependencies' field.
+data RuleId -- opaque
 
-  , monitoredValue :: !( Maybe ByteString )
-     -- ^ A monitored value.
-     --
-     -- The rule is considered out-of-date when the environment passed to
-     -- compute this rule changes and this value also changes.
-     --
-     -- A value of @Nothing@ means: always consider the rule to be out-of-date.
-     --
-     -- A value of @Just _@ means: consider the rule to be out-of-date if,
-     -- after re-computing rules from the environment, the stored value
-     -- has changed.
-  , monitoredDirs :: ![ Location ]
-     -- ^ Monitored directories; if the contents of these directories change,
-     -- the rule is considered out-of-date.
+data RuleCommands
+  = -- | A rule with statically-known dependencies.
+    forall arg.
+    Typeable arg =>
+    StaticRuleCommand
+      { staticRuleCommand :: !(Command arg (IO ()))
+      -- ^ The command to execute the rule.
+      }
+  | DynamicRuleCommands { .. } -- (explained later)
+
+instance Eq RuleCommands
+instance Binary RuleCommands
+
+-- NB: essentially the Cloud Haskell "Closure" type.
+data Command arg res = Command
+  { actionPtr :: !(StaticPtr (arg -> res))
+  -- ^ The (statically-known) action to execute.
+  , actionArg :: !arg
+  -- ^ The (possibly dynamic) argument to pass to the action.
+  , cmdInstances :: !(StaticPtr (Dict (Binary arg, Show arg)))
+  -- ^ Static evidence that the argument can be serialised and deserialised.
   }
 
-newtype Action =
-  Action
-    { action
-      :: [ ResolvedLocation ]
-           -- ^ locations at which the __dependencies__ of this action
-           -- were found
-      -> [ ResolvedLocation ]
-           -- ^ locations in which the ___results__ of this action
-           -- should be put
-      -> IO () }
+instance Eq (Command arg res)
+instance Binary (Command arg res)
+
+newtype Rules env =
+  Rules { runRules :: env -> RulesT IO () }
 ```
 
-The specific monadic type of rules, namely
+In this design, a rule stores a closure (in the sense of Cloud Haskell) that
+executes it, using the `RuleCommands` datatype. For the simple case of a static
+rule (with no dynamic dependencies), this constists of:
+
+  - a static pointer to a function expecting an argument and returning `IO ()`,
+  - the argument to pass to the action,
+  - static evidence that the argument can be serialised/deserialised, so that
+    it can be passed through an IPC interface.
+
+For example, the function might be an invocation of `happy` whose arguments
+depend on the passed in value (e.g. which module we are compiling).
+
+The specific monadic return type, `RulesT IO ()`, is used internally to handle
+generation of `RuleId`s as explained in [§ Identifiers](#identifiers).
+Ignoring these implementation details, we can think of the rules as being
+specified by a Haskell function with the following type:
 
 ```haskell
-env -> ActionsM ( IO [Rule] )
+env -> IO (Map RuleId Rule, [MonitorFileOrDir])
 ```
 
-is meant to address concerns surrounding generation of `ActionId`s, as is
-explained in [§ Identifiers for fine-grained rules](#identifiers-for-fine-grained-rules).
-In practice, we can think of the rules as being specified by a Haskell
-function with the following type:
+This design is an intermediate point in between the applicative and monadic
+dependency structures defined in [Build systems à la carte](#carte):
 
-```haskell
-env -> ( Map ActionId Action, IO [Rule] )
-```
+  - an applicative interface enforces a static dependency structure, which
+    is not flexible enough when we need to query an executable for dependencies
+    (e.g. `gcc -M`),
+
+  - a monadic interface allows full dynamic dependencies. While desirable,
+    this presents challenges when considering how to communicate this build
+    graph to other build systems such as HLS (it would require the ability to
+    call back into the build system from within the hooks executable, as
+    detailed in [Free Delivery](#delivery)).
+
+Instead, we opt to restrict ourselves to a limited amount of dynamicism in
+the dependency structure of rules: we can dynamically generate a collection
+of rules, and each rule can then introduce additional dynamic dependencies
+on other rules (but not add any new nodes to the dependency graph).
+This follows the design in `ninja`, which requires a tool to generate a ninja
+file that lists rules and their dependencies, with rules being allowed to
+declare
+[additional dynamic dependencies](https://ninja-build.org/manual.html#ref_dyndep).
+
+This design seems sufficient for common use cases, such as GHC's build system.
+Indeed, as explained in [Hadrian](#hadrian), its Make build system only required
+second-layer expansion (i.e. `$$$$`) for rules that invoke `ghc -M` in some way,
+not any further layers.  
+More generally, it is preferable to output a set of rules that are at a rather
+low-level, so that these can be readily consumed by build tools, rather than
+requiring the build tool to do additional work to resolve dependencies.
 
 ### Dependency structure
 
-Rule dependencies and results are declared using the following datatypes:
+We propose the following API for rule dependencies:
 
 ```haskell
-data Dependency
-  -- | Declare a dependency on a file from the current project that should
-  -- be found by looking at project search paths.
-  --
-  -- This file might exist already, or it might be the output of another rule.
-  = ProjectSearchDirFile
-      !Location
-        -- ^ where to go looking for the file
-      !FilePath
-        -- ^ path of the file, relative to a Cabal search directory
-type Result = ( Location, FilePath )
-data Location
-  -- | A source file:
-  --
-  -- - for a rule dependency, we will go looking for it in
-  --   the source directories and in autogen modules directories;
-  -- - for a rule output, the file should be put in an autogen module directory.
-  = SrcFile
-  -- | A build-file, that belongs to some build directory.
-  | BuildFile
-  -- | A temporary file.
-  | TmpFile
+data Dependency = RuleDependency RuleOutput | FileDependency Location
+data RuleOutput = RuleOutput { outputOfRule :: RuleId, outputIndex :: Int }
 ```
 
-To illustrate, a rule could declare a dependency on `Parser.y` (using the
-`dependencies` field). The build-system will look through appropriate
-search paths to resolve this dependency, and pass the location in which the file
-was found on disk as one of the elements of the list passed as the first argument
-to the `action` stored in the `Action` that the rule refers to through its
-`ActionId`. (Although see [§ No searching in fine-grained rules](#no-searching-in-fine-grained-rules)
-for an alternative in which searching is performed when computing the rules
-themselves.)
+In particular, a rule that depends on the output of another rule must depend
+directly on the rule, rather than the file that that rule outputs.  
+This ensures that dependencies are resolved upfront rather than when running
+the rules. This ensures that any complexity in the structure of the rules exists
+within the program generating the rules rather than in the build tool consuming
+them. Moreover, this design avoids several issues surrounding stale files that
+plague `Shake` and `Hadrian` in practice; see
+[§ Rules only depend on files](#rules-only-depend-on-files).
 
-Note that we do not allow a rule to directly depend on another rule, as this
-can easily introduce bugs. For example, suppose that `Rule {ruleId = 1}`
-outputs `A.y` and `Rule {ruleId = 2}` depends on `A.y` in order to produce
-`A.hs`. It is much more direct and robust for rule 2 to directly declare its
-dependency on `A.y`, rather than on (the output of) rule 1, as the latter is
-prone to breakage if one refactors the code and changes which rule generates
-`A.y`.
+Note that we still require the ability for rules to depend directly on files,
+to account for situations in which the file is not generated by another rule,
+such as for a Happy pre-processor rule `A.y -> A.hs`, where `A.y` is a source
+file present on disk (e.g. open in a code editor window).
+
+#### File dependencies
+
+Locations on the file system are specified as fully resolved paths, using
+the `Location` type:
+
+```haskell
+-- | A (fully resolved) location of a dependency or result of a rule,
+-- consisting of a base directory and of a file path relative to that base
+-- directory path.
+--
+-- In practice, this will be something like @( dir, toFilePath modName )@,
+-- where:
+--
+--  - for a file dependency, @dir@ is one of the Cabal search directories,
+--  - for an output, @dir@ is a directory such as @autogenComponentModulesDir@
+--    or @componentBuildDir@.
+type Location = (FilePath, FilePath)
+```
+
+That is, each rule can be thought of as a pure function that takes in the
+contents of the files at the input locations (the `dependencies` of the rule),
+and outputs the contents of the files at the output locations (the `results`
+of the rule).  
+The logic that computes all pre-build rules is responsible for computing such
+resolved locations, for example by searching the Cabal search directories.
+However, there are certain restrictions on the filepaths used for results of
+rules. Namely:
+
+  - these filepaths are not allowed to refer to files outside the project,
+  - the location of any result file must either be the autogenerated modules
+    directory for the component, the build directory for the component, or
+    a temporary directory for the component.
+
+To implement the `happy` preprocessor using these fine-grained build rules,
+one would thus:
+
+  - search for all `.y` files corresponding to Haskell modules declared by the
+    component in the `.cabal` file,
+  - for each such `.y` file, register an associated rule that stores the
+    `happy` action together with the relevant arguments to pass to it (e.g.
+    the input/output locations and additional flags).
+
+This results in one rule for each `.y` file, which will get re-run whenever the
+associated `.y` file is modified.  
+The rules need to be re-computed whenever a `.y` file gets added/removed, or when
+a `.hs` file with the same module name as a `.y` file gets added/removed; we can
+declare this by using the `MonitorFileOrDir` functionality.
+
+#### Dynamic dependencies
+
+Inspired by [ninja's dynamic dependencies](https://ninja-build.org/manual.html#ref_dyndep),
+we support rules with dynamic dependencies, using the following API:
+
+```haskell
+data RuleCommands
+  = -- | A rule with statically-known dependencies.
+    forall arg.
+    Typeable arg =>
+    StaticRuleCommand
+      { staticRuleCommand :: !(Command arg (IO ()))
+      -- ^ The command to execute the rule.
+      }
+  | -- | A rule with dynamic dependencies, which consists of two parts:
+    --
+    --  - a dynamic dependency computation, that returns additional edges to
+    --    be added to the build graph together with an additional piece of data,
+    --  - the command to execute the rule itself, which receives the additional
+    --    piece of data returned by the dependency computation.
+    forall depsArg depsRes arg.
+    (Typeable depsArg, Typeable depsRes, Typeable arg) =>
+    DynamicRuleCommands
+      { dynamicRuleInstances :: !(StaticPtr (Dict (Binary depsRes, Show depsRes)))
+      -- ^ Static evidence used for serialisation, in order to pass the result
+      -- of the dependency computation to the main rule action.
+      , dynamicDepsCommand :: !(Command depsArg (IO ([Dependency], depsRes)))
+      -- ^ A dynamic dependency computation. The resulting dependencies
+      -- will be injected into the build graph, and the result of the computation
+      -- will be passed on to the command that executes the rule.
+      , dynamicRuleCommand :: !(Command arg (depsRes -> IO ()))
+      -- ^ The command to execute the rule. It will receive the result
+      -- of the dynamic dependency computation.
+      }
+```
+
+Here, a rule with dynamic dependencies is specified by two actions:
+
+  - an action that computes dynamic dependencies and returns additional data,
+  - an action that takes in this additional data and executes the rule.
+
+The information flow is that the build system should execute all these dynamic
+dependency computations first, adding all the resulting edges to the build graph.
+It can then start running rules in dependency order, passing any rules with
+dynamic dependencies the additional data that was returned by the dependency
+computation.
+
+This functionality is important in handling the common case of imports without
+wasting work. Consider for example pre-processing `.chs` files:
+
+  - An individual file `foo.chs` can be compiled using `c2hs`, producing both
+    `foo.hs` and `foo.chi`.
+  - `foo.chs` may import `bar.chs`, introducing a dependency of `foo.chs`
+     on `bar.chi`.
+
+To preprocess a collection of `.chs` files, we would register a rule with
+dynamic dependencies for each `.chs` file, consisting of two actions:
+
+  - a dynamic dependency action that computes which `.chi` files the current
+    `.chs` file depends on for compilation,
+  - the `c2hs` preprocessor action, that outputs both a `.hs` and a `.chi`
+    file.
+
+See [§ API overview](#api-overview) for an illustration of such an implementation.
+
+This design means that we **do not** re-run the entire computation of rules
+each time a `.chs` file is modified. Instead, we re-run the dependency
+computation of the modified `.chs` file (as its imports list may have changed),
+which allows us to update the build graph.  
+This ensures the dependencies of this rule remain up to date, ensuring correct
+recompilation checking. Without this mechanism for declaring additional dynamic
+dependencies, we would be forced to re-run the entire computation of rules each
+time any input to any rule changes, which potentially leads to a lot of wasted
+work.
 
 ### Rule demand
 
-The general flow is that we can find, by traversing the `[Rule]`
-returned from querying all pre-build rules, what all the dependencies of
-rules are. Whenever any of these changes, we must then:
+When do we re-run the actions associated to individual rules, and when do
+we re-compute the rules (which, we recall, are returned as the result of an
+`IO` action)?
 
-  1. Re-query the pre-build rules to obtain all up-to-date rules. This step
-     is necessary because the dependency structure might have changed.
-  2. Find out all the rules that are now stale and need to be re-run.
-  3. Re-run all demanded stale rules by calling out to the separate hooks
-     executable, passing the `ActionId` and additional action arguments to
-     that executable in order to run the `Action` associated to each
-     demanded stale rule.
+The general flow is as follows:
+
+  1. When the rules are **out-of-date**, re-query the pre-build rules to obtain
+     up-to-date rules.
+  2. Re-run the **demanded** **stale** rules.
 
 A rule is considered **demanded** if:
 
@@ -1200,109 +1331,221 @@ following conditions apply:
 
 <dl>
   <dt>O1</dt>
-  <dd>a file dependency of a rule has changed in some way,</dd>
+  <dd>there has been a (relevant) change in the files and directories monitored
+      by the rules, or</dd>
 
   <dt>O2</dt>
-  <dd>the environment passed to the computation of rules has changed,</dd>
+  <dd>the environment passed to the computation of rules has changed.</dd>
 
-  <dt>O3</dt>
-  <dd>there has been a relevant change in a file or directory monitored
-      by a rule.</dd>
 </dl>
 
 If the rules are out-of-date, we re-run the computation that computes
-all rules. Once this is done, we compute which rules are stale.
-
-A rule is considered **stale** if, after re-running the computation of all
-of the rules, any of following conditions apply:
+all rules. After this re-computation of the set of all rules, we match up new
+rules with old rules, by `RuleId`. A rule is then considered **stale** if any of
+following conditions apply:
 
 <dl>
-  <dt>S1</dt>
-  <dd>a dependency of the rule has been modified/created/deleted,
-      or a (transitive) rule dependency of the rule is itself stale;</dd>
-
-  <dt>S2</dt>
-  <dd>the monitor value is stale, i.e. either:
-     <ol>
-      <li>the <code>monitoredValue</code> of the rule changed, or</li>
-      <li>the rule declares <code>monitoredValue = Nothing</code>.</li>
-     </ol>
+  <dt>N</dt>
+  <dd>the rule is new, or</dd>
+  <dt>S</dt>
+  <dd>the rule matches with an old rule, and either:
+    <dl>
+    <dt>S1</dt>
+    <dd>a file dependency of the rule has been modified/created/deleted, or
+        a (transitive) rule dependency of the rule is itself stale, or</dd>
+    <dt>S2</dt>
+    <dd>the rule is different from the old rule, e.g. the argument stored in
+        the rule command has changed, or the pointer to the action to run the
+        rule has changed. (This is determined using the <code>Eq Rule</code>
+        instance.)
+    </dd>
+    </dl>
   </dd>
 </dl>
 
-A stale rule becomes no longer stale once we run its associated action; the
-build system is responsible for re-running the actions associated with
-each demanded stale rule, in dependency order.
+A stale rule becomes no longer stale once we run both its associated action
+(which will require running the rule's dynamic dependency computation first, if
+it has one). The build system is responsible for re-running the actions
+associated with each demanded stale rule, in dependency order (including dynamic
+dependencies).
 
 Justification:
 
-  - (O1)/(S1) are clear. If we change a file that a rule depends on,
-    the rule needs to be re-run.  
-    Because the dependency structure might also change, we need to recompute
-    all the rules first, before then re-running the ones that have been staled.
-  - (O2) is also clear: if we change the environment, we need to re-compute
-    the rules (as the rules are given by specifying a function from an
-    environment).  
+  - (O1) covers any situation in which we perform some kind of search to
+    generate the rules. This might be the case when one is using a templating
+    mechanism for which there isn't a one-to-one mapping between modules
+    declared in the `.cabal` file and source files on disk.
+  - (O2) is clear: if we change the environment, we need to re-compute
+    the rules (as the rules are specified by a function from an environment).  
     Note that this covers the event of the package configuration changing
     (e.g. after `cabal configure` has been re-run).
-  - (S2) is an optimisation that ensures we don't pessimistically re-run a rule
-    every time we change the environment, but only when the monitored value changes.
-  - (O3) covers the use case in which we invoke an external tool (such as
-    `ghc -M`) which performs a search in order to compute a dependency graph.
-    We want to ensure that, if the user adds a new module, we re-run this
-    dependency computation.  
-    We don't want to rely on the user necessarily re-configuring the package,
-    especially as the package description might not necessarily have changed
-    (even though, in common cases, one expects that adding a new source file
-    would correspond to a new module declared in the `.cabal` file).
+  - (N, S1) are clear.
+  - (S2) ensures we don't pessimistically re-run a rule every time we change the
+    environment, but only when the rule actually changes.
 
 ### Identifiers
 
-Note that [§ Rule demand](#rule-demand) requires a notion of persistence across
-invocations, as is necessary to compute staleness of individual rules. We can't
-simply use the index of the rule in the returned `[Rule]`, as this might vary
-if new rules are added. Instead, we propose that a rule be uniquely identified
-by the set of outputs that it produces. This gives the necessary way to match
-up rules output by two different executions of the `IO` action that computes
-the set of pre-build rules.
+[§ Rule demand](#rule-demand) requires a notion of persistence across
+invocations, as is necessary to compute staleness of individual rules. For this,
+we use the `RuleId` of each rule to match up rules output by two different
+executions of the `IO` action that computes the set of pre-build rules.
 
-The question of `ActionId` is somewhat different. With the above design, actions
-are uniquely identified by `ActionId`s, but requiring users to manually generate
-these `ActionId`s is unergonomic and potentially error-prone.  
-In particular, one might want to combine the `Rules` declared by two different
-libraries, as described in [§ Composing `SetupHooks`](#composing--setuphooks-).  
-To avoid having to know that e.g. another package uses `ActionId 17`
-(so as to avoid clashing with it), the implementation is free to provide a
-monadic API that handles creation of fresh `ActionId`s in order to
-ensure that these identifiers are correct by construction.  
-
-We thus propose the following API for hook authors:
+We propose that users generate `RuleId`s themselves with the following API:
 
 ```haskell
-newtype ActionId -- in practice a newtype around 'Int', but this is crucially
-                 -- not exposed in the API in order to prevent users from
-                 -- manually constructing these values
-
-newtype ActionsM a -- in practice, something like 'State (Map ActionId Action) a',
-                   -- but this is an implementation detail
-  deriving (Functor, Applicative, Monad)
-
--- | Register an action. Returns a unique identifier for that action.
-registerAction :: Action -> ActionsM ActionId
-
-newtype Rules env =
-  Rules { runRules :: env -> ActionsM ( IO [Rule] ) }
+registerRule :: ShortText -> Rule -> RulesT IO RuleId
 ```
 
-This frees the package author from the responsibility of handling identifiers
-manually.
+The `ShortText` argument is a user-given name for the rule. Different rules
+defined within a package are required to have different name.  
+These `RuleId`s are used by the build system to determine when a rule needs to
+be re-run. This means that users will in practice want to ensure persistence of
+rules names across computations of rules. For example, if two successive
+computations of the set of rules contain a rule in common, this rule should be
+registered using the same name; not doing so will cause the rule to necessarily
+be re-run the second time around, as described in [§ Rule demand](#rule-demand).
 
-Note that having `ActionId`s vary across invocations of the external hooks
-executable is not problematic: these depend purely on the input environment,
-and every time this input environment changes we recompute the rules themselves.
-So there is no risk that a `Rule` refers to an "outdated" `ActionId`, as long
-as one makes sure that every time the environment changes we recompute the set
-of rules before running any actions.
+Note that rules do not know their own names: instead, one must register rules
+with the API, which returns identifiers which are opaque to the user.  
+This leads to a more declarative and functional style for package authors
+declaring pre-build rules. By having the identifier partly determined by the user
+(in the form of the `ShortText` arguments), we also ensure that these identifiers
+remain understandable by package authors (which should help when debugging
+pre-build rules). This sometimes requires the use of `-XRecursiveDo`, see
+[§ API overview](#api-overview) for an example.
+
+### Rule monitors
+
+The Hooks API provides functionality for declaring monitored files or directories;
+whenever these change, the rules as a whole are recomputed.
+
+The basic API function is
+
+```haskell
+addRuleMonitors :: Monad m => [ MonitorFileOrDir ] -> RulesT m ()
+```
+
+where `MonitorFileOrDir` is some datatype, such as the one that exists in
+`cabal-install` today, that specifies what one wants to monitor.  
+Specifically, `MonitorFileOrDir` should at least support monitoring:
+
+  1. The existence of a file or directory.
+  2. The contents of a file or directory.
+  3. The non-existence of a file or directory.
+
+(3) is necessary for correct searching logic: if the computation of rules
+searches for a file `Foo.bar`, first in directory `X` then in directory `Y`,
+and finds it in `Y`, then we must declare a dependency on the non-existence of
+`X/Foo.bar`: the computation of rules needs to be re-run if this file is created.
+
+Beyond this minimal set of functionality, the API could also support file globs,
+which would allow depending only on e.g. the set of `*.mustache` files in a
+given directory, instead of the entire directory contents.
+
+### API overview
+
+To summarise, we propose the following API for hook authors:
+
+```haskell
+data Rules env -- definition not exposed to the user
+instance Semigroup (Rules env)
+instance Monoid (Rules env)
+
+rules :: StaticPtr (env -> RulesT IO ()) -> Rules env
+
+data RuleId
+  -- In practice, identifiers consists of a pair of a UnitId and
+  -- a user-supplied textual name, but the constructor is crucially
+  -- not exposed in the API in order to enforce hygiene.
+
+newtype RulesT m a
+  deriving (Functor, Applicative, Monad, MonadTrans, MonadIO, MonadFix)
+
+registerRule :: ShortText -> Rule -> RulesT IO RuleId
+addRuleMonitors :: [ MonitorFileOrDir ] -> RulesT IO ()
+```
+
+To illustrate, we might implement the `c2hs` preprocessor using this
+framework (from [§ Dynamic dependencies](#dynamic-dependencies)) as follows:
+
+```haskell
+{-# LANGUAGE RecursiveDo #-}
+{-# LANGUAGE StaticPointers #-}
+
+c2HsPreBuildRules :: PreBuildComponentRules
+c2HsPreBuildRules = rules $ static c2HsRules
+
+c2HsRules :: PreBuildComponentInputs -> RulesT IO ()
+c2HsRules buildEnvt = mdo
+
+  (chsModDirs :: Map ModuleName FilePath)
+    <- searchFileGlobModules buildEnvt "*.chs"
+      -- (NB: this function would also monitor the non-existence of
+      -- corresponding ".hs" files in the search directories.)
+
+  (modNmRuleId :: Map ModuleName RuleId)
+    <- ( `Map.traverseWithKey` chsModDirs ) \ modNm modDir -> do
+      let modPath = toFilePath modNm
+          chsLoc = ( modDir    , modPath <.> "chs" )
+          hsLoc  = ( autogenDir, modPath <.> "hs"  )
+          chiLoc = ( buildDir  , modPath <.> "chi" )
+
+      registerRule ("c2hs " <> show modNm) $
+        dynamicRule (static Dict)
+          ( -- Compute dynamic dependencies
+            mkCommand (static Dict) (static c2HsDepsAction)
+            (chsLoc, c2HsDepsArgs, modNmRuleId) -- Note this use of modNmRuleId
+          )
+          ( -- Execute the rule
+            mkCommand (static Dict) (static runC2HsAction)
+            (chsLoc, c2HsArgs)
+          )
+          -- Static dependencies
+          [ FileDependency chsLoc ]
+          -- Rule outputs
+          ( hsLoc NE.:| [ chiLoc ] )
+  return ()
+
+  where
+    c2HsArgs = c2HsArgsFromEnvt buildEnvt
+    c2HsDepsArgs = c2HsDepsArgsFromEnvt buildEnvt
+
+    c2HsDepsAction :: (Location, Args, Map ModuleName RuleId) -> IO ([Dependency], [ModuleName])
+    c2HsDepsAction (chsLoc, args, ruleIds) = do
+      let chsFile = uncurry (</>) chsLoc
+      -- Run a (hypothetical) "c2hsDeps" command to compute imports of a .chs file.
+      importMods <- run "c2hsDeps" (chsFile : args)
+      return $
+        -- Look up the RuleId that generates each imported chs module.
+        ( [ RuleDependency $ RuleOutput rId 1
+          | imp <- importMods
+          , let rId = ruleIds Map.! imp ]
+        , importMods )
+
+    runC2HsAction :: (Location, Args) -> [ModuleName] -> IO ()
+    runC2HsAction (chsFile, args) importMods = do
+      let chsFile = uncurry (</>) chsLoc
+          depsArgs = chiImportArgs importMods -- tell C2Hs where to find the dependent .chi files
+      run "c2hs" $ (chsFile : args) ++ depsArgs
+```
+
+Note how we use the `static` keyword in the definition of `c2HsPreBuildRules`.
+Here, the Hooks API uses static pointers in order to tag rules by the package that
+defines them, in order to allow combining the `Rules` declared by two different
+libraries, as described in [§ Composing `SetupHooks`](#composing-setuphooks).  
+The user-provided names for rules (`"r1"`, `"r2"`, `"r3"` above) are expected
+to be unique within the package that defines them (note that this is stronger
+than requiring uniqueness in the `static` block that contains them).  
+(NB: we don't use `static` for each individual identifier, as these are often
+dynamically generated based on the result of an `IO` action, as above.)
+
+Moreover, the API also uses static pointers in order to store the actions that
+execute the rules as well as the dynamic dependency actions. This is seen in the
+usage of the `static` keyword in the calls to `mkCommand`.
+
+Finally, note the usage of `RecursiveDo`: the `c2HsDepsAction` dynamic
+dependency computation must be able to look up `RuleId`s to depend on rules, so
+we pass `modNmRuleId :: Map ModuleName RuleId` to it.
 
 ### Inputs to pre-build rules
 
@@ -1330,7 +1573,7 @@ data PreBuildComponentInputs
   { buildingWhat :: BuildingWhat
   , localBuildInfo :: LocalBuildInfo
   , targetInfo :: TargetInfo
-  } deriving (Generic, Show)
+  }
 
 type PreBuildComponentRules = Rules PreBuildComponentInputs
 ```
@@ -1341,11 +1584,12 @@ that one would update the `haddock` and `repl` hooks to mirror the `build` hooks
 (which one can easily forget to do, and end up with an unusable `repl`, for example, see `singletons-base`
 which fails to update the `replHook`).
 
-Note also the interaction with the `monitoredValue` field of `Rule`: when running
-`cabal build && cabal haddock`, we might (or might not) want to re-run the build
-hooks. The way hooks authors can choose which behaviour they want is to output
-a `monitoredValue` that changes (or does not change, respectively) when the
-`BuildingWhat` parameter changes, say from `BuildNormal _` to `BuildHaddock _`.
+Note also the interaction with the `Eq Rule` instance involved in
+[§ Rule demand](#rule-demand): when running `cabal build && cabal haddock`, we
+might (or might not) want to re-run the build hooks. If the rules actions are
+genuinely different (e.g. we pass different command line options when building
+for Haddock), the rules will get re-run, but if the rules are identical we don't
+need to re-run them.
 
 ### Hooked preprocessors
 
@@ -1441,16 +1685,11 @@ package-level pre-configure hook a collection of configured programs. Recall:
 ```haskell
 type PreConfPackageHook = PreConfPackageInputs -> IO PreConfPackageOutputs
 
-data PreConfPackageInputs
-  = PreConfPackageInputs
-  { ..
-  , programDb :: ProgramDb
-  }
-
 data PreConfPackageOutputs
   = PreConfPackageOutputs
   { ..
-  , configuredProgs :: ConfiguredProgs }
+  , extraConfiguredProgs :: ConfiguredProgs
+  }
 ```
 
 The configured programs returned by the package-wide pre-configure hook will
@@ -1626,51 +1865,70 @@ window during which `Custom` will need to be supported.
 
 ### Identifiers for fine-grained rules
 
-Instead of using a monadic API to guarantee correctness of `ActionId`s, we could
-imagine letting users manually create their own `ActionId`s, perhaps with
-an existential type such as:
+Instead of relying on user creating their own `RuleId`s, these could be wholly
+generated by the API. This would ensure correctness by construction, but causes
+difficulties when computing staleness of rules as one cannot use these `RuleId`s
+to match old rules with new rules (as the identifiers might be completely
+different, e.g. all offset by one). We could instead match up rules using their
+declared outputs, but this incurs the risk of introducing bugs involving stale files.
+
+### Rules only depend on files
+
+Compare the following two styles:
 
 ```haskell
-data ActionId where
-  ActionId :: (Typeable a, Ord a, Read a, Show a) => a -> ActionId
+-- Depending on rules
+do
+  rule1 <- registerRule $ Rule { results = [ "A.y" ], ... }
+  rule2 <- registerRule $ Rule { deps = [ rule1 ], result = [ "A.hs" ], ... }
 ```
 
-This design means that each hook author would be able to use a type that is
-specific to them to identify `Action`s, ensuring the `ActionId`s can't clash
-with those defined elsewhere.
+```haskell
+-- Depending on file paths
+do
+  registerRule $ Rule { results = [ "A.y" ], ... }
+  registerRule $ Rule { deps = [ "A.y" ], result = [ "A.hs" ], ... }
+```
 
-This would allow getting rid of the monadic API for creation of fresh `ActionId`,
-but would require additional thought about how we would deserialise such
-`ActionId`s as required by IPC with the external hooks executable.  
-This design would arguably be less robust to internal refactorings, as we end
-up in a situation in which `ActionId`s are aware of their own names.
+With the second style, one can delete the first rule without a compilation error,
+whereas the lexical scoping of the first style prevents such a change.
+This avoids several issues with stale files: if we delete the first rule
+(and don't clean between runs), we run the risk of relying on the stale `.y`
+file produced by a previous run, instead of errorring because one no longer has
+a rule which generates the dependency of the second rule.
 
-### No searching in fine-grained rules
+In the first example, the dependency between the rules is specified directly
+in the code, while in the second, it remains implicit (because a dependency of
+the second rule matches an output of the first rule).  
+The first style is more functional:
+
+  - the data flow of the computation of rules reflects the data flow of the
+    building of rules,
+  - it doesn't introduce any implicit state via the file system, which moves
+    complexity into the logic of the computation of rules and out of the
+    build tool.
+
+### Let the build tool control all searching
 
 As noted in [Pre-build hooks](#pre-build-hooks), rules are described at a
 low-level with explicit inputs and outputs. For example, this framework does
 not include "rule patterns" (generating `*.hs` from `*.y`).  
-However, filepaths are not specified entirely explicitly: for example,
-inputs are declared relative to a search path, and the build system will
-perform the search and then pass the resolved locations of these dependencies.
+Moreover, filepaths are specified entirely explicitly: the rules themselves
+are responsible for searching for input files in the input directory structure.
 
-An alternative design would be to perform all file searching logic inside
-the pre-build hooks, in the computation of the rules. The `Cabal` library would
-provide a convenient interface to do file searching that could be used by
-hook authors. This would simplify the design by making it more uniform, and
-it would eliminate all searching from the semantics of the rules. That is, the
-rules framework would not itself contain any notion of searching; any necessary
-searching would be implemented on top. In particular, rules would no longer need
-separate datatypes for unresolved and resolved dependencies.  
-This is the approach taken by the `ninja` build system, which is designed around
-a low-level syntax of rules being generated by a higher-level framework.  
+An alternative design would be to let the build tool perform all searching logic.
+That is, a rule would specify its dependencies without concrete directory names,
+and the build tool would search for the file, and then pass the fully resolved
+location when running the action. This has the benefit of enforcing a certain
+hygiene: the build system tells the action where the dependencies are and where
+the outputs are.
 
-One possible drawback of such a design is that it risks baking into the hooks
-API assumptions that `Cabal` and `cabal-install` currently make about the
-directory structure of dependencies and outputs: the library interface for
-searching would be provided by `Cabal` for use by hook authors, but one would
-want to account for the needs of other build systems which might use a
-completely way of organising files inputs and outputs.
+However, this design introduces a fair amount of extra complexity to the rules
+framework (e.g. there would be different types for locations of dependencies,
+and for locations of results, before they get resolved by the build system).
+We opted to keep the rules API as low-level as possible, following the approach
+taken by the [`ninja` build system](#ninja), which is designed around a
+low-level syntax of rules being generated by a higher-level framework.  
 
 ### Making other hooks fine-grained
 
@@ -1753,23 +2011,84 @@ This repository fulfills several goals:
     away from `Custom`.
 
 
-### Future work
+## Future work
 
 In the future, it will be desirable for Haskell build tools like `cabal-install`
 to avoid using the `./Setup` CLI interface at all.
 
-* There is no need to perform the full configuration phase for each package, because `cabal-install` has already
-  decided about the global and local configuration.
+* There is no need to perform the full configuration phase for each package,
+  because `cabal-install` has already decided about the global and local
+  configuration.
 * This will allow finer grained build plans, because we don't have to rely
   on `./Setup.hs build` in order to build a package. Instead,
   `cabal-install` could build each module one at a time.
-* It will allow `cabal-install` and other tools to use the `Cabal` library
-  interface directly to manage the build process, which is a richer and more
-  flexible interface than what can be provided by a CLI.
 * `cabal-install` will be able to use per-component builds for all packages,
   where currently it must fall back to per-package builds for packages
   using `build-type: Custom`. This will reduce the number of different code
   paths and simplify maintenance.
+* It will allow `cabal-install` and other tools to use the `Cabal` library
+  interface directly to manage the build process, which is a richer and more
+  flexible interface than what can be provided by a CLI.
 
-We do not currently have guaranteed funding to implement improvements for
-`cabal-install`, but intend to seek this in the future.
+We plan to continue working on improvements to `cabal-install` following
+this proposal, thanks to additional support from the Sovereign Tech Fund.
+
+### Hooks integration
+
+This proposal defines the interface for the hooks as a Haskell library
+interface, with the understanding that build tools will choose their own
+mechanism to interact with the hooks interface.
+
+Here are a few examples of how build tools might want to integrate with hooks
+via IPC:
+
+  - by emulating the classic `Setup.hs` CLI,
+  - in "one shot" CLI style: build `SetupHooks.hs` against a stub executable
+    that implements a CLI to expose all the hooks in a simple "invoke then terminate"
+    way, i.e. not as a long running process.  
+    This choice might be appropriate for non-interactive CLI tools like
+    `cabal-install` or `stack`.
+  - in interactive/server style: build `SetupHooks.hs` against a stub executable
+    that communicates over pipes to be able to invoke hooks on command, in a
+    long-running process style. This would minimise latency at the cost of some
+    memory.   
+    This choice might be appropriate for an IDE such as HLS, as well as for
+    use with GHCi.
+
+In the one-shot style, the build system would run a hook such as
+`preConfPackageHook :: PreConfPackageInputs -> IO PreConfPackageOutputs` by
+serialising its inputs (`PreConfPackageInputs`), passing this data to the
+external hooks executable it has compiled, and deserialising the output data
+from the executable to obtain the outputs (`PreConfPackageOutputs`).
+
+In server style, one would avoid the cost of having to pass this data over
+and over, as one would only need to pass what has changed in the meantime.  
+
+On top of these options, it would also be possible to directly link against the
+hooks, or to dynamically load them into an existing process, to further minimise
+the overhead of invoking hooks, but the above IPC mechanisms seem more realistic
+in practice.
+
+# References
+
+<a id="carte" href=https://www.microsoft.com/en-us/research/uploads/prod/2018/03/build-systems.pdf>
+[Build Systems à la Carte]</a>
+Andrey Mokhov, Neil Mitchell, Simon Peyton Jones: <b>Build Systems à la Carte</b>
+(2018).
+
+<a id="cloud-haskell" href=https://www.microsoft.com/en-us/research/wp-content/uploads/2016/07/remote.pdf>
+[Towards Haskell in the Cloud]</a>
+Jeff Epstein, Andrew P. Black, Simon Peyton Jones: <b>Towards Haskell in the Cloud</b>
+(2011).
+
+<a id="delivery" href=https://www.cs.ox.ac.uk/jeremy.gibbons/publications/delivery.pdf>
+[Free Delivery]</a>
+Jeremy Gibbons: <b>Free Delivery</b> (2016).
+
+<a id="hadrian" href=https://www.microsoft.com/en-us/research/wp-content/uploads/2016/03/hadrian.pdf>
+[Hadrian]</a>
+Andrey Mokhov, Neil Mitchell, Simon Peyton Jones, Simon Marlow: <b>Non-recursive Make Considered Harmful</b>
+(2016).
+
+<a id="ninja" href=https://ninja-build.org>[Ninja]</a>
+The ninja build system.
