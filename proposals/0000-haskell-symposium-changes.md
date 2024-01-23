@@ -32,7 +32,7 @@ Under this proposal, authors will still submit papers to the Haskell Symposium, 
 
 Authors of accepted papers will present their papers at the Symposium, whether or not they are intended for JFP.  Authors of papers intended for JFP may also provide links to materials to be included in the program.
 
-JFP will accept the HS reviews as the first round of reviewing for JFP, provided the reviews meet the standards of the journal.  Authors of accepted papers will then be given the option to revise their papers for submission to JFP.  To assure that these appear in a timely fashion, and to give authors the chance to include feedback from the Symposium, the deadline for revision will shorty after the Symposium itself.  Revised papers will be reviewed by JFP, most likely by the original reviewers.
+JFP will accept the HS reviews as the first round of reviewing for JFP, provided the reviews meet the standards of the journal.  Authors of accepted papers will then be given the option to revise their papers for submission to JFP.  To assure that these appear in a timely fashion, and to give authors the chance to include feedback from the Symposium, the deadline for revision will be shortly after the Symposium itself.  Revised papers will be reviewed by JFP, most likely by the original reviewers.
 
 The final decision of the JFP editors is, of course, independent of the decision of the Haskell Symposium PC.
 
