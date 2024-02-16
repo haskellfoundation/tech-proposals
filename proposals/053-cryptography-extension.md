@@ -30,7 +30,11 @@ Solving this required bringing back cryptographic typeclasses, which were origin
 
 This has ultimately ended up delaying the `botan` library by a few weeks after feedback indicated a strong desire to see more effort being spent on polishing, documentation, and release of `botan-bindings` and `botan-low` before continuing work on `botan`.
 
-These issues could have been handled by better prioritization and scope management, and a more clear communication of any effect on the project timeline. As such, this proposal is slightly less aggressive in scope, to allow for a little more flexibility to account for shifting needs and feedback.
+These issues and confounding factors could have been handled by better prioritization and scope management, and a more clear communication of any effect on the project timeline. 
+
+However, there are mitigating factors as well: significant progress was made towards a high-value stretch goal (Extended X509 suppport), and the deliverables were met despite the size and scope of the project being significantly larger than originally estimated.
+
+As such, this proposal is slightly less aggressive in scope, to allow for a little more flexibility to account for shifting needs and feedback.
 
 # Technical Content
 
