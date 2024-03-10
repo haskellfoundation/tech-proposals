@@ -26,7 +26,7 @@ We'd like to spend a good chunk of time improving the installation process, with
 
 [^1]: Definitely more highly requested than anticipated
 
-This is a high-priority goal, alongside improvements to CI and unit testing, and will be a major focus. We're already looking into using `build-type: Configure` for bundling Botan C++ as a Haskell package for easy installation on all operating systems - we'd like for usage to be as easy as adding `botan` to your dependencies.
+This is a high-priority goal, alongside improvements to CI and unit testing, and will be a major focus. We're already looking into using `build-type: Configure` to automatically fetch and/or build the latest compatible version of Botan C++ via Cabal if it is not already installed, in order to streamline the process on all operating systems - we'd like for usage to be as easy as adding `botan` to your dependencies.
 
 ## Development of a drop-in interface replacement for `crypton`
 
@@ -80,10 +80,6 @@ We'd also like to investigate integrating with other libraries. In particular, w
 
 Finally, we'd also like to continue improving, unifying, and standardizing the `botan-low` factory methods used to generate bindings bindings, for improved low-level consistency overall. The techniques for binding to functions were refined over time, and have not been evenly applied, and there is a significant amount of duplicated code or one-off implementations. It would improve maintenance significantly if all of the buffer handling et al were in one place.
 
-## Development of a high-level libsodium-like interface
-
-We'd like to expose a high-level libsodium-like interface of selected best-in-class algorithms in order to make usage dead simple. We don't want you managing primitives yourselves - we want you calling a simple function purely or in an appropriate monad / transformer. This is bit of a stretch goal, however, in favor of focusing our efforts on primary goals such as replacing `crypton`.
-
 # Timeline and Budget
 
 We propose a timeline of 3 months for these new goals, with a budget of $7000 USD per month for one full-time engineer. Please see the [first proposal][first proposal] for more detail.
@@ -107,7 +103,6 @@ The following are secondary deliverables, to be considered as optional stretch g
 - Continued development of the cryptographic typeclasses and gold-standard algorithm modules
     - There is no set completion date on this, but progress should be made if possible
 - Completion of the objectives in 'Continued improvements to `botan`'
-- Development of a high-level libsodium-like interface
 
 ## Intermediate deliverables
 
@@ -137,6 +132,7 @@ This proposal will be considered a success if the immediate and intermediate del
 
 There are many things that are out-of-scope or are of lower priority than the the project goals already mentioned. The following are long-term goals that are likely to be revisited in a future proposal:
 
+- Development of a high-level libsodium-like interface of recommended best-in-class algorithms
 - Implementation of advanced algorithms such as Merkle Trees, Distributed JSON, [Signal's Double Ratchet][double ratchet], and [Apple's PQ3][apple pq3]
 - Improving APIs with higher-order functions
 - To investigate integration / migrating specific libraries to `botan`, such as `x509`, `tls`, `servant`, as an alternative to `crypton`
