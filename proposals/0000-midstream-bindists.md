@@ -150,20 +150,7 @@ idea how to achieve that.
 
 ## Technical Content
 
-We propose here to create a joint project of "installation experience" developers to get funding and maintain
-all tooling bindists centrally and autonomically.
-
-This will allow:
-
-* greater quality assurance
-* good platform support, we want to support at least these consistently:
-* more bindists for uncommon linux distros
-* continuously updated and maintained bindists (including historical GHC versions)
-* actually working nightlies
-
-### Phase 1
-
-In Phase 1 we will build the entire Haskell toolchain autonomically.
+We propose here to start with the smallest step possible, to build the entire Haskell toolchain autonomically.
 The way this will be implemented is to start a central GitHub repository that builds bindists for releases of:
 
 - GHC
@@ -197,9 +184,17 @@ For the following Linux x86_64 distros:
 
 Linux i386, armv7 and aarch64 will be confined to Debian or Ubuntu.
 
-### Phase 2
+These private runners will be made available to the whole Haskell GitHub org and as such benefit
+other projects there as well (like HLS, Cabal, bytestring, etc.).
 
-In Phase 2 we want to:
+## Future work
+
+The following ideas and goals are outside of the scope of this proposal, but are essential
+to understand the broader mission and roadmap that motivated this proposal.
+
+### Enhancements to bindist quality and installation experience
+
+Further goals are:
 
 * enhance the quality of the bindists by
   - running the entire test suite for all of the tools
@@ -225,56 +220,38 @@ this type of feedback. Early release candidates can assist with this workflow.
 Another perception shift necessary is that upstream projects should consider that their build system
 are end-user interfaces, making it easier for both distributors and end-user to build release binaries correctly themselves.
 
-### Phase 3
+### Nightlies
 
-In phase 3, we will mainly focus on making nightlies available for GHC and cabal. This will require
+We also want to make nightlies available for GHC and cabal and HLS. This will require
 coming up with a permanent storage solution and very robust nightly pipelines.
-
-HLS nightlies may be added as well.
 
 ## Timeline
 
-* phase 1 (6 months): proof of concept of a central GitHub CI building the entire toolchain
-* phase 2 (9 months): bindist testing workflow, automated integration with GHCup, etc.
-* phase 3 (12+ months): nightlies working for GHC and cabal and maybe HLS
+* 6 months: proof of concept of a central GitHub CI building most of the toolchain
+* 12 months: building GHC via github actions
 
 ## Budget
 
-We would like to have a full-time developer work on this, at least partly. But at the moment,
-we don't have anyone to propose and hiring an external contractor for this role may or may not
-be helpful, since this requires significant DevX experience and commitment to the specified goals.
+We request funding for private GitHub CI runners to power our midstream bindist release pipelines. Prices are in USD.
+This is an example/estimate. The HF and the proposer will negotiate the exact terms in private.
 
-As such, we propose the "phase 1" of this proposal that focuses on advancing the existing GitHub CI
-support for the GitHub Haskell organization, spearheaded by @angerman (providing aarch64 linux and
-darwin M1 self-hosted machines). This infrastructure is already used by GHCup, HLS and other projects
-and needs more runners.
+- Linux/FreeBSD x86_64 runner on Hetzner (AX52)
+  * monthly: $62.24
+  * yearly: $746.88
+- Linux aarch64 runner on Hetzner (RX170)
+  * monthly: $181.73
+  * yearly: $2,180.76
+- Darwin runner on Hetzner (Mac Mini M1)
+  * monthly: $56.59
+  * yearly: $679.08
 
-Github actions at the moment does not provide all platforms. So the budget proposal to close the platform gap on GitHub actions is as follows (all prices in USD):
+To host one private runner per all these platform, the yearly cost would be: **$3,606.72**
 
-- FreeBSD x86_64 private runner on [vultr](https://www.vultr.com/pricing/), utilizing [github-act-runner](https://github.com/ChristopherHX/github-act-runner), instance with 8vCPU, 16 GB Memory, 150GB storage
-  * monthly: $160
-  * yearly: $1,920
-- Linux aarch64 private runner on [AWS](https://aws.amazon.com/marketplace/pp/prodview-uzg6o44ep3ugw) (m6g.xlarge instance)
-  * hourly: $0.154
-  * monthly: $112.5
-  * yearly: $1,350
-- Darwin M1 private runner on [macstadium](https://www.macstadium.com/pricing), instance with M1 8 Core, 16 GB Memory, 1 TB SSD
-  * monthly: $179
-  * yearly: $2,148
+There will likely also be an initial setup cost (as is usual for Hetzner).
 
-To host one additional private runner per all these platform, the yearly cost would be: **$5,418**
+We may request more runners depending on the demand, so it may very well be 3 runners per platform, resulting in yearly cost of: $10,820.16
 
-We may request more runners depending on the demand, so it may very well be 3 runners per platform, resulting in yearly cost of: $16,254
-
-For FreeBSD it is also possible to buy [Cirrus CI compute credits](https://cirrus-ci.org/pricing/#compute-credits),
-which amount to a similar value of: $1,576.8
-
-As such, we estimate the cost for phase 1 to be between 5000 to 16000 USD. The benefit of this investment is not confined to
-the midstream bindist proposal, but to the entirety of the GitHub Haskell organization CI infrastructure
-(including GHCup, HLS, Cabal, bytestring, text, unix, ...).
-
-Phase 2 and 3 may need follow-up proposals with more concrete implementation strategy, cost analysis
-and potentially hiring a full-time employee.
+**As such, the budget estimated is between 4 to 10k USD per year.**
 
 ## Stakeholders
 
