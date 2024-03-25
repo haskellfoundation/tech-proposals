@@ -5,8 +5,9 @@
 Bindists for the Haskell toolchain have been produced by upstream (the developers of each respective tool) for
 a long time and many tools rely on these "official" bindists (e.g. GHCup and stack).
 
-We propose here that bindists are additionally built and maintained in joint effort by the projects that
-provide installation experiences, removing the hard dependency on upstream bindists entirely.
+We propose here that bindists are built and maintained by the GHCup project, which
+provides the main installation experiences in the Haskell ecosystem, removing the hard
+dependency on upstream bindists entirely.
 
 ## Background
 
@@ -230,10 +231,21 @@ coming up with a permanent storage solution and very robust nightly pipelines.
 * 6 months: proof of concept of a central GitHub CI building most of the toolchain
 * 12 months: building GHC via github actions
 
-## Budget
+## Funding
 
-We request funding for private GitHub CI runners to power our midstream bindist release pipelines. Prices are in USD.
-This is an example/estimate. The HF and the proposer will negotiate the exact terms in private.
+### Who and what
+
+The GHCup project requests funding for private GitHub CI runners to power the midstream bindist release pipelines.
+It will receive and manage the funding in strict collaboration with the Haskell Foundation.
+
+Volunteers who want to collaborate in midstream bindists are welcome to look at the project structure and collaboration guidelines:
+
+* https://www.haskell.org/ghcup/about/#team
+* https://www.haskell.org/ghcup/dev/#contribution-process-and-expectations
+
+### Budget
+
+The following is an example/estimate of a budget (prices are in USD). The HF and the proposer will negotiate the exact terms in private.
 
 - Linux/FreeBSD x86_64 runner on Hetzner (AX52)
   * monthly: $62.24
@@ -255,12 +267,12 @@ We may request more runners depending on the demand, so it may very well be 3 ru
 
 ## Stakeholders
 
+* GHCup developers, who receive funding
 * GHC developers
 * cabal developers
 * stack developers
 * HLS developers
 * VSCode Haskell developers
-* GHCup developers
 * Haskell toolchain end users
 
 ## Success
