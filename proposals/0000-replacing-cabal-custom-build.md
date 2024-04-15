@@ -1075,7 +1075,7 @@ data Rule
     , staticDependencies :: ![Dependency]
     -- ^ Static dependencies of this rule.
     , results :: !(NE.NonEmpty Location)
-    -- ^ Results of this rule; see t'Result'.
+    -- ^ Results of this rule.
     }
   deriving (Eq, Binary)
 
@@ -1108,7 +1108,7 @@ instance Eq (Command arg res)
 instance Binary (Command arg res)
 
 newtype Rules env =
-  Rules { runRules :: env -> RulesT IO () }
+  Rules { runRules :: env -> RulesM () }
 ```
 
 In this design, a rule stores a closure (in the sense of Cloud Haskell) that
@@ -1123,7 +1123,7 @@ rule (with no dynamic dependencies), this constists of:
 For example, the function might be an invocation of `happy` whose arguments
 depend on the passed in value (e.g. which module we are compiling).
 
-The specific monadic return type, `RulesT IO ()`, is used internally to handle
+The specific monadic return type, `RulesM ()`, is used internally to handle
 generation of `RuleId`s as explained in [§ Identifiers](#identifiers).
 Ignoring these implementation details, we can think of the rules as being
 specified by a Haskell function with the following type:
@@ -1393,7 +1393,7 @@ executions of the `IO` action that computes the set of pre-build rules.
 We propose that users generate `RuleId`s themselves with the following API:
 
 ```haskell
-registerRule :: ShortText -> Rule -> RulesT IO RuleId
+registerRule :: ShortText -> Rule -> RulesM RuleId
 ```
 
 The `ShortText` argument is a user-given name for the rule. Different rules
@@ -1422,7 +1422,7 @@ whenever these change, the rules as a whole are recomputed.
 The basic API function is
 
 ```haskell
-addRuleMonitors :: Monad m => [ MonitorFileOrDir ] -> RulesT m ()
+addRuleMonitors :: [ MonitorFileOrDir ] -> RulesM ()
 ```
 
 where `MonitorFileOrDir` is some datatype, such as the one that exists in
@@ -1451,18 +1451,18 @@ data Rules env -- definition not exposed to the user
 instance Semigroup (Rules env)
 instance Monoid (Rules env)
 
-rules :: StaticPtr (env -> RulesT IO ()) -> Rules env
+rules :: StaticPtr label -> (env -> RulesM ()) -> Rules env
 
 data RuleId
   -- In practice, identifiers consists of a pair of a UnitId and
   -- a user-supplied textual name, but the constructor is crucially
   -- not exposed in the API in order to enforce hygiene.
 
-newtype RulesT m a
+newtype RulesM a
   deriving (Functor, Applicative, Monad, MonadTrans, MonadIO, MonadFix)
 
-registerRule :: ShortText -> Rule -> RulesT IO RuleId
-addRuleMonitors :: [ MonitorFileOrDir ] -> RulesT IO ()
+registerRule :: ShortText -> Rule -> RulesM RuleId
+addRuleMonitors :: [ MonitorFileOrDir ] -> RulesM ()
 ```
 
 To illustrate, we might implement the `c2hs` preprocessor using this
@@ -1473,9 +1473,9 @@ framework (from [§ Dynamic dependencies](#dynamic-dependencies)) as follows:
 {-# LANGUAGE StaticPointers #-}
 
 c2HsPreBuildRules :: PreBuildComponentRules
-c2HsPreBuildRules = rules $ static c2HsRules
+c2HsPreBuildRules = rules (static ()) c2HsRules
 
-c2HsRules :: PreBuildComponentInputs -> RulesT IO ()
+c2HsRules :: PreBuildComponentInputs -> RulesM ()
 c2HsRules buildEnvt = mdo
 
   (chsModDirs :: Map ModuleName FilePath)
@@ -1534,8 +1534,7 @@ Here, the Hooks API uses static pointers in order to tag rules by the package th
 defines them, in order to allow combining the `Rules` declared by two different
 libraries, as described in [§ Composing `SetupHooks`](#composing-setuphooks).  
 The user-provided names for rules (`"r1"`, `"r2"`, `"r3"` above) are expected
-to be unique within the package that defines them (note that this is stronger
-than requiring uniqueness in the `static` block that contains them).  
+to be unique (within the scope of the label).  
 (NB: we don't use `static` for each individual identifier, as these are often
 dynamically generated based on the result of an `IO` action, as above.)
 
