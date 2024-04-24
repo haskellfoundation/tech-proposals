@@ -92,7 +92,7 @@ This work is being carried out by Well-Typed LLP thanks to investment from the
 Sovereign Tech Fund. (For more information, read our [blog post announcing the
 project](https://www.well-typed.com/blog/2023/10/sovereign-tech-fund-invests-in-cabal/).)
 It has previously been discussed at [Cabal issue #9292](https://github.com/haskell/cabal/issues/9292),
-and is now being [discussed at this pull request](https://github.com/haskellfoundation/tech-proposals/pull/60).
+and [tech-proposals pull request #60](https://github.com/haskellfoundation/tech-proposals/pull/60).
 
 ## Background
 
@@ -418,7 +418,7 @@ uniform mechanism.
 
 ## High-level design of `build-type: Hooks`
 
-We propose to augment `Cabal` with a new build-type, `Hooks`.  
+We propose to augment `Cabal` with a new build-type, `Hooks`.
 To implement a package with the `Hooks` build-type, the user needs to provide
 a `SetupHooks.hs` file which specifies the hooks using a Haskell API.
 
@@ -544,7 +544,7 @@ while, in theory, a package using `build-type: Custom` can implement its `Setup`
 script without depending on `Cabal`, we saw that this flexibility was unused in
 practice, as `Setup` scripts end up being defined in terms of `UserHooks`.
 This usage pattern incurs a corresponding dependency on the `Cabal` library in
-`setup-depends`, in much the same way as we propose here for `Cabal-hooks`.  
+`setup-depends`, in much the same way as we propose here for `Cabal-hooks`.
 An additional benefit of the separate `Cabal-hooks` library is that it makes it
 possible to evolve the Hooks API without requiring a version bump of the
 `Cabal` library.
@@ -552,7 +552,7 @@ possible to evolve the Hooks API without requiring a version bump of the
 In practice, we expect the initial versions of `Cabal-hooks` to mostly
 re-export `Cabal` datatypes, as it is these types (such as `LocalBuildInfo`)
 that get passed back-and-forth between the build system and the hooks in our
-current design (see e.g. [§ Configure hooks](#configure-hooks)).  
+current design (see e.g. [§ Configure hooks](#configure-hooks)).
 This design choice does introduce some coupling between the versions of
 `Cabal-hooks` and `Cabal` (but see [§ Decoupling `Cabal-hooks`](#decoupling-Cabal-hooks)).
 At any rate, this design makes the situation no worse than with `Custom`
@@ -561,7 +561,7 @@ using an older version of `Cabal-hooks`), but it gives more options to the build
 e.g. where serialisation of hook inputs/outputs is used, the serialisation
 format can be controlled by the build tool, and is not necessarily fixed by `Cabal-hooks`.
 Indeed, we could imagine a build tool being compiled against multiple `Cabal-hooks`
-versions.  
+versions.
 The version compatibility problem exists in
 `cabal-install` already: even where communication happens via the `Setup.hs`
 command line interface, there is already a need for `cabal-install` to adapt to
@@ -726,7 +726,7 @@ From the build tool's perspective, the global configuration phase goes as follow
 - Run the `preConfPackageHook`, which has the opportunity to modify the
   initially decided global configuration (with a `BuildOptions` that overrides
   those stored in the passed in `LocalBuildConfig`, and `ConfiguredProgs` that
-  get added to the `ProgramDb`).  
+  get added to the `ProgramDb`).
   After this point, the `LocalBuildConfig` can no longer be modified.
 
 - Use the `LocalBuildConfig` in order to perform the global package
@@ -828,7 +828,7 @@ from `Cabal`,making it less likely that an internal change in Cabal would end up
 breaking the `Hooks` defined by package authors. However, one would need to
 ensure this interface is general enough in order to avoid locking out Hooks
 authors, e.g. if `Cabal` adds a new field to `Component` without updating the
-corresponding `ComponentDiff` type in order to make it modifiable by hook authors.  
+corresponding `ComponentDiff` type in order to make it modifiable by hook authors.
 If we end up with a design in which `Cabal`'s version of the `Component` type
 is necessarily separate from the type in the hooks API, we may want to reconsider
 this alternative.
@@ -841,7 +841,7 @@ build hooks in the old `UserHooks`, but updated to the per-component world.
 This included monolithic pre and post hooks for each component, plus the existing
 "hooked pre-processors" abstraction. This had the advantage that it would be easy
 for package authors to port their `Setup.hs` scripts to the new design, and it was
-a relatively minimal change in the Cabal codebase.  
+a relatively minimal change in the Cabal codebase.
 Many Cabal contributors share a long term goal to move the Cabal design towards
 one based on a build graph with fine-grained dependencies. From this perspective,
 the critique was that the initial proposal was too conservative a change, and that
@@ -849,7 +849,7 @@ we should take this opportunity of making a significant API change to establish 
 new API that would not hold back the move towards finer-grained dependencies.
 Another critique was that the original `UserHooks` design was somewhat ad-hoc,
 since it used both monolithic hooks and hooked pre-processors to provide
-finer-grained dependencies for a modest subset of use cases.  
+finer-grained dependencies for a modest subset of use cases.
 On the other hand, there is a very large design space for finer-grained
 dependencies, and so picking a point in the design space is not simple.
 Another disadvantage is that it will of course be more work for package authors
@@ -866,7 +866,7 @@ possible to build higher level patterns on top, using Haskell's usual powers of
 abstraction to generate the lower level rules. Crucially, the design allows the
 rules to be used across an IPC interface, which is necessary for build tools
 like `cabal-install` or HLS to be able to interrogate and invoke them
-(see e.g. the future work discussed in [§ Hooks integration](#hooks-integration)).  
+(see e.g. the future work discussed in [§ Hooks integration](#hooks-integration)).
 
 The full details of the design of pre-build hooks are provided in
 [§ Pre-build hooks](#pre-build-hooks).
@@ -886,7 +886,7 @@ data BuildHooks
   , postBuildComponentHook :: Maybe PostBuildComponentHook }
 ```
 
-Build hooks cannot change the configuration of the package.  
+Build hooks cannot change the configuration of the package.
 There are deliberately no package-level build hooks, only component-level hooks.
 This avoids introducing unnecessary synchronisation points when multiple
 packages/components are being built in parallel.
@@ -1026,7 +1026,7 @@ data TentativeRule = TentativeRule
 That is, rules are specified by a function that takes in an environment
 (which in practice consists of information known to `Cabal` after configuring,
 e.g. `LocalBuildInfo`, `ComponentLocalBuildInfo`) and returns an `IO` action
-that computes a list of rules.  
+that computes a list of rules.
 
 ### Proposed design of rules
 
@@ -1157,7 +1157,7 @@ declare
 This design seems sufficient for common use cases, such as GHC's build system.
 Indeed, as explained in [Hadrian](#hadrian), its Make build system only required
 second-layer expansion (i.e. `$$$$`) for rules that invoke `ghc -M` in some way,
-not any further layers.  
+not any further layers.
 More generally, it is preferable to output a set of rules that are at a rather
 low-level, so that these can be readily consumed by build tools, rather than
 requiring the build tool to do additional work to resolve dependencies.
@@ -1172,7 +1172,7 @@ data RuleOutput = RuleOutput { outputOfRule :: RuleId, outputIndex :: Int }
 ```
 
 In particular, a rule that depends on the output of another rule must depend
-directly on the rule, rather than the file that that rule outputs.  
+directly on the rule, rather than the file that that rule outputs.
 This ensures that dependencies are resolved upfront rather than when running
 the rules. This ensures that any complexity in the structure of the rules exists
 within the program generating the rules rather than in the build tool consuming
@@ -1207,7 +1207,7 @@ type Location = (FilePath, FilePath)
 That is, each rule can be thought of as a pure function that takes in the
 contents of the files at the input locations (the `dependencies` of the rule),
 and outputs the contents of the files at the output locations (the `results`
-of the rule).  
+of the rule).
 The logic that computes all pre-build rules is responsible for computing such
 resolved locations, for example by searching the Cabal search directories.
 However, there are certain restrictions on the filepaths used for results of
@@ -1228,7 +1228,7 @@ one would thus:
     the input/output locations and additional flags).
 
 This results in one rule for each `.y` file, which will get re-run whenever the
-associated `.y` file is modified.  
+associated `.y` file is modified.
 The rules need to be re-computed whenever a `.y` file gets added/removed, or when
 a `.hs` file with the same module name as a `.y` file gets added/removed; we can
 declare this by using the `MonitorFileOrDir` functionality.
@@ -1301,7 +1301,7 @@ See [§ API overview](#api-overview) for an illustration of such an implementati
 This design means that we **do not** re-run the entire computation of rules
 each time a `.chs` file is modified. Instead, we re-run the dependency
 computation of the modified `.chs` file (as its imports list may have changed),
-which allows us to update the build graph.  
+which allows us to update the build graph.
 This ensures the dependencies of this rule remain up to date, ensuring correct
 recompilation checking. Without this mechanism for declaring additional dynamic
 dependencies, we would be forced to re-run the entire computation of rules each
@@ -1376,7 +1376,7 @@ Justification:
     mechanism for which there isn't a one-to-one mapping between modules
     declared in the `.cabal` file and source files on disk.
   - (O2) is clear: if we change the environment, we need to re-compute
-    the rules (as the rules are specified by a function from an environment).  
+    the rules (as the rules are specified by a function from an environment).
     Note that this covers the event of the package configuration changing
     (e.g. after `cabal configure` has been re-run).
   - (N, S1) are clear.
@@ -1397,7 +1397,7 @@ registerRule :: ShortText -> Rule -> RulesM RuleId
 ```
 
 The `ShortText` argument is a user-given name for the rule. Different rules
-defined within a package are required to have different name.  
+defined within a package are required to have different name.
 These `RuleId`s are used by the build system to determine when a rule needs to
 be re-run. This means that users will in practice want to ensure persistence of
 rules names across computations of rules. For example, if two successive
@@ -1406,7 +1406,7 @@ registered using the same name; not doing so will cause the rule to necessarily
 be re-run the second time around, as described in [§ Rule demand](#rule-demand).
 
 Note that rules do not know their own names: instead, one must register rules
-with the API, which returns identifiers which are opaque to the user.  
+with the API, which returns identifiers which are opaque to the user.
 This leads to a more declarative and functional style for package authors
 declaring pre-build rules. By having the identifier partly determined by the user
 (in the form of the `ShortText` arguments), we also ensure that these identifiers
@@ -1426,7 +1426,7 @@ addRuleMonitors :: [ MonitorFileOrDir ] -> RulesM ()
 ```
 
 where `MonitorFileOrDir` is some datatype, such as the one that exists in
-`cabal-install` today, that specifies what one wants to monitor.  
+`cabal-install` today, that specifies what one wants to monitor.
 Specifically, `MonitorFileOrDir` should at least support monitoring:
 
   1. The existence of a file or directory.
@@ -1532,9 +1532,9 @@ c2HsRules buildEnvt = mdo
 Note how we use the `static` keyword in the definition of `c2HsPreBuildRules`.
 Here, the Hooks API uses static pointers in order to tag rules by the package that
 defines them, in order to allow combining the `Rules` declared by two different
-libraries, as described in [§ Composing `SetupHooks`](#composing-setuphooks).  
+libraries, as described in [§ Composing `SetupHooks`](#composing-setuphooks).
 The user-provided names for rules (`"r1"`, `"r2"`, `"r3"` above) are expected
-to be unique (within the scope of the label).  
+to be unique (within the scope of the label).
 (NB: we don't use `static` for each individual identifier, as these are often
 dynamically generated based on the result of an `IO` action, as above.)
 
@@ -1693,7 +1693,7 @@ data PreConfPackageOutputs
 
 The configured programs returned by the package-wide pre-configure hook will
 then be used to extend `Cabal`'s `ProgramDb`, which will then get stored in
-`Cabal`'s `LocalBuildInfo` datatype and passed to subsequent hooks.  
+`Cabal`'s `LocalBuildInfo` datatype and passed to subsequent hooks.
 
 Note that we require hook authors configure the programs themselves (using
 functions provided by the hooks API). This is justified by the fact that
@@ -1768,9 +1768,9 @@ second.
 
 Instead of `Cabal-hooks` re-exporting datatypes from `Cabal`, one could imagine
 defining datatypes in `Cabal-hooks` instead; then `Cabal-hooks` would not depend
-on `Cabal`.  
+on `Cabal`.
 This would completely encapsulate the Hooks API, which would no longer be tied
-to a particular `Cabal` version.  
+to a particular `Cabal` version.
 Here are two conceivable ways in which this change might then impact `Cabal`:
 
   1. `Cabal` itself depends on `Cabal-hooks`. This is attractive from a
@@ -1898,7 +1898,7 @@ a rule which generates the dependency of the second rule.
 
 In the first example, the dependency between the rules is specified directly
 in the code, while in the second, it remains implicit (because a dependency of
-the second rule matches an output of the first rule).  
+the second rule matches an output of the first rule).
 The first style is more functional:
 
   - the data flow of the computation of rules reflects the data flow of the
@@ -1911,7 +1911,7 @@ The first style is more functional:
 
 As noted in [Pre-build hooks](#pre-build-hooks), rules are described at a
 low-level with explicit inputs and outputs. For example, this framework does
-not include "rule patterns" (generating `*.hs` from `*.y`).  
+not include "rule patterns" (generating `*.hs` from `*.y`).
 Moreover, filepaths are specified entirely explicitly: the rules themselves
 are responsible for searching for input files in the input directory structure.
 
@@ -1927,13 +1927,13 @@ framework (e.g. there would be different types for locations of dependencies,
 and for locations of results, before they get resolved by the build system).
 We opted to keep the rules API as low-level as possible, following the approach
 taken by the [`ninja` build system](#ninja), which is designed around a
-low-level syntax of rules being generated by a higher-level framework.  
+low-level syntax of rules being generated by a higher-level framework.
 
 ### Making other hooks fine-grained
 
 Note that we do not currently propose to use the same design of fine-grained
 rules for other hooks, e.g. the hooks into the configure phase or the install
-hooks.  
+hooks.
 The downside of this choice is that we do not track fine-grained dependency
 information that would let us know when to re-run these hooks.
 However, it is not clear that there is much demand for it to do so. Thus it may
@@ -2044,13 +2044,13 @@ via IPC:
   - by emulating the classic `Setup.hs` CLI,
   - in "one shot" CLI style: build `SetupHooks.hs` against a stub executable
     that implements a CLI to expose all the hooks in a simple "invoke then terminate"
-    way, i.e. not as a long running process.  
+    way, i.e. not as a long running process.
     This choice might be appropriate for non-interactive CLI tools like
     `cabal-install` or `stack`.
   - in interactive/server style: build `SetupHooks.hs` against a stub executable
     that communicates over pipes to be able to invoke hooks on command, in a
     long-running process style. This would minimise latency at the cost of some
-    memory.   
+    memory.
     This choice might be appropriate for an IDE such as HLS, as well as for
     use with GHCi.
 
@@ -2061,7 +2061,7 @@ external hooks executable it has compiled, and deserialising the output data
 from the executable to obtain the outputs (`PreConfPackageOutputs`).
 
 In server style, one would avoid the cost of having to pass this data over
-and over, as one would only need to pass what has changed in the meantime.  
+and over, as one would only need to pass what has changed in the meantime.
 
 On top of these options, it would also be possible to directly link against the
 hooks, or to dynamically load them into an existing process, to further minimise
@@ -2070,24 +2070,20 @@ in practice.
 
 # References
 
-<a id="carte" href=https://www.microsoft.com/en-us/research/uploads/prod/2018/03/build-systems.pdf>
-[Build Systems à la Carte]</a>
-Andrey Mokhov, Neil Mitchell, Simon Peyton Jones: <b>Build Systems à la Carte</b>
-(2018).
-
-<a id="cloud-haskell" href=https://www.microsoft.com/en-us/research/wp-content/uploads/2016/07/remote.pdf>
-[Towards Haskell in the Cloud]</a>
-Jeff Epstein, Andrew P. Black, Simon Peyton Jones: <b>Towards Haskell in the Cloud</b>
-(2011).
-
-<a id="delivery" href=https://www.cs.ox.ac.uk/jeremy.gibbons/publications/delivery.pdf>
-[Free Delivery]</a>
-Jeremy Gibbons: <b>Free Delivery</b> (2016).
-
-<a id="hadrian" href=https://www.microsoft.com/en-us/research/wp-content/uploads/2016/03/hadrian.pdf>
-[Hadrian]</a>
-Andrey Mokhov, Neil Mitchell, Simon Peyton Jones, Simon Marlow: <b>Non-recursive Make Considered Harmful</b>
-(2016).
-
-<a id="ninja" href=https://ninja-build.org>[Ninja]</a>
-The ninja build system.
+* <a id="carte" href=https://www.microsoft.com/en-us/research/uploads/prod/2018/03/build-systems.pdf>
+  [Build Systems à la Carte]</a>
+  Andrey Mokhov, Neil Mitchell, Simon Peyton Jones: <b>Build Systems à la Carte</b>
+  (2018).
+* <a id="cloud-haskell" href=https://www.microsoft.com/en-us/research/wp-content/uploads/2016/07/remote.pdf>
+  [Towards Haskell in the Cloud]</a>
+  Jeff Epstein, Andrew P. Black, Simon Peyton Jones: <b>Towards Haskell in the Cloud</b>
+  (2011).
+* <a id="delivery" href=https://www.cs.ox.ac.uk/jeremy.gibbons/publications/delivery.pdf>
+  [Free Delivery]</a>
+  Jeremy Gibbons: <b>Free Delivery</b> (2016).
+* <a id="hadrian" href=https://www.microsoft.com/en-us/research/wp-content/uploads/2016/03/hadrian.pdf>
+  [Hadrian]</a>
+  Andrey Mokhov, Neil Mitchell, Simon Peyton Jones, Simon Marlow: <b>Non-recursive Make Considered Harmful</b>
+  (2016).
+* <a id="ninja" href=https://ninja-build.org>[Ninja]</a>
+  The ninja build system.
