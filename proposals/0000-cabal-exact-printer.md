@@ -3,11 +3,16 @@
 
 ## Abstract
 
-The Exact Printer project aims to develop a precise parsing and printing tool for .cabal files in Haskell, inspired by ghc-exactprint. This tool will enable byte-for-byte bidirectional parsing and printing, enhancing the functionality and usability of the Cabal package manager. The project addresses the need for accurate and efficient management of package descriptions, a crucial aspect for Haskell developers.
+The Exact Printer project aims to develop a precise parsing and printing tool for .cabal files in Haskell, 
+inspired by ghc-exactprint. 
+This tool will enable byte-for-byte bidirectional parsing and printing, 
+enhancing the functionality and usability of the Cabal package manager. 
+The project addresses the need for accurate and efficient management of package descriptions, 
+a crucial aspect for Haskell developers.
 
 ## Background
 
-cabal is a build tool for haskell.
+Cabal is a build tool for haskell.
 It directs GHC and deals with "packages".
 Which are collections of haskell modules.
 cabal allows you to depend on libraries,
@@ -34,6 +39,7 @@ It defines exact printing as follows:
 _This section should describe the problem that the proposal intends to solve and how solving the problem will benefit the Haskell community.
 It should also enumerate the requirements against which a solution should be evaluated._
 
+
 This [issue](https://github.com/haskell/cabal/issues/7544) is stracked on the cabal bug tracker.
 
 Currently if you build a project with an extra module not listed in your cabal file,
@@ -46,16 +52,38 @@ ghc emits a warning:
 
 You'd say, why doesn't cabal just add this module to the cabal file?
 Well, it can't.
-cabal is currently only able to parse cabal files,
-and print them back out in a mangled form via the pretty printer.
+Cabal is currently only able to parse Cabal files, 
+and print them back out in a mangled form.
+There are other programs providing module detection, 
+but nothing is integrated in cabal itself.
 
-you can see this mangling by running `cabal format` on a cabal file,
-the issues I saw were:
+This problem has been solved by the community, several times outside of cabal.
+For example:
+<ul>
+ <li> [hpack](https://github.com/sol/hpack),              </li>
+ <li> [autopack](https://github.com/kowainik/autopack)    </li>
+ <li> [cabal-fmt](https://github.com/phadej/cabal-fmt)    </li>
+ <li> [gild](https://taylor.fausak.me/2024/02/17/gild/)   </li>
+</ul>
 
-1. Delete all comments
-2. merge any `common` stanza into wherever it was imported.
-3. change line ordering
-4. change spacing (although perhaps to be expected from a formatter)
+Of course many of these projects do more then just module expension.
+hpack provides a completly different cabal file layout for exampe,
+cabal-fmt and gild are formatters for cabal file.
+Only auto-pack just does this one feature.
+However, since all these programs implement this functionality,
+there is clearly demand for it.
+
+There are more issues then just module expension however.
+For example [cabal gen-bounds](https://github.com/haskell/cabal/issues/7304) could modify a cabal file in place,
+with [cabal edit](https://github.com/haskell/cabal/issues/7337) we could add a dependency via cli, 
+[cabal init](https://github.com/haskell/cabal/issues/6187) could be simplified.
+
+The current implementation of writing, cabal format, has the following issues:
+
+1. Deletes all comments
+2. merge any `common` stanza into wherever it was imported. https://github.com/haskell/cabal/issues/5734
+3. changes line ordering.
+4. changes spacing (although perhaps to be expected from a formatter)
 
 A similar problem occurs when HLS want's to do any modification to a cabal
 file during development.
@@ -63,8 +91,11 @@ For example if a module was added or renamed, or if a (hidden) library is requir
 Or perhaps some function used in a known library via hoogle for example.
 HLS has no clue what to do,
 because even if it links against the cabal library,
-there is no function to create a cabal file
-(lest it fucks it up)
+there is no function to modify a generic cabal representation and print a cabal file that keeps
+it similar to the users'.
+
+The goal is to make non invasive changes.
+This tech proposal therefore aims to address all these issues.
 
 ## Prior Art and Related Efforts
 
