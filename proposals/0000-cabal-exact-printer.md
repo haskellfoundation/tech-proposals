@@ -5,10 +5,12 @@
 
 The Exact Printer project aims to develop a precise parsing and printing tool for .cabal files in Haskell, 
 inspired by ghc-exactprint. 
-This tool will enable byte-for-byte bidirectional parsing and printing, 
-enhancing the functionality and usability of the Cabal package manager. 
-The project addresses the need for accurate and efficient management of package descriptions, 
-a crucial aspect for Haskell developers.
+This tool will enable byte-for-byte bidirectional parsing and printing.
+Which will allow both cabal and other tools to modify cabal files without
+mangling the format, structure or comments of users.
+
+The overal goal would be to roundtrip 99% of all hackage packages.
+
 
 ## Background
 
@@ -35,10 +37,6 @@ It defines exact printing as follows:
 > is called exact-printing. An exact-printed program includes the original spacing and all comments.
 
 ## Problem Statement
-
-_This section should describe the problem that the proposal intends to solve and how solving the problem will benefit the Haskell community.
-It should also enumerate the requirements against which a solution should be evaluated._
-
 
 This [issue](https://github.com/haskell/cabal/issues/7544) is stracked on the cabal bug tracker.
 
@@ -70,7 +68,8 @@ Of course many of these projects do more then just module expension.
 hpack provides a completly different cabal file layout for exampe,
 cabal-fmt and gild are formatters for cabal file.
 Only auto-pack just does this one feature.
-However, since all these programs implement this functionality,
+However, since all these programs implement this functionality
+in their own distinct way,
 there is clearly demand for it.
 
 There are more issues then just module expension however.
@@ -101,9 +100,28 @@ This tech proposal therefore aims to address all these issues.
 
 Previous attempts to address this problem have been fragmented, and no comprehensive solution has been developed. This project builds upon the ideas discussed in various issues over the past six years (e.g., Haskell/cabal issues #3614, #6621, #6187, #4965). The project will synthesize these discussions into a cohesive solution.
 
-I think prior art would be tools such as 
+I think prior art would be tools such as cabalfmt, hpack and autopack
 
-cabalfmt, hpack and autopack
+Previous attempts were [abandoned](https://github.com/haskell/cabal/pull/7626).
+Or they revolved around creating a seperate AST[^ast], which was against maintainer recommendation, 
+and then [abandoned](https://github.com/haskell/cabal/pull/9385).
+
+A related effort is to build combinators that allow modifyng the `Field` type directly.
+This would depracate the GenericPackage structure and make an alternative structure
+available.
+A proof of concept was developed during zurich hack
+https://discourse.haskell.org/t/pre-proposal-cabal-exact-print/9582/9?u=jappie
+
+I suppose the idea is to completly replace `GenericPackageDescription` with
+this `Field` type.
+Which is a significant effort,
+however this work can be amend the exact print effort, 
+because better modification of cabal files would be appreciated.
+Exact printing is mostly a module that takes some input type and then
+does the formatting.
+
+Furthermore the test suite created by the exact print effort this module
+describes can also be used in the related `GenericPackageDescription` to `Field` effort.
 
 ## Technical Content
 
@@ -122,7 +140,6 @@ byte for byte roundtrip of all hacakgePackage:
 ```
 
 where `hackagePackage` is a cabal package found on hackage.
-
 
 
 to support exact printing a new field is added to `GenericPackageDescritpion`:
@@ -161,6 +178,8 @@ The issue for addition is that you now have to invent exact positions.
 for removal, if it involves a line, you've to fix up all following lines, 
 (and it has to know something was removed).
 
+The overal goal would be to roundtrip 99% of all hackage packages.
+
 ### Partials
 
 + modification to the `GenericPackageDescription`.
@@ -175,18 +194,24 @@ for removal, if it involves a line, you've to fix up all following lines,
 
 ## Timeline
 
-_When will the project be completed?
-What are the intermediate steps and intermediate concrete deliverables for the community?_
+I expect that after this project is approved it'd take roughly 4 months in total to complete.
+This would be about 2 'man' months, however there maybe random hickups.
+Most work will be done by either me or one of my employees @Riuga.
 
-I think the overall work is roughly 2 and a half week of fulltime work.
-However this maybe executed over several months.
+Intermediate steps are the listed tests in the linked PR,
+then after all those pass we'll move onto a full hackage run,
+and sift out more .
+
+We can easily track progress via the tests being finished.
+
 I'd expect the project to be completed by April 2024.
 
 I've a free week in decemeber for example, but then it'll be weekends and nights.
 
 ## Budget
 
-120 hours * 120 euro per hours is 14'400 euro.
+I think this should be around 15'000 euro to complete,
+considering the size of the overal work.
 
 The money will be used to compensate for opportunity cost,
 and allowing me, and hopefully others,
@@ -194,21 +219,18 @@ to justify taking on similar large projects in the future.
 
 ## Stakeholders
 
-_Who stands to gain or lose from the implementation of this proposal?
-Proposals should identify stakeholders so that they can be contacted for input, and a final decision should not occur without having made a good-faith effort to solicit representative feedback from important stakeholder groups._
-
-The primary benificiaries would be HLS and cabal users.
+The primary benificiaries would be cabal users.
 we can:
 
-+ improve cabal usability, gen-bounds comes to mind.
-+ improve HLS and cabal interaction.
-+ 
++ opens up the possibility to improve cabal user experience, via inserting modules or running gen-bounds.
++ makes it easier for cabal library to deal with cabal files, such as hpack, HLS and cabal-fmt
++ makes maintaining cabal itself easier, eg cabal init could be described via GenericPackageDesription
 
-An indirect loser maybe the stack build tool.
-Which misses this direct investment, 
-
-and cabal may drastically.
+Furthermore I've heard that the HLS project will benefit greatly from this effort,
+(TODO where?)
 
 ## Success
 
-_Under what conditions will the project be considered a success?_
+This proposal successful once the cabal exact print branch is merged into cabal proper with the provided tests passing.
+Most of hackage should be exact printable, say 99%,
+which means, an existing hackage cabal file is being parsed, and then printed again resulting into the same output as input.
