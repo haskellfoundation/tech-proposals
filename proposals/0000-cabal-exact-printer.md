@@ -219,7 +219,7 @@ exact printer position should be shifted if we add a line.
 ## Timeline
 I expect that after this project is approved it'd take roughly 4 months in total to complete.
 This would be about 2 'man' months, however there maybe random hickups.
-Most work will be done by either me or one of my colleagues under contract @Riuga.
+Most work will be done by me or a subcontractor if I can find them.
 
 Intermediate steps are the listed tests in the linked PR,
 then after all those pass we'll move onto a full hackage run,
