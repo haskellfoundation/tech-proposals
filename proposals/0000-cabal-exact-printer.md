@@ -115,6 +115,20 @@ and no comprehensive solution has been finished.
 There is however a work in progress implementation of the [exact printer](https://github.com/haskell/cabal/pull/9436/).
 The goal of this proposal is to buy time to finish that implementation.
 
+The current work left to be done on this pull request is:
++ Add more comment preservation on more locations.
++ Deal with changes in generic package description.
+   + We need to add tests about which changes we care about. 
+     For example add a build field, add a field which causes comment overlap on x,y. 
+     Delete a section, add a language flag, etc.
+   + it the algorithm just relatively shifts everything if you add
+     a build field for example.
+     You know something got added because you can't find it in ExactPrintMeta.
++ Redo how common stanza's are handled (they're currently "merged" into sections directly, which is unrecoverable).
++ add support for comma printing,
++ add support for braces.
++ add support for conditional branches.
+
 Previous attempts for making this directly into cabal were [abandoned](https://github.com/haskell/cabal/pull/7626).
 I guess they got demotivated by the shear size of the effort,
 or they revolved around creating a seperate AST[^ast], 
