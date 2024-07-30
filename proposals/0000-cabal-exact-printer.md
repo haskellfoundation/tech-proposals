@@ -216,6 +216,75 @@ for removal, if it involves a line, you've to fix up all following lines,
 
 The overal goal would be to roundtrip 99% of all hackage packages.
 
+### Common stanzas
+Currently if you run the pretty printer on a parsed generic package you will
+lose all common stanzas.
+The reason for this is that they're merged in the imported sections[^see-pr],
+and then forgotten about.
+
+[^see-pr]: I marked where this happened https://github.com/haskell/cabal/pull/9436/files#diff-39a353df50e7eed47b5958c6025b67b06fac735a8b5b994c1464d6fd84df745eR718
+
+I think there are two somewhat viable approaches to dealing with common stanzas.
+
+1. Keep the current "merging" approach. However track their original shape in 
+   `ExactPrintMeta`. Then let the printer figure out based on that information
+    what came from the commen stanza and what came in the original section.
+    
+2. Refactor `GenericPackageDescription` so that the parser no longer merges these
+   sections and instead stores them as proper records.
+   Then make the callsites smart enough to deal with common stanzas.
+   
+In this case I'd attempt approach 2 first.
+It seems less fragile to me to just refactor this.
+It also removes the concern of carrying duplicate information, and should
+make it more obvious to the users of the cabal syntax library 
+on how to manipulate common stanzas.
+
+how this is done concretly, you go to the associated types and
+add imports field:
+```haskell
+newtype CommonStanzaName = CommonStanzaName Text
+
+data Library = Library
+  { libName :: LibraryName
+  , imports :: [CommonStanzaName]
+  ...
+  }
+```
+
+and to generic package description you add another map:
+```haskell
+data GenericPackageDescription = GenericPackageDescription
+  { packageDescription :: PackageDescription
+  , gpdCommonStanzas :: Map CommonStanzaName CommonStanza
+  }
+```
+
+I'm not sure if this is fast enough, but
+one easy and dirty way to make it all work with
+backwards compatibility is to
+create custom getters, (original setters are fine)
+
+we expose a getter (which is the current record field name `condSubLibraries`):
+
+```haskell
+condSubLibraries :: GenericPackageDescription -> [( UnqualComponentName , CondTree ConfVar [Dependency] Library)]
+```
+
+which merges the common stanzas on every "get" call.
+Then the actual record field will be renamed, 
+and doesn't have this merging in behavior.
+
+This way, new code will be able to access a library without common stanzas merged in,
+as would be expected wthin the cabal file.
+Old code, will have the same behavior as the current implementation.
+And it will allow the exact printer to make a distinction between common stanzas and
+whatever is in the other stanzas.
+
+### Conditionals
+TODO: see how these work - so I can think of a design, I've a suspicion but i just need to 
+confirm my mental model maps to reality
+
 ### Partials
 
 modification to the `GenericPackageDescription`.
@@ -226,6 +295,7 @@ exact printer position should be shifted if we add a line.
 
 ### Not included
 
++ Support for braces
 + Any warnings during parsing won't be included (low value add)
 + Any integration in tools such as `cabal format` or `cabal gen-bounds`.
   These tasks are relatively easy in comparison, however if we include this as an unused well tested library
