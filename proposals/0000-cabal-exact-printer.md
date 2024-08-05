@@ -107,6 +107,8 @@ This will ensure clients of the cabal library can print cabal files more
 easily and have some stability guarantees.
 
 ## Prior Art and Related Efforts
+TODO: describe why previous efforts didn't succeed. How is this proposal different?
+
 This [issue](https://github.com/haskell/cabal/issues/7544) is tracked on the cabal bug tracker.
 Essentially this proposal attempts to "solve" that issue.
 As can be seen in the issue, there have been previous attempts,
