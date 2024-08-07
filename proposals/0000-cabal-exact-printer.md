@@ -123,20 +123,21 @@ The current work left to be done on this pull request is:
    + We need to add tests about which changes we care about. 
      For example add a build field, add a field which causes comment overlap on x,y. 
      Delete a section, add a language flag, etc.
-   + it the algorithm just relatively shifts everything if you add
+   + The algorithm just relatively shifts everything if you add
      a build field for example.
      You know something got added because you can't find it in ExactPrintMeta.
 + Redo how common stanza's are handled (they're currently "merged" into sections directly, which is unrecoverable).
-+ add support for comma printing,
-+ add support for braces.
+ See the technical content section for more details on this.
++ Add support for comma printing.
 + add support for conditional branches.
+  See the technical content section for more details on this.
 
 A Previous attempts by [patrick](https://github.com/ptkato) for making this directly into cabal was [abandoned](https://github.com/haskell/cabal/pull/7626).
 In private they mentioned that they worked for the Haskell foundation for a while on this,
 but the contract expired and he moved on to another employer.
 However another issue they had with this was that there appeared to
 be no agreement on how to move forward with this specific problem.
-It was a somewhat chaotic debate.
+They found the debate somewhat chaotic, and didn't know to proceed.
 So at least what we can do with this proposal is come to a consensus what
 a good solution looks like.
 And let the perfect not be the enemy of good.
@@ -146,7 +147,6 @@ which was against maintainer recommendation (because it'd make the issue even bi
 and then [abandoned](https://github.com/haskell/cabal/pull/9385).
 They got discouraged because they received no maintainer feedback
 after [one and a half year](https://discourse.haskell.org/t/pre-proposal-cabal-exact-print/9582/2?u=jappie).
-
 
 A related effort is to build combinators that allow modifyng the `Field` type directly.
 This would depracate the `GenericPackage` structure and make an alternative structure
@@ -159,6 +159,10 @@ the syntax of a cabal file.
 If it could store whitespaces it could potentially be used to be exact printed.
 This `Field` type later gets parsed into other types such as 
 `InstalledPackageInfo`, `ProjectConfig` and `GenericPackageDescription`.
+Currently it's unclear to me how this would work with modifications
+on `GenericPackageDescription`.
+Although the proposal presented here converts `GenericPackageDescription` into
+`PrettyField` which is similar to `Field`, before printing.
 
 This proposal only focusess only on getting exact printing
 to work with a minimal footprint.
