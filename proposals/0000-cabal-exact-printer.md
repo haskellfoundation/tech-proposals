@@ -131,11 +131,22 @@ The current work left to be done on this pull request is:
 + add support for braces.
 + add support for conditional branches.
 
-Previous attempts for making this directly into cabal were [abandoned](https://github.com/haskell/cabal/pull/7626).
-I guess they got demotivated by the shear size of the effort,
-or they revolved around creating a seperate AST[^ast], 
+A Previous attempts by [patrick](https://github.com/ptkato) for making this directly into cabal was [abandoned](https://github.com/haskell/cabal/pull/7626).
+In private they mentioned that they worked for the Haskell foundation for a while on this,
+but the contract expired and he moved on to another employer.
+However another issue they had with this was that there appeared to
+be no agreement on how to move forward with this specific problem.
+It was a somewhat chaotic debate.
+So at least what we can do with this proposal is come to a consensus what
+a good solution looks like.
+And let the perfect not be the enemy of good.
+
+Another effort revolved around creating a seperate AST[^ast], 
 which was against maintainer recommendation (because it'd make the issue even bigger), 
 and then [abandoned](https://github.com/haskell/cabal/pull/9385).
+They got discouraged because they received no maintainer feedback
+after [one and a half year](https://discourse.haskell.org/t/pre-proposal-cabal-exact-print/9582/2?u=jappie).
+
 
 A related effort is to build combinators that allow modifyng the `Field` type directly.
 This would depracate the `GenericPackage` structure and make an alternative structure
@@ -143,16 +154,13 @@ available.
 A proof of concept was developed during zurich hack
 https://discourse.haskell.org/t/pre-proposal-cabal-exact-print/9582/9?u=jappie
 
-I suppose the idea is to completly replace `GenericPackageDescription` with
-this `Field` type.
-Which is a significant effort,
-however this work can be added to the exact print effort, 
-because better modification of cabal files would be appreciated.
-Exact printing is mostly a module that takes some input type and then
-does the formatting.
+The idea was to start with the `Field` type because it describes
+the syntax of a cabal file.
+If it could store whitespaces it could potentially be used to be exact printed.
+This `Field` type later gets parsed into other types such as 
+`InstalledPackageInfo`, `ProjectConfig` and `GenericPackageDescription`.
 
-Unlike the `Field` effort, 
-this proposal only focusess only on getting exact printing
+This proposal only focusess only on getting exact printing
 to work with a minimal footprint.
 We don't want to do any additional refactoring.
 Furthermore the test suite created by the exact print effort this module
@@ -369,8 +377,14 @@ build-depends:base <5
    Once support is added I suspect it'll work with the other strategy
 2. Indentation of `if` wrong, and it's also in the wrong position (should be moved 2 lines down).
 
-Currently it looks like the exact positions of if fields aren't stored, 
-once we do this it should be printed at a much better location.
+Currently it looks like the exact positions of `if` fields aren't used, 
+correctly.
+They do appear to be stored, for example in a debug dump of that file:
+```
+    , ([NameSpace{nameSpaceName = "library", nameSpaceSectionArgs = []}, NameSpace{nameSpaceName = "if", nameSpaceSectionArgs = ["flag", "(", "foo", ")"]}], ExactPosition{namePosition = Position 14 3, argumentPosition = [Position 14 6, Position 14 10, Position 14 11, Position 14 14]})
+```
+I think this is just a matter of debugging to get it to print on the right position.
+
 We also need to add support for multiple ifs in a single section.
 I think we can do that by changing the lookup for if statments, and
 adding the index occurred for a section.
