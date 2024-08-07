@@ -158,8 +158,6 @@ We don't want to do any additional refactoring.
 Furthermore the test suite created by the exact print effort this module
 describes can also be used in the related `GenericPackageDescription` to `Field` effort.
 
-
-
 ## Technical Content
 This proposal want's to add a function to the cabal library:
 
@@ -192,6 +190,36 @@ data ExactPrintMeta = ExactPrintMeta
   , exactComments :: Map Position Text
   }
 ```
+
+Where Exact position is:
+```
+data ExactPosition = ExactPosition {namePosition :: Position
+                                  , argumentPosition :: [Position] }
+```
+And `Postion` is just a row and column coordinate of a textfile.
+This type already exists in cabal.
+
+A namespace is used to find exact positions:
+```
+data NameSpace = NameSpace
+  { nameSpaceName :: FieldName
+  , nameSpaceSectionArgs :: [ByteString]
+  }
+  deriving (Show, Eq, Typeable, Data, Ord, Generic)
+```
+It just encodes a path down the rose tree.
+for example:
+```
+library
+  if flag(foo)
+    build-depends:     base <5
+```
+would be encoded as:
+```
+,[NameSpace {nameSpaceName = "library", nameSpaceSectionArgs = []},NameSpace {nameSpaceName = "if", nameSpaceSectionArgs = ["flag(foo)"]},NameSpace {nameSpaceName = "build-depends", nameSpaceSectionArgs = []}]
+```
+This gives a unique way of figuring out the exact position of the build-depends field.
+Although conditionals need a little bit more refinement, see the conditional section for that.
 
 For comments some parser modifications were needed which were developed during zurich hack 2024.
 This was a big uncertainty which now has been addressed.
@@ -286,6 +314,94 @@ whatever is in the other stanzas.
 ### Conditionals
 TODO: see how these work - so I can think of a design, I've a suspicion but i just need to 
 confirm my mental model maps to reality
+
+-- I suspect the pretty printer already supports this because condtree is part of syntax
+   -- need to test.
+   -- I think all we need to do is more exact location mapping on partials and it should be fine.
+
+
+For conditionals I wrote a test to see how far it got in it's current state:
+
+```cabal
+cabal-version:           3.0
+name:                    bounded
+version:                 0
+synopsis:                The -any none demo
+build-type:              Simple
+
+flag foo
+  manual: True
+  default: True
+
+library
+  default-language:  Haskell2010
+  exposed-modules:   AnyNone
+  if flag(foo)
+    build-depends:     base <5
+  else
+    build-depends:     base <5.5
+```
+which got printed as (anomalies marked with `{}`):
+
+```cabal
+cabal-version:           3.0
+name:                    bounded
+version:                 0
+synopsis:                The -any none demo
+build-type:              Simple
+
+flag foo
+  manual: True
+  {1}
+
+library
+ifflag(foo) {2}
+build-depends:base <5
+  default-language:  Haskell2010
+  exposed-modules:   AnyNone
+
+  else
+    build-depends:     base <5.5
+```
+
+1. Default gone, 
+   it may not be stored within the flag ast, we need to add support for that.
+   Once support is added I suspect it'll work with the other strategy
+2. Indentation of `if` wrong, and it's also in the wrong position (should be moved 2 lines down).
+
+Currently it looks like the exact positions of if fields aren't stored, 
+once we do this it should be printed at a much better location.
+We also need to add support for multiple ifs in a single section.
+I think we can do that by changing the lookup for if statments, and
+adding the index occurred for a section.
+So the namespace type would be changed to:
+
+```haskell
+data NameSpace = NameSpace
+  { nameSpaceName :: FieldName
+  , nameSpaceSectionArgs :: [ByteString]
+  , nameSpaceDuplicateBust :: Word
+  }
+  deriving (Show, Eq, Typeable, Data, Ord, Generic)
+```
+
+the newly added field `nameSpaceOccuranceBust`, tracks how many if's it has encountered in this case.
+Allowing multiple exact positions to be stored per section,
+even if they share the same arguments.
+For all lookups where this can't occur, the number would remain 0.
+
+### Performance and Interaction with hackage
+
+Changes to cabal shouldn't affect the normal operation of hackage.
+So performance should remain at similar level as they are now.
+
+This can be tested by spinning up a virtual machine with similar 
+specs to hackage production and just do the heavy tasks hackage 
+normally does.
+
+If it crashes or performance degrades due to the exact printer changes
+we should improve performance before declaring this finished.
+
 
 ### Partials
 
