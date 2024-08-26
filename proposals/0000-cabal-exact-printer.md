@@ -260,6 +260,29 @@ like `Map ([NameSpace], PackageVersionConstraint) Original`,
 this kind of representation allows us to retrieve the original only if it hasn't changed.
 However I'm confident all of this is do-able.
 
+Many are concerned about using `Field` I suppose for the printing part, 
+but we don't use that, we use `PrettyField` because the pretty printer
+already had a decent `FieldGrammar`,
+and the type is almost the same.
+The first thing `exactPrint` does is use the existing pretty field grammar to
+create pretty fields:
+```haskell
+exactPrint :: GenericPackageDescription -> Text
+exactPrint package = ...
+  where
+    fields :: [PrettyField ()]
+    fields = ppGenericPackageDescription (specVersion (packageDescription (package))) package
+
+```
+
+Then we attach all the meta data to these `Fields` with `anotatePostions`:
+```haskell
+attachPositions :: [NameSpace] -> Map [NameSpace] ExactPosition -> [PrettyField ()] -> [PrettyField (Maybe ExactPosition)]
+```
+Here we put the various pieces of meta data directly into the field for parsing.
+Maybe you have an exact position at a certain point during printing,
+which you can use to "repair" the default pretty printing behavior.
+
 Peliminary testing shows that this approach works with multiple sections of cabal files,
 and now also with some basic comments.
 Comments likely have to be worked out further as we only made that one test pass,
