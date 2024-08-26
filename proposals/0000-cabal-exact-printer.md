@@ -127,6 +127,7 @@ and wrote their own invent their own parsers end printers.
 So every tool that want's to modify cabal files has a larger maintenance
 burden because cabal isn't doing this upstream.
 
+## Prior Art and Related Efforts
 This [issue](https://github.com/haskell/cabal/issues/7544) is tracked on the cabal bug tracker.
 Essentially this proposal attempts to "solve" that issue.
 As can be seen in the issue, there have been previous attempts,
