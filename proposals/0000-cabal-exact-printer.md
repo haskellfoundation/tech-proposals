@@ -130,6 +130,35 @@ and write their own own parsers and printers.
 So every tool that want's to modify cabal files has a larger maintenance
 burden because cabal isn't doing this upstream.
 
+An example how a program to add dependencies to the main library could look:
+```haskell
+main :: IO ()
+main = do
+    theFile <- readFile "my.cabal"
+    dependName <- PackageName <$> getLine
+    case parseGenericPackageDescription theFile of
+    let (warns, eDescription) = runParseResult res
+    case eDescription of
+      Left someFailure -> do
+        error $ "failed parsing " <> show someFailure
+      Right generic ->
+        let
+          depends = mkDependency dependName anyVersion (NES.singleton LMainLibName)
+          modified = generic { condLibrary = case (condLibrary generic) of  
+                                                Just lib -> (lib { condTreeConstraints = depends : condTreeConstraints lib })
+                                                Nothing -> Nothing
+                             }
+        in
+        Text.writeFile "my.cabal" $ exactPrint modified
+```
+
+All the difficulty in this programming lies in figuring out where to place a dependency,
+we just made a decision here to do it in the main library assuming it exists.
+We also assumed there would be no conditionals, 
+all these questions are what a program to add dependencies should ask to a user,
+and the `GenericPackageDescription` type guides the programmer in asking the right questions.
+Therefore, we can say that `GenericPackageDescription` is stronger typed then `Field`.
+
 ## Prior Art and Related Efforts
 This [issue](https://github.com/haskell/cabal/issues/7544) is tracked on the cabal bug tracker.
 Essentially this proposal attempts to "solve" that issue.
