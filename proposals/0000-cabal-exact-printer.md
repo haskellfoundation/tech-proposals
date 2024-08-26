@@ -3,29 +3,17 @@
 
 ## Abstract
 The Exact Printer project aims to develop a precise parsing and printing tool for .cabal files in the cabal library.
-This will enable byte-for-byte bidirectional parsing and printing.
-Which will allow both cabal and other tools to modify cabal files without
-mangling the format, structure or comments of users.
+This will allow both cabal and other tools to modify cabal files without
+mangling the format, structure or comments of users files.
+Furthermore it makes cabal authoritative on the cabal file format
+allowing downstream users to use the provided printing functions
+and get a stability guarantee.
 
 ## Background
-This is the formal application of my [blogpost](https://jappie.me/cabal-exact-printing.html).
-Ironically I started on this proposal first,
-but then I got cold feet and decided to write a "lower stake" informal blogpost instead.
-Writing this proposal has been difficult. 
-I've no idea why this is so hard for me.
-I think it's partly because there is no going back after opening the proposal.
-and I'm mostly just making these numbers and timelines up y'know.
-I've no idea for it'll take 2 months, but it seems reasonable.
-I've no idea if there is even budget for this, but asking 10k for a man month
-seems reasonable as well. 
-Getting this accepted and solved won't make me rich, 
-but it could make me happy. 
-It'll solve a pain point bringing my work life closer to epicurean atraxia.
-
-Cabal is a build tool for haskell.
+Cabal is a build tool for Haskell.
 It directs GHC and deals with "packages".
-Which are collections of haskell modules.
-cabal allows you to depend on libraries,
+Which are collections of Haskell modules.
+Cabal allows you to depend on libraries,
 publish libraries and manage build flags.
 In essence if you want to do something non-trivial
 with haskell you want to use cabal.
@@ -43,9 +31,23 @@ It defines exact printing as follows:
 > Taking an abstract syntax tree (AST) and converting it into a string that looks like what the user originally wrote
 > is called exact-printing. An exact-printed program includes the original spacing and all comments.
 
+PS: This is the formal application of my [blogpost](https://jappie.me/cabal-exact-printing.html).
+Ironically I started on this proposal first,
+but then I got cold feet and decided to write a "lower stake" informal blogpost instead.
+Writing this proposal has been difficult. 
+I've no idea why this is so hard for me.
+I think it's partly because there is no going back after opening the proposal.
+and I'm mostly just making these numbers and timelines up y'know.
+I've no idea for it'll take 2 months, but it seems reasonable.
+I've no idea if there is even budget for this, but asking 10k for a man month
+seems reasonable as well. 
+Getting this accepted and solved won't make me rich, 
+but it could make me happy. 
+It'll solve a pain point bringing my work life closer to epicurean atraxia.
+
 ## Problem Statement
 Currently if you build a project with an extra module not listed in your cabal file,
-ghc emits a warning:
+GHC emits a warning:
 ```
 <no location info>: error: [-Wmissing-home-modules, -Werror=missing-home-modules]
     These modules are needed for compilation but not listed in your .cabal file's other-modules: 
@@ -68,8 +70,8 @@ For example:
  <li> [gild](https://taylor.fausak.me/2024/02/17/gild/)   </li>
 </ul>
 
-Of course many of these projects do more then just module expension.
-hpack provides a completly different cabal file layout for exampe,
+Of course many of these projects do more then just module expansion.
+hpack provides a completely different cabal file layout for example,
 `cabal-fmt` and `gild` are formatters for cabal files.
 Only auto-pack just does this one feature.
 However, since all these programs implement this functionality
@@ -93,7 +95,7 @@ The current implementation of printing in cabal via the `cabal format` command, 
 A similar problem occurs when HLS want's to do any modification to a cabal
 file during development.
 For example if a module was added or renamed, or if a (hidden) library is required.
-Or perhaps some function used in a known library via hoogle for example.
+Or perhaps some function used in a known library via Hoogle for example.
 HLS has no clue what to do,
 because even if it links against the cabal library,
 there is no function to modify a generic cabal representation and print a cabal file that keeps
@@ -103,7 +105,7 @@ The goal is to make non invasive changes to cabal files.
 This tech proposal therefore aims to address all these issues.
 Furthermore by bringing it directly into cabal we can enforce the round tripping
 property.
-This will ensure clients of the cabal library can print cabal files more
+This will ensure clients of the Cabal library can print cabal files more
 easily and have some stability guarantees.
 
 Why even bother with adding this directly to cabal? 
@@ -111,27 +113,28 @@ What advantage do existing tools get by making cabal smart enough
 to modify it's own files?
 It's hard to guarantee stability across projects if many functionalities
 are distributed across many projects.
-For example a newly introduced cabal-add, would need to take into account any 
+For example a newly introduced tool called [cabal-add](https://github.com/Bodigrim/cabal-add), would need to take into account any 
 syntax change to cabal, *forever*. 
 This is true for other tools as well that want to modify cabal files (such as HLS).
 If cabal would support an exact printer all syntax odds and ends
 will remain within cabal allowing us to change the cabal file format easily
 without breaking downstream libraries and tools.
-Because cabal itself supports parsing and printing and exposes
-a it as library functions.
+This is because cabal would supports parsing and printing,
+and exposes this capability as library functions.
 This will allow downstream programmers to parse and print 
 cabal files without having to care about the syntax details.
+Furthermore it'll make it easier for programmers to add new cabal related tools.
 Which is different from the current situation where some diligent programmers 
 assumed the entire cabal file format is stable, 
-and wrote their own invent their own parsers end printers.
+and write their own own parsers and printers.
 So every tool that want's to modify cabal files has a larger maintenance
 burden because cabal isn't doing this upstream.
 
 ## Prior Art and Related Efforts
 This [issue](https://github.com/haskell/cabal/issues/7544) is tracked on the cabal bug tracker.
 Essentially this proposal attempts to "solve" that issue.
-As can be seen in the issue, there have been previous attempts,
-previous attempts to address this problem have been fragmented, 
+As can be seen in the issue, there have been previous attempts.
+these attempts have been fragmented, 
 and no comprehensive solution has been finished. 
 There is however a work in progress implementation of the [exact printer](https://github.com/haskell/cabal/pull/9436/).
 The goal of this proposal is to buy time to finish that implementation.
@@ -144,7 +147,7 @@ The current work left to be done on this pull request is:
      Delete a section, add a language flag, etc.
    + The algorithm just relatively shifts everything if you add
      a build field for example.
-     You know something got added because you can't find it in ExactPrintMeta.
+     You know something got added because you can't find it in `ExactPrintMeta`.
 + Redo how common stanza's are handled (they're currently "merged" into sections directly, which is unrecoverable).
  See the technical content section for more details on this.
 + Add support for comma printing.
@@ -162,7 +165,7 @@ a good solution looks like.
 And let the perfect not be the enemy of good.
 
 Another effort revolved around creating a seperate AST[^ast], 
-which was against maintainer recommendation (because it'd make the issue even bigger), 
+which was against maintainer recommendation because it'd make the issue even bigger, 
 and then [abandoned](https://github.com/haskell/cabal/pull/9385).
 They got discouraged because they received no maintainer feedback
 after [one and a half year](https://discourse.haskell.org/t/pre-proposal-cabal-exact-print/9582/2?u=jappie).
@@ -262,7 +265,7 @@ this kind of representation allows us to retrieve the original only if it hasn't
 However I'm confident all of this is do-able.
 
 Many are concerned about using `Field` I suppose for the printing part, 
-but we don't use that, we use `PrettyField` because the pretty printer
+but we don't use that exact type, we use `PrettyField` because the pretty printer
 already had a decent `FieldGrammar`,
 and the type is almost the same.
 The first thing `exactPrint` does is use the existing pretty field grammar to
@@ -366,14 +369,6 @@ And it will allow the exact printer to make a distinction between common stanzas
 whatever is in the other stanzas.
 
 ### Conditionals
-TODO: see how these work - so I can think of a design, I've a suspicion but i just need to 
-confirm my mental model maps to reality
-
--- I suspect the pretty printer already supports this because condtree is part of syntax
-   -- need to test.
-   -- I think all we need to do is more exact location mapping on partials and it should be fine.
-
-
 For conditionals I wrote a test to see how far it got in it's current state:
 
 ```cabal
@@ -451,7 +446,6 @@ even if they share the same arguments.
 For all lookups where this can't occur, the number would remain 0.
 
 ### Performance and Interaction with hackage
-
 Changes to cabal shouldn't affect the normal operation of hackage.
 So performance should remain at similar level as they are now.
 
@@ -462,10 +456,14 @@ normally does.
 If it crashes or performance degrades due to the exact printer changes
 we should improve performance before declaring this finished.
 
+Furthermore we don't want to slow down common operations of cabal files
+to build it's database to solve.
+If parsing is slow then it becomes amplified at scale and
+make end users frustrated when common commands take longer.
+So if there is a slowdown, it shouldn't be noticeable at scale.
 
 ### Partials
-
-modification to the `GenericPackageDescription`.
+Modification to the `GenericPackageDescription`.
 covering every conceivable modification would be though.
 However we should be able to do common operations such as adding libraries or modules.
 What we want is a sort of default behavior, all subsequent mappings in the
@@ -473,7 +471,7 @@ exact printer position should be shifted if we add a line.
 
 ### Not included
 
-+ Support for braces
++ Support for braces. They don't do anything.
 + Any warnings during parsing won't be included (low value add)
 + Any integration in tools such as `cabal format` or `cabal gen-bounds`.
   These tasks are relatively easy in comparison, however if we include this as an unused well tested library
@@ -515,7 +513,8 @@ we can:
 
 + opens up the possibility to improve cabal user experience, 
   via inserting modules or running gen-bounds.
-+ makes it easier for cabal library to deal with cabal files, such as hpack, HLS and cabal-fmt
++ makes it easier for users of the cabal library to deal with cabal files, 
+  such as hpack, HLS and cabal-fmt
 + makes maintaining cabal itself easier, 
   eg cabal init could be described via `GenericPackageDesription`
 
