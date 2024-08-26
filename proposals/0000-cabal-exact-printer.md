@@ -198,7 +198,7 @@ printExact :: GenericPackageDescription -> Text
 Which will do exact printing.
 This function has the following properties:
 
-byte for byte roundtrip of all hacakgePackage:
+byte for byte roundtrip of all `hacakgePackage`:
 ```
   forall (hackagePackage :: ByteString) . (printExact <$> (parseGeneric hackagePackage)) == Right hackagePackage
 ```
@@ -213,7 +213,7 @@ data GenericPackageDescription {
  }
 ```
 
-which in turn contains various meta data we need for exact printing:
+Which in turn contains various meta data we need for exact printing:
 ```haskell
 data ExactPrintMeta = ExactPrintMeta
   { exactPositions :: Map [NameSpace] ExactPosition
@@ -244,7 +244,7 @@ library
   if flag(foo)
     build-depends:     base <5
 ```
-would be encoded as:
+Would be encoded as:
 ```
 ,[NameSpace {nameSpaceName = "library", nameSpaceSectionArgs = []},NameSpace {nameSpaceName = "if", nameSpaceSectionArgs = ["flag(foo)"]},NameSpace {nameSpaceName = "build-depends", nameSpaceSectionArgs = []}]
 ```
