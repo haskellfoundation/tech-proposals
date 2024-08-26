@@ -158,6 +158,8 @@ We also assumed there would be no conditionals,
 all these questions are what a program to add dependencies should ask to a user,
 and the `GenericPackageDescription` type guides the programmer in asking the right questions.
 Therefore, we can say that `GenericPackageDescription` is stronger typed then `Field`.
+Note that there is no low level syntax mangling going on at all,
+because the functions exposed in the cabal library takes care of that for us.
 
 ## Prior Art and Related Efforts
 This [issue](https://github.com/haskell/cabal/issues/7544) is tracked on the cabal bug tracker.
