@@ -106,8 +106,26 @@ property.
 This will ensure clients of the cabal library can print cabal files more
 easily and have some stability guarantees.
 
-## Prior Art and Related Efforts
-TODO: describe why previous efforts didn't succeed. How is this proposal different?
+Why even bother with adding this directly to cabal? 
+What advantage do existing tools get by making cabal smart enough
+to modify it's own files?
+It's hard to guarantee stability across projects if many functionalities
+are distributed across many projects.
+For example a newly introduced cabal-add, would need to take into account any 
+syntax change to cabal, *forever*. 
+This is true for other tools as well that want to modify cabal files (such as HLS).
+If cabal would support an exact printer all syntax odds and ends
+will remain within cabal allowing us to change the cabal file format easily
+without breaking downstream libraries and tools.
+Because cabal itself supports parsing and printing and exposes
+a it as library functions.
+This will allow downstream programmers to parse and print 
+cabal files without having to care about the syntax details.
+Which is different from the current situation where some diligent programmers 
+assumed the entire cabal file format is stable, 
+and wrote their own invent their own parsers end printers.
+So every tool that want's to modify cabal files has a larger maintenance
+burden because cabal isn't doing this upstream.
 
 This [issue](https://github.com/haskell/cabal/issues/7544) is tracked on the cabal bug tracker.
 Essentially this proposal attempts to "solve" that issue.
