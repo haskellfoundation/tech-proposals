@@ -117,7 +117,8 @@ The following steps are necessary to perform the project.
 3. The project developer makes a proposal for an API that suits the tool use
    case, if any refactorings are necessary. Both the GHC mentor and the
    tool maintainer need to agree on the proposal before proceeding with the
-   implementation.
+   implementation. Feedback from the maintainers of other tools with similar
+   needs could be invited at this time.
 
 4. If there is agreement on an API proposal, the project developer implements
    it and documents or provides links so people unacquainted with the GHC
