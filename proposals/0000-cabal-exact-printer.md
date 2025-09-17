@@ -226,7 +226,7 @@ describes can also be used in the related `GenericPackageDescription` to `Field`
 ## Technical Content
 This proposal want's to add a function to the cabal library:
 
-```
+```haskell
 printExact :: GenericPackageDescription -> Text
 ```
 
@@ -234,7 +234,7 @@ Which will do exact printing.
 This function has the following properties:
 
 byte for byte roundtrip of all `hacakgePackage`:
-```
+```haskell
   forall (hackagePackage :: ByteString) . (printExact <$> (parseGeneric hackagePackage)) == Right hackagePackage
 ```
 
@@ -257,7 +257,7 @@ data ExactPrintMeta = ExactPrintMeta
 ```
 
 Where Exact position is:
-```
+```haskell
 data ExactPosition = ExactPosition {namePosition :: Position
                                   , argumentPosition :: [Position] }
 ```
@@ -265,7 +265,7 @@ And `Postion` is just a row and column coordinate of a textfile.
 This type already exists in cabal.
 
 A namespace is used to find exact positions:
-```
+```haskell
 data NameSpace = NameSpace
   { nameSpaceName :: FieldName
   , nameSpaceSectionArgs :: [ByteString]
@@ -274,13 +274,13 @@ data NameSpace = NameSpace
 ```
 It just encodes a path down the rose tree.
 for example:
-```
+```haskell
 library
   if flag(foo)
     build-depends:     base <5
 ```
 Would be encoded as:
-```
+```haskell
 ,[NameSpace {nameSpaceName = "library", nameSpaceSectionArgs = []},NameSpace {nameSpaceName = "if", nameSpaceSectionArgs = ["flag(foo)"]},NameSpace {nameSpaceName = "build-depends", nameSpaceSectionArgs = []}]
 ```
 This gives a unique way of figuring out the exact position of the build-depends field.
@@ -318,7 +318,7 @@ Here we put the various pieces of meta data directly into the field for parsing.
 Maybe you have an exact position at a certain point during printing,
 which you can use to "repair" the default pretty printing behavior.
 
-Peliminary testing shows that this approach works with multiple sections of cabal files,
+Preliminary testing shows that this approach works with multiple sections of cabal files,
 and now also with some basic comments.
 Comments likely have to be worked out further as we only made that one test pass,
 but the 'tools', and more importantly, the understanding is in place.
