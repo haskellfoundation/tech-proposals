@@ -134,7 +134,7 @@ After the project, GHC developers are responsible for maintaining the new API.
 No guarantees of backward compatibility are required, but guidance needs to be
 provided to clients of the API to accommodate for changes to it.
 
-In principle, there are no constraints on which a client of the `ghc` library
+In principle, there are no constraints on which client of the `ghc` library
 should be chosen first, but the community already shows agreement on
 [splitting a parser library] that could benefit from the template structure,
 and there are perhaps smaller projects like [print-api] on which to test the template,
