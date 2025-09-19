@@ -1,10 +1,11 @@
-# A process to incrementally document a GHC API
+# A process to incrementally document GHC for tooling authors
 
 ## Abstract
 
-This proposal defines a process to define and document a GHC API. The process
-involves tooling authors, GHC developers, and the Haskell Foundation in
-defining and validating pieces of a GHC API in incremental fashion.
+This proposal defines a process to define and document GHC for tooling authors.
+The process involves tooling authors, GHC developers, and the Haskell Foundation in
+defining how GHC is to be used to satisfy the needs of language tooling in
+incremental fashion.
 
 ## Background
 
@@ -90,55 +91,55 @@ well.
 
 ## Technical Content
 
-The core of the proposal is a project template to define and document a subset
-of the GHC implementation needed for one of several tools. This template can then
-be applied to more tools later on.
+The core of the proposal is a project template to write a cookbook to use the
+GHC implementation for a particular task needed by some tool. This template can then be applied to
+more tasks later on. Additionally, follow up projects might integrate the
+produced documentation into the GHC development process so it is kept up to
+date.
 
 In executing such a project, there needs to be at least the following roles:
-* a project developer to write the documentation and analyse and implement
-  any necessary changes;
-* a GHC mentor to represent the GHC developers, who will support the project
-  developer by providing feedback on the work and providing technical insight
-  when needed; and
-* a tool maintainer to validate and provide feedback on the produced
-  documentation and API.
+* a project developer to define the task with precision, and documentation how
+  to accomplish it with the exiting implementation of GHC;
+* a GHC mentor, who will support the project developer by providing pointers
+  to existing resources and giving feedback on the accuracy and of the
+  documentation; and
+* a tool maintainer that needs to accomplish the chosen task, to validate and
+  provide feedback on the produced documentation.
 
 The following steps are necessary to perform the project.
 
-1. The Haskell Foundation and GHC developers select some tool to serve first.
-   Availability of the tool maintainers needs to be checked at this stage, and
-   the roles of the project developer and the GHC mentor need to be assigned.
-   Also the project scope needs to be defined at this time.
+1. The Haskell Foundation and GHC developers select some task to document.
+   Availability of the tool maintainers that will use the documentation needs
+   to be checked at this stage, and the roles of the project developer and
+   the GHC mentor needs to be assigned.
 
 2. The project developer studies the functions and types that the tool uses
-   from the `ghc` library, and engages with the tool maintainer where their
+   from the `ghc` library, and engages with the tool maintainer where the
    purpose of using them is unclear.
 
-3. The project developer makes a proposal for an API that suits the tool use
-   case, if any refactorings are necessary. Both the GHC mentor and the
-   tool maintainer need to agree on the proposal before proceeding with the
-   implementation. Feedback from the maintainers of other tools with similar
+3. The project developer documents the how the tool is using the GHC API,
+   which the GHC mentor should review and then propose alternatives if
+   there are any. If there are corrections to how the task should be
+   implemented, the tool maintainer needs to agree on the changes.
+   Feedback from the maintainers of other tools with similar
    needs could be invited at this time.
 
-4. If there is agreement on an API proposal, the project developer implements
-   it and documents or provides links so people unacquainted with the GHC
-   implementation can understand it.
+4. If there is agreement on how the taks is to be done, the documentation is
+   updated, and the GHC mentor and the tool maintainer validate the accuracy
+   and the completeness of the documentation.
 
-5. The GHC mentor and the tool maintainer validate the accuracy and the
-   completeness of the documentation.
+5. The project developer updates the tool to test the accuracy of the
+   documentation.
 
-6. If appropriate, the project developer might update GHC so it uses the new
-   API as well.
+After the project, GHC developers link the cookbook from some place where it
+can be discovered by GHC users.
+No commitments are made to maintain the cookbook up to date.
 
-After the project, GHC developers are responsible for maintaining the new API.
-No guarantees of backward compatibility are required, but guidance needs to be
-provided to clients of the API to accommodate for changes to it.
-
-In principle, there are no constraints on which client of the `ghc` library
-should be chosen first, but the community already shows agreement on
-[splitting a parser library] that could benefit from the template structure,
-and there are perhaps smaller projects like [print-api] on which to test the template,
-which could allow for a smaller initial commitment.
+In principle, there are no constraints on which task and client of the `ghc` library
+should be chosen first. Working on tools that depend on the GHC parser could inform
+the proposal for [splitting a parser library],
+and there are perhaps smaller projects like [print-api] where tasks could be identified
+as well with modest effort.
 
 [splitting a parser library]: https://github.com/haskellfoundation/tech-proposals/pull/56
 [print-api]: https://github.com/Kleidukos/print-api
@@ -146,14 +147,13 @@ which could allow for a smaller initial commitment.
 
 ### Risks and Limitations
 
-The project could have difficulties if the scope definition in the initial step
-ends up invalidated by new insight in later stages. This could require revising
-scope and budget midway through.
+The project could become too long if the chosen task ends up being more complex than
+anticipated. This could require either chosing a different task or splitting the initial
+task some some of the smaller tasks can be documented instead.
 
-Tools might evolve after the project, requiring APIs to be modified or redesigned.
-Ideally, the design of an API would allow to use it together with unsupported GHC
-definitions, so users that miss a feature are not forced to choose between using
-the API or only using GHC unsupported definitions.
+The cookbook might become outdated as GHC evolves. To avoid this, follow up projects
+could incorporate tests of the cookbook in the GHC development process to keep it up
+to date.
 
 ## Timeline
 
@@ -172,10 +172,12 @@ the identified roles, and it will need to be negotiated in each case.
 
 ## Success
 
-The project will be successful if the maintainer of the chosen Haskell tool has an
-accurate understanding of what it will take to upgrade their projects to use a
-newer version of the compiler by reading changelogs and the API documentation,
-thus eliminating the trial and error costs.
+In the short term, the project is successful if it informs follow up
+documentation-related and refactoring projects.
+
+In the long term, the project will be successful if the maintainer of the chosen
+Haskell tool has an accurate understanding of what it will take to upgrade their
+projects by reading the cookbook, thus eliminating the trial and error costs.
 
 The project will be successful too if accidental breakage of downstream tooling
-is avoided thanks to the definition of a GHC API.
+is avoided thanks to the definition of the cookbooks.
