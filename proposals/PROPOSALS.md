@@ -46,10 +46,9 @@ The current members of the TWG are:
  * Gershom Bazerman ([@gbaz](https://github.com/gbaz))
  * John Ericson ([@Ericson2314](https://github.com/Ericson2314))
  * Hécate ([@Kleidukos](https://github.com/Kleidukos))
- * Evie Ciobanu ([@eviefp](https://github.com/eviefp))
- * David Thrane Christiansen ([@david-christiansen](https://github.com/david-christiansen))
- * Noon van der Silk ([@silky](https://github.com/silky))
- * Laurent P. René de Cotret ([@LaurentRDC](https://github.com/LaurentRDC))
+ * José Calderon ([@jmct](https://github.com/jmct))
+ * Markus Läll ([@mafoc](https://github.com/eyeinsky/mafoc))
+ * Matthías Páll Gissurarson ([@tritlo](https://github.com/Tritlo))
 
 ## Decisions
 
